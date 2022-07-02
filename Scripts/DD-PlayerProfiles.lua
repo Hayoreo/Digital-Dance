@@ -40,6 +40,7 @@ local profile_whitelist = {
 	CueMines = "boolean",
 	IgnoreHoldsRolls = "boolean",
 	IgnoreNotes = "boolean",
+	CountdownBreaks = "boolean",
 
 	ColumnFlashOnMiss = "boolean",
 	SubtractiveScoring = "boolean",

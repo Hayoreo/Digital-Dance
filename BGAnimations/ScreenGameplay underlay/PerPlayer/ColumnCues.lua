@@ -7,8 +7,8 @@ local player = ...
 local mods = SL[ToEnumShortString(player)].ActiveModifiers
 local po = GAMESTATE:GetPlayerState(player):GetPlayerOptions('ModsLevel_Current')
 
-local left = po:Left()
-local right = po:Right()
+local Left = po:Left()
+local Right = po:Right()
 local mirror = po:Mirror()
 local shuffle = po:Shuffle() or po:SuperShuffle() or po:SoftShuffle()
 local flip = po:Flip() > 0
@@ -24,6 +24,7 @@ local notes_removed = (po:Little()  or po:NoHolds() or po:NoStretch() or
 local CueMines = mods.CueMines and not NoMines
 local IgnoreHoldsRolls = mods.IgnoreHoldsRolls
 local IgnoreNotes = mods.IgnoreNotes
+local CountdownBreaks = mods.CountdownBreaks
 
 -- Don't run this if mines AND notes are not being cued lol
 if IgnoreNotes and not CueMines then return end
@@ -44,10 +45,10 @@ if invert then
 	noteMapping = {noteMapping[2], noteMapping[1], noteMapping[4], noteMapping[3]}
 end
 
-if left then
+if Left then
 	noteMapping = {noteMapping[2], noteMapping[4], noteMapping[1], noteMapping[3]}
 end
-if right then
+if Right then
 	noteMapping = {noteMapping[3], noteMapping[1], noteMapping[4], noteMapping[2]}
 end
 if mirror then
@@ -199,13 +200,25 @@ for ColumnIndex=1,NumColumns do
 			end
 
 			if flashDuration ~= nil then
-				
+				BreakTime = tonumber(flashDuration)
 				quad:stoptweening()
 					:decelerate(fade_time)
 					:diffuse(color)
 					:sleep(flashDuration - 2*fade_time)
 					:accelerate(fade_time)
 					:diffuse(0,0,0,0)
+				if CountdownBreaks then
+					if BreakTime >= 5 then
+						text:stoptweening()
+							:x((ColumnIndex - (NumColumns/2 + 0.5)) * (width/NumColumns))
+							:decelerate(fade_time)
+							:diffuse(Color.White)
+							:settext(round(BreakTime,1))
+							:playcommand("UpdateBreak")
+					else
+						text:diffuse(0,0,0,0)
+					end
+				end
 			end
 		end,
 		Def.Quad {
@@ -216,6 +229,33 @@ for ColumnIndex=1,NumColumns do
 					:setsize(width/NumColumns, _screen.h - y_offset)
 					:fadebottom(0.333)
 				quad = self
+			end,
+		},
+		Def.BitmapText{
+			Font="_Combo Fonts/Bebas Neue/Bebas Neue",
+			Text="",
+			InitCommand=function(self)
+				self:zoom(0.5)
+					:diffuse(0,0,0,0)
+					:horizalign(center)
+					:x((ColumnIndex - (NumColumns/2 + 0.5)) * (width/NumColumns))
+					:y(80)
+				text = self
+			end,
+			UpdateBreakCommand=function(self)
+				if BreakTime > 0.5 then
+					BreakTime = BreakTime - 0.1
+					if BreakTime > 0.5 then
+						self:sleep(0.1)
+							:settext(round(BreakTime))
+							:queuecommand("UpdateBreak")
+					else
+						self:diffuse(0,0,0,0)
+					end
+				else
+					self:diffuse(0,0,0,0)
+				end
+				
 			end,
 		}
 	}

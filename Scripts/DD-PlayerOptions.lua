@@ -549,7 +549,7 @@ local Overrides = {
 	ColumnCueExtras = {
 		SelectType = "SelectMultiple",
 		Values = function()
-			return {"CueMines", "IgnoreHoldsRolls", "IgnoreNotes",}
+			return {"CueMines", "IgnoreHoldsRolls", "IgnoreNotes","CountdownBreaks"}
 		end,
 		LoadSelections = function(self, list, pn)
 			local mods = SL[ToEnumShortString(pn)].ActiveModifiers
@@ -557,6 +557,7 @@ local Overrides = {
 			list[1] = mods.CueMines or false
 			list[2] = mods.IgnoreHoldsRolls or false
 			list[3] = mods.IgnoreNotes or false
+			list[4] = mods.CountdownBreaks or false
 			return list
 		end,
 		SaveSelections = function(self, list, pn)
@@ -565,6 +566,7 @@ local Overrides = {
 			mods.CueMines = list[1]
 			mods.IgnoreHoldsRolls = list[2]
 			mods.IgnoreNotes = list[3]
+			mods.CountdownBreaks = list[4]
 		end
 	},
 	-------------------------------------------------------------------------
