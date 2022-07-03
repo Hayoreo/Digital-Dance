@@ -2,6 +2,7 @@
 if GAMESTATE:IsCourseMode() or GAMESTATE:GetCurrentGame():GetName() ~= "dance" then return end
 
 local player = ...
+local BreakTime
 
 --- A list of potential mods the player will have active.
 local mods = SL[ToEnumShortString(player)].ActiveModifiers
