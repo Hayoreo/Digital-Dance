@@ -169,6 +169,15 @@ if not GAMESTATE:IsCourseMode() then
 							local pss = STATSMAN:GetCurStageStats():GetPlayerStageStats(player)
 							pss:FailPlayer()
 						end
+					else
+						--- in the event that the player is playing on a sm build with the broken mine fix and they fail on the last step lol
+						for player in ivalues( GAMESTATE:GetEnabledPlayers() ) do
+							local LifeState = GAMESTATE:GetPlayerState(player):GetHealthState()
+							local pss = STATSMAN:GetCurStageStats():GetPlayerStageStats(player)
+							if LifeState == "HealthState_Dead" then
+								pss:FailPlayer()
+							end
+						end
 					end
 				end,
 			}
