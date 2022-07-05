@@ -448,7 +448,7 @@ local Overrides = {
 	DataVisualizations = {
 		Values = function()
 			local choices = { "None", "Target Score Graph", "Step Statistics" }
-
+			
 			-- None and Target Score Graph should always be available to players
 			-- but Step Statistics needs a lot of space and isn't always possible
 			-- remove it as an available option if we aren't in single or if the current
@@ -458,14 +458,10 @@ local Overrides = {
 			local IsUltraWide = (GetScreenAspectRatio() > 21/9)
 			local mpn = GAMESTATE:GetMasterPlayerNumber()
 
-			-- Never available in double
-			if style and style:GetName() == "double"
-			-- In 4:3 versus mode
-			or (not IsUsingWideScreen() and style and style:GetName() == "versus")
+			-- Never In 4:3 versus mode
+			if (not IsUsingWideScreen() and style and style:GetName() == "versus")
 			-- if the notefield takes up more than half the screen width (e.g. single + Center1Player + 4:3)
 			or (notefieldwidth and notefieldwidth > _screen.w/2)
-			-- if the notefield is centered with 4:3 aspect ratio (probably don't need both these conditions)
-			or (mpn and GetNotefieldX(mpn) == _screen.cx and not IsUsingWideScreen())
 			then
 				table.remove(choices, 3)
 			end
