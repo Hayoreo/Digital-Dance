@@ -330,8 +330,10 @@ local GetMeasureInfo = function(Steps, measuresString)
 			measureCount = measureCount + 1
 		else
 			-- Is this a note? (Tap, Hold Head, Roll Head)
-			if(line:match("[124]")) then
-				notesInMeasure = notesInMeasure + 1
+			for i=1,#line do
+				if line:sub(i,i):match("[124]") then
+					notesInMeasure = notesInMeasure + 1
+				end
 			end
 		end
 	end
