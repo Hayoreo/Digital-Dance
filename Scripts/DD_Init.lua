@@ -93,7 +93,6 @@ local GlobalDefaults = {
 				PlayerOptions2 = "ScreenGameplay",
 				PlayerOptions3 = "ScreenGameplay",
 			}
-			self.ContinuesRemaining = ThemePrefs.Get("NumberOfContinuesAllowed") or 0
 			self.GameMode = "DD"
 			self.ScreenshotTexture = nil
 			self.TimeAtSessionStart = nil
