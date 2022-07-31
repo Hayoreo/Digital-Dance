@@ -28,7 +28,7 @@ Handle.Start = function(event)
 	if not GAMESTATE:IsHumanPlayer(event.PlayerNumber) then
 		-- pass -1 to SetProfileIndex() to join that player
 		-- see ScreenSelectProfile.cpp for details
-		nsj = 2
+		nsj = nsj + 1
 		topscreen:SetProfileIndex(event.PlayerNumber, -1)
 	else
 		if nsj == 1 then
@@ -154,23 +154,25 @@ Handle.MenuDown = Handle.MenuRight
 Handle.DownRight = Handle.MenuRight
 
 Handle.Back = function(event)
-	if GAMESTATE:GetNumPlayersEnabled()==0 then
+	if GAMESTATE:IsHumanPlayer(event.PlayerNumber) then
+		if event.PlayerNumber == "PlayerNumber_P1" and IsP1Ready then
+			IsP1Ready = false
+			MESSAGEMAN:Broadcast("BackButton")
+			MESSAGEMAN:Broadcast("P1ProfileUnReady")
+		elseif event.PlayerNumber == "PlayerNumber_P2" and IsP2Ready then
+			IsP2Ready = false
+			MESSAGEMAN:Broadcast("BackButton")
+			MESSAGEMAN:Broadcast("P2ProfileUnReady")
+		elseif not IsP1Ready and not IsP2Ready then
+			nsj = nsj - 1
+			MESSAGEMAN:Broadcast("BackButton")
+			-- ScreenSelectProfile:SetProfileIndex() will interpret -2 as
+			-- "Unjoin this player and unmount their USB stick if there is one"
+			-- see ScreenSelectProfile.cpp for details
+			SCREENMAN:GetTopScreen():SetProfileIndex(event.PlayerNumber, -2)
+		end
+	elseif GAMESTATE:GetNumPlayersEnabled()==0 then
 		SCREENMAN:GetTopScreen():Cancel()
-	elseif event.PlayerNumber == "PlayerNumber_P1" and IsP1Ready then
-		IsP1Ready = false
-		MESSAGEMAN:Broadcast("BackButton")
-		MESSAGEMAN:Broadcast("P1ProfileUnReady")
-	elseif event.PlayerNumber == "PlayerNumber_P2" and IsP2Ready then
-		IsP2Ready = false
-		MESSAGEMAN:Broadcast("BackButton")
-		MESSAGEMAN:Broadcast("P2ProfileUnReady")
-	elseif not IsP1Ready and not IsP2Ready then
-		nsj = 1
-		MESSAGEMAN:Broadcast("BackButton")
-		-- ScreenSelectProfile:SetProfileIndex() will interpret -2 as
-		-- "Unjoin this player and unmount their USB stick if there is one"
-		-- see ScreenSelectProfile.cpp for details
-		SCREENMAN:GetTopScreen():SetProfileIndex(event.PlayerNumber, -2)
 	end
 end
 
