@@ -330,8 +330,14 @@ local GetMeasureInfo = function(Steps, measuresString)
 			measureCount = measureCount + 1
 		else
 			-- Is this a note? (Tap, Hold Head, Roll Head)
-			for i=1,#line do
-				if line:sub(i,i):match("[124]") then
+			if ThemePrefs.Get("JumpsHandsNPS") then 
+				for i=1,#line do
+					if line:sub(i,i):match("[124]") then
+						notesInMeasure = notesInMeasure + 1
+					end
+				end
+			else
+				if(line:match("[124]")) then
 					notesInMeasure = notesInMeasure + 1
 				end
 			end

@@ -18,6 +18,12 @@ end
 
 SL_CustomPrefs.Get = function()
 	return {
+		JumpsHandsNPS =
+		{
+			Default = false,
+			Choices = { THEME:GetString("ThemePrefs","Yes"), THEME:GetString("ThemePrefs", "No") },
+			Values 	= { true, false }
+		},
 		HideStockNoteSkins =
 		{
 			Default = false,
