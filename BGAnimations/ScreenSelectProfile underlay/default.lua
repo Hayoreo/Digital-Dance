@@ -131,30 +131,6 @@ local t = Def.ActorFrame {
 	WhatMessageCommand=function(self) self:runcommandsonleaves(function(subself) if subself.distort then subself:distort(0.5) end end):sleep(4):queuecommand("Undistort") end,
 	UndistortCommand=function(self) self:runcommandsonleaves(function(subself) if subself.distort then subself:distort(0) end end) end,
 
-	CodeMessageCommand=function(self, params)
-
-		-- Don't allow players to unjoin from SelectProfile in CoinMode_Pay.
-		-- 1 credit has already been deducted from ScreenTitleJoin, so allowing players
-		-- to unjoin would mean we'd have to handle credit refunding (or something).
-		if GAMESTATE:GetCoinMode() == "CoinMode_Pay" then return end
-
-		if params.Name == "Select" then
-			if GAMESTATE:GetNumPlayersEnabled()==0 then
-				SCREENMAN:GetTopScreen():Cancel()
-			else
-				-- only attempt to unjoin the player if that side is currently joined
-				if GAMESTATE:IsSideJoined(params.PlayerNumber) then
-					MESSAGEMAN:Broadcast("BackButton")
-					-- ScreenSelectProfile:SetProfileIndex() will interpret -2 as
-					-- "Unjoin this player and unmount their USB stick if there is one"
-					-- see ScreenSelectProfile.cpp for details
-					SCREENMAN:GetTopScreen():SetProfileIndex(params.PlayerNumber, -2)
-				end
-			end
-			return
-		end
-	end,
-
 	-- various events can occur that require us to reassess what we're drawing
 	OnCommand=function(self) self:queuecommand('Update') end,
 	StorageDevicesChangedMessageCommand=function(self) self:queuecommand('Update') end,

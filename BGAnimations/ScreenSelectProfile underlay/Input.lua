@@ -21,83 +21,64 @@ local Handle = {}
 
 Handle.Start = function(event)
 	local topscreen = SCREENMAN:GetTopScreen()
-
-	-- if the input event came from a side that is not currently registered as a human player, we'll either
-	-- want to reject the input (we're in Pay mode and there aren't enough credits to join the player),
-	-- or we'll use ScreenSelectProfile's inscrutably custom SetProfileIndex() method to join the player.
-	if not GAMESTATE:IsHumanPlayer(event.PlayerNumber) then
-		-- pass -1 to SetProfileIndex() to join that player
-		-- see ScreenSelectProfile.cpp for details
-		nsj = nsj + 1
-		topscreen:SetProfileIndex(event.PlayerNumber, -1)
-	else
-		if nsj == 1 then
-			-- we only bother checking scrollers to see if both players are
-			-- trying to choose the same profile if there are scrollers because
-			-- there are local profiles.  If there are no local profiles, there are
-			-- no scrollers to compare.
-			if PROFILEMAN:GetNumLocalProfiles() > 0
-			-- and if both players have joined and neither is using a memorycard
-			and #GAMESTATE:GetHumanPlayers() > 1 and not GAMESTATE:IsAnyHumanPlayerUsingMemoryCard() then
-				-- and both players are trying to choose the same profile
-				if scrollers[PLAYER_1]:get_info_at_focus_pos().index == scrollers[PLAYER_2]:get_info_at_focus_pos().index
-				-- and that profile they are both trying to choose isn't [GUEST]
-				and scrollers[PLAYER_1]:get_info_at_focus_pos().index ~= 0 then
-					-- broadcast an InvalidChoice message to play the "Common invalid" sound
-					-- and "shake" the playerframe for the player that just pressed start
-					MESSAGEMAN:Broadcast("InvalidChoice", {PlayerNumber=event.PlayerNumber})
-					return
-				end
-			end
-
-			-- otherwise, play the StartButton sound
-			MESSAGEMAN:Broadcast("StartButton")
-			-- and queue the OffCommand for the entire screen
-			topscreen:queuecommand("Off"):sleep(0.4)
-		elseif nsj == 2 then
-			if event.PlayerNumber == "PlayerNumber_P1" and IsP1Ready == false then
-				IsP1Ready = true
-				if not IsP2Ready then
-					MESSAGEMAN:Broadcast("StartButton")
-				end
-				MESSAGEMAN:Broadcast("P1ProfileReady")
-			elseif  event.PlayerNumber == "PlayerNumber_P2" and IsP2Ready == false then
-				IsP2Ready = true
-				if not IsP1Ready then
-					MESSAGEMAN:Broadcast("StartButton")
-				end
-				MESSAGEMAN:Broadcast("P2ProfileReady")
-			end
-			if IsP1Ready and IsP2Ready then
-				-- we only bother checking scrollers to see if both players are
-			-- trying to choose the same profile if there are scrollers because
-			-- there are local profiles.  If there are no local profiles, there are
-			-- no scrollers to compare.
-			if PROFILEMAN:GetNumLocalProfiles() > 0
-			-- and if both players have joined and neither is using a memorycard
-			and #GAMESTATE:GetHumanPlayers() > 1 and not GAMESTATE:IsAnyHumanPlayerUsingMemoryCard() then
-				-- and both players are trying to choose the same profile
-				if scrollers[PLAYER_1]:get_info_at_focus_pos().index == scrollers[PLAYER_2]:get_info_at_focus_pos().index
-				-- and that profile they are both trying to choose isn't [GUEST]
-				and scrollers[PLAYER_1]:get_info_at_focus_pos().index ~= 0 then
-					-- broadcast an InvalidChoice message to play the "Common invalid" sound
-					-- and "shake" the playerframe for the player that just pressed start
-					if event.PlayerNumber == "PlayerNumber_P1" then
-						IsP1Ready = false
-						MESSAGEMAN:Broadcast("P1ProfileUnReady")
-					elseif event.PlayerNumber == "PlayerNumber_P2" then
-						IsP2Ready = false
-						MESSAGEMAN:Broadcast("P2ProfileUnReady")
+	if event.type == "InputEventType_FirstPress" then
+		-- if the input event came from a side that is not currently registered as a human player, we'll either
+		-- want to reject the input (we're in Pay mode and there aren't enough credits to join the player),
+		-- or we'll use ScreenSelectProfile's inscrutably custom SetProfileIndex() method to join the player.
+		if not GAMESTATE:IsHumanPlayer(event.PlayerNumber) then
+			-- pass -1 to SetProfileIndex() to join that player
+			-- see ScreenSelectProfile.cpp for details
+			nsj = nsj + 1
+			topscreen:SetProfileIndex(event.PlayerNumber, -1)
+		else
+			if nsj == 1 then
+				MESSAGEMAN:Broadcast("StartButton")
+				topscreen:queuecommand("Off"):sleep(0.4)
+			elseif nsj == 2 then
+				if event.PlayerNumber == "PlayerNumber_P1" and IsP1Ready == false then
+					IsP1Ready = true
+					if not IsP2Ready then
+						MESSAGEMAN:Broadcast("StartButton")
 					end
-					MESSAGEMAN:Broadcast("InvalidChoice", {PlayerNumber=event.PlayerNumber})
-					return
+					MESSAGEMAN:Broadcast("P1ProfileReady")
+				elseif  event.PlayerNumber == "PlayerNumber_P2" and IsP2Ready == false then
+					IsP2Ready = true
+					if not IsP1Ready then
+						MESSAGEMAN:Broadcast("StartButton")
+					end
+					MESSAGEMAN:Broadcast("P2ProfileReady")
 				end
-			end
+				if IsP1Ready and IsP2Ready then
+					-- we only bother checking scrollers to see if both players are
+				-- trying to choose the same profile if there are scrollers because
+				-- there are local profiles.  If there are no local profiles, there are
+				-- no scrollers to compare.
+				if PROFILEMAN:GetNumLocalProfiles() > 0
+				-- and if both players have joined and neither is using a memorycard
+				and #GAMESTATE:GetHumanPlayers() > 1 and not GAMESTATE:IsAnyHumanPlayerUsingMemoryCard() then
+					-- and both players are trying to choose the same profile
+					if scrollers[PLAYER_1]:get_info_at_focus_pos().index == scrollers[PLAYER_2]:get_info_at_focus_pos().index
+					-- and that profile they are both trying to choose isn't [GUEST]
+					and scrollers[PLAYER_1]:get_info_at_focus_pos().index ~= 0 then
+						-- broadcast an InvalidChoice message to play the "Common invalid" sound
+						-- and "shake" the playerframe for the player that just pressed start
+						if event.PlayerNumber == "PlayerNumber_P1" then
+							IsP1Ready = false
+							MESSAGEMAN:Broadcast("P1ProfileUnReady")
+						elseif event.PlayerNumber == "PlayerNumber_P2" then
+							IsP2Ready = false
+							MESSAGEMAN:Broadcast("P2ProfileUnReady")
+						end
+						MESSAGEMAN:Broadcast("InvalidChoice", {PlayerNumber=event.PlayerNumber})
+						return
+					end
+				end
 
-			-- otherwise, play the StartButton sound
-			MESSAGEMAN:Broadcast("StartButton")
-			-- and queue the OffCommand for the entire screen
-			topscreen:queuecommand("Off"):sleep(0.4)
+				-- otherwise, play the StartButton sound
+				MESSAGEMAN:Broadcast("StartButton")
+				-- and queue the OffCommand for the entire screen
+				topscreen:queuecommand("Off"):sleep(0.4)
+				end
 			end
 		end
 	end
@@ -154,6 +135,7 @@ Handle.MenuDown = Handle.MenuRight
 Handle.DownRight = Handle.MenuRight
 
 Handle.Back = function(event)
+	local topscreen = SCREENMAN:GetTopScreen()
 	if GAMESTATE:IsHumanPlayer(event.PlayerNumber) then
 		if event.PlayerNumber == "PlayerNumber_P1" and IsP1Ready then
 			IsP1Ready = false
@@ -170,11 +152,24 @@ Handle.Back = function(event)
 			-- "Unjoin this player and unmount their USB stick if there is one"
 			-- see ScreenSelectProfile.cpp for details
 			SCREENMAN:GetTopScreen():SetProfileIndex(event.PlayerNumber, -2)
+		elseif event.PlayerNumber == "PlayerNumber_P1" and not IsP1Ready and nsj == 2 then
+			nsj = nsj - 1
+			MESSAGEMAN:Broadcast("BackButton")
+			SCREENMAN:GetTopScreen():SetProfileIndex(event.PlayerNumber, -2)
+			MESSAGEMAN:Broadcast("StartButton")
+			topscreen:queuecommand("Off"):sleep(0.4)
+		elseif event.PlayerNumber == "PlayerNumber_P2" and not IsP2Ready and nsj == 2 then
+			nsj = nsj - 1
+			MESSAGEMAN:Broadcast("BackButton")
+			SCREENMAN:GetTopScreen():SetProfileIndex(event.PlayerNumber, -2)
+			MESSAGEMAN:Broadcast("StartButton")
+			topscreen:queuecommand("Off"):sleep(0.4)
 		end
 	elseif GAMESTATE:GetNumPlayersEnabled()==0 then
 		SCREENMAN:GetTopScreen():Cancel()
 	end
 end
+Handle.Select = Handle.Back
 
 
 local InputHandler = function(event)
