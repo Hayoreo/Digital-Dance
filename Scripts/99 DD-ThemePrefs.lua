@@ -30,12 +30,6 @@ SL_CustomPrefs.Get = function()
 			Choices = { 0,1,2,3,4,5,6,7,8,9 },
 			Values = { 0,1,2,3,4,5,6,7,8,9 }
 		},
-		AllowSongSearch =
-		{
-			Default = true,
-			Choices = { THEME:GetString("ThemePrefs","Yes"), THEME:GetString("ThemePrefs", "No") },
-			Values 	= { true, false }
-		},
 		HideStockNoteSkins =
 		{
 			Default = false,

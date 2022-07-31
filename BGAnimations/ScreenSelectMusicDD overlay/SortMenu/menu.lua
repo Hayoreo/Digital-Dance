@@ -157,10 +157,6 @@ local t = Def.ActorFrame{
 				local InitialZoomY = 255
 				local InitialAddY = -25
 				
-				if ThemePrefs.Get("AllowSongSearch") then
-					InitialZoomY = InitialZoomY + 25
-					InitialAddY = InitialAddY + 12.5
-				end
 				if IsServiceAllowed(SL.GrooveStats.Leaderboard) and SongIsSelected then
 					InitialZoomY = InitialZoomY + 25
 					InitialAddY = InitialAddY + 12.5
@@ -204,10 +200,6 @@ local t = Def.ActorFrame{
 				local InitialZoomY = 250
 				local InitialAddY = -25
 				
-				if ThemePrefs.Get("AllowSongSearch") then
-					InitialZoomY = InitialZoomY + 25
-					InitialAddY = InitialAddY + 12.5
-				end
 				if IsServiceAllowed(SL.GrooveStats.Leaderboard) and SongIsSelected then
 					InitialZoomY = InitialZoomY + 25
 					InitialAddY = InitialAddY + 12.5
@@ -610,9 +602,7 @@ end
 OtherLabel = {}
 OtherLabel[#OtherLabel+1] = "RESET SORT/FILTERS"
 OtherLabel[#OtherLabel+1] = switchCourseSongSelectLabel
-if ThemePrefs.Get("AllowSongSearch") then
-	OtherLabel[#OtherLabel+1] = "SONG SEARCH"
-end
+
 -- OtherLabel[#OtherLabel+1] = "MARK AS FAVORITE"
 if GAMESTATE:GetCurrentStyle():GetStyleType() ~= 'StyleType_TwoPlayersTwoSides' then
 	OtherLabel[#OtherLabel+1] = switchStepsTypeLabel

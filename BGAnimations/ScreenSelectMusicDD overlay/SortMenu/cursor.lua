@@ -21,9 +21,6 @@ local function GetMaxCursorPosition()
 	if IsServiceAllowed(SL.GrooveStats.Leaderboard) and SongIsSelected then
 		MaxCursorPosition = MaxCursorPosition + 1
 	end
-	if ThemePrefs.Get("AllowSongSearch") then
-		MaxCursorPosition = MaxCursorPosition + 1
-	end
 	return tonumber(MaxCursorPosition)
 end
 
@@ -190,14 +187,10 @@ local t = Def.ActorFrame{
 			elseif DDSortMenuCursorPosition == 13 then
 				self:zoomx(170)
 				self:xy(SCREEN_CENTER_X + 85,SCREEN_CENTER_Y + 105)
-			-- leaderboards or test input
+			-- test input
 			elseif DDSortMenuCursorPosition == 14 then
 				self:zoomx(170)
 				self:xy(SCREEN_CENTER_X + 85,SCREEN_CENTER_Y + 130)
-			-- test input
-			elseif DDSortMenuCursorPosition == 15 then
-				self:zoomx(170)
-				self:xy(SCREEN_CENTER_X + 85,SCREEN_CENTER_Y + 155)
 			end
 			self:queuecommand("FadeOut")
 			

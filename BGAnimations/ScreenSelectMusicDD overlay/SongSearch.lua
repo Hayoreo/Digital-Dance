@@ -1,6 +1,41 @@
+local holdingCtrl = false
+local holdingShift = false
+
+local InputHandler = function( event )
+
+	-- if (somehow) there's no event, bail
+	if not event then return end
+
+	if event.type == "InputEventType_FirstPress" then
+		
+		--Trace(event.DeviceInput.button)
+		
+		if event.DeviceInput.button == "DeviceButton_left ctrl" then
+			holdingCtrl = true
+		end
+		
+		if holdingCtrl then
+			if event.DeviceInput.button == "DeviceButton_f" then
+				holdingCtrl = false
+				MESSAGEMAN:Broadcast("SongSearchSSMDD")
+			end
+		end
+		
+	end
+	
+	if event.type == "InputEventType_Release" then
+		if event.DeviceInput.button == "DeviceButton_left ctrl" then
+			holdingCtrl = false
+		end
+	end
+
+end
+
+
 local t = Def.ActorFrame{
 	OnCommand=function(self)
 		screen = SCREENMAN:GetTopScreen()
+		screen:AddInputCallback( InputHandler )
 		if SongSearchSSMDD == true then
 			SongSearchSSMDD = false
 			SongSearchAnswer = nil
