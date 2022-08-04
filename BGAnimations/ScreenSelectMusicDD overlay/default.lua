@@ -5,7 +5,7 @@
 local setup = LoadActor("./Setup.lua")
 local ChartUpdater = LoadActor("./UpdateChart.lua")
 local LeavingScreenSelectMusicDD = false
-
+SearchInput = false
 ChartUpdater.UpdateCharts()
 
 if setup == nil then

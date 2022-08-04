@@ -99,7 +99,7 @@ local lastMenuDownPressTime = 0
 
 t.Handler = function(event)
 	-- if any of these, don't attempt to handle input
-	if t.Enabled == false or not event or not event.PlayerNumber or not event.button then
+	if t.Enabled == false or not event or not event.PlayerNumber or not event.button or SearchInput then
 		return false
 	end
 	
@@ -358,7 +358,7 @@ if not GAMESTATE:IsSideJoined(event.PlayerNumber) then
 		if not t.AllowLateJoin() then return false end
 
 		-- latejoin
-		if event.GameButton == "Start" then
+		if event.GameButton == "Start" and not SearchInput then
 			GAMESTATE:JoinPlayer( event.PlayerNumber )
 			Players = GAMESTATE:GetHumanPlayers()
 			MESSAGEMAN:Broadcast("ReloadSSMDD")

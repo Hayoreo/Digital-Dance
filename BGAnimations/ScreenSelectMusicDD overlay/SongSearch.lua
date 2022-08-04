@@ -17,6 +17,7 @@ local InputHandler = function( event )
 		if holdingCtrl then
 			if event.DeviceInput.button == "DeviceButton_f" then
 				holdingCtrl = false
+				SearchInput = true
 				MESSAGEMAN:Broadcast("SongSearchSSMDD")
 			end
 		end
@@ -90,14 +91,17 @@ local t = Def.ActorFrame{
 						end
 					end
 					if results > 0 then
+						self:sleep(0.2):queuecommand("TurnOffSearchInput")
 						SongSearchSSMDD = true
 						SongSearchAnswer = answer
 						SongSearchWheelNeedsResetting = true
 						self:sleep(0.25):queuecommand("ReloadScreen")
 					else
+						self:sleep(0.2):queuecommand("TurnOffSearchInput")
 						SM("No songs found!")
 					end
 				else
+					self:sleep(0.2):queuecommand("TurnOffSearchInput")
 					SongSearchSSMDD = false
 					SongSearchAnswer = nil
 					SongSearchWheelNeedsResetting = false
@@ -105,8 +109,15 @@ local t = Def.ActorFrame{
 				end
 				
 			end,
+			OnCancel = function()
+				self:sleep(0.2):queuecommand("TurnOffSearchInput")
+			end,
 			};
 			SCREENMAN:GetTopScreen():Load(songSearch)
+	end,
+	
+	TurnOffSearchInputCommand=function(self)
+		SearchInput = false
 	end,
 	
 	ReloadScreenCommand=function(self)
