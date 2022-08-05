@@ -6,7 +6,8 @@
 -- 		- quad height
 -- 		- the quad's horizontal alignment (left, right, center)
 -- 		- the quad's vertical alignment (top, bottom, middle)
-IsMouseGucci = function(QuadX, QuadY, QuadWidth, QuadHeight, Horizontal, Vertical)
+--		- The Zoom of the quad/object (this one is optional and will probably rarely get used, but it exists)
+IsMouseGucci = function(QuadX, QuadY, QuadWidth, QuadHeight, Horizontal, Vertical, Zoom)
 	local MouseX = INPUTFILTER:GetMouseX()
 	local MouseY = INPUTFILTER:GetMouseY()
 	local XMax = SCREEN_WIDTH
@@ -17,10 +18,11 @@ IsMouseGucci = function(QuadX, QuadY, QuadWidth, QuadHeight, Horizontal, Vertica
 	-- If the mouse is not in the SM window then don't check anything else.
 	if (MouseX < 0 or MouseX > XMax) or (MouseY < 0 or MouseY > YMax) then return false end
 	
+	Zoom = Zoom or 1
 	QuadX = QuadX
 	QuadY = QuadY
-	QuadWidth = QuadWidth
-	QuadHeight = QuadHeight
+	QuadWidth = QuadWidth * Zoom
+	QuadHeight = QuadHeight * Zoom
 	Horizontal = Horizontal or "center"
 	Vertical = Vertical or "middle"
 	

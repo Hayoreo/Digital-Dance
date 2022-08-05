@@ -25,7 +25,7 @@ local t = {}
 
 
 local SwitchInputFocus = function(button)
-	if button == "Start" then
+	if button == "Start" or "DeviceButton_left mouse button" then
 
 		if t.WheelWithFocus == GroupWheel then
 			if NameOfGroup == "RANDOM-PORTAL" then
@@ -98,6 +98,74 @@ local lastMenuUpPressTime = 0
 local lastMenuDownPressTime = 0
 
 t.Handler = function(event)
+	-- Allow Mouse Input here
+	if event.type == "InputEventType_FirstPress" then
+		if event.DeviceInput.button == "DeviceButton_middle mouse button" and t.WheelWithFocus == SongWheel then
+			stop_music()
+			SOUND:PlayOnce( THEME:GetPathS("MusicWheel", "expand.ogg") )
+			MESSAGEMAN:Broadcast("CloseCurrentFolder")
+			CloseCurrentFolder()
+		end
+		if event.DeviceInput.button == "DeviceButton_left mouse button" then
+			for i=1, 4 do
+				if IsMouseGucci(_screen.cx, (_screen.cy + 45) - (i*25), 320, 24) then
+					t.WheelWithFocus:scroll_by_amount(-i)
+					SOUND:PlayOnce( THEME:GetPathS("MusicWheel", "change.ogg") )
+					stop_music()
+					ChartUpdater.UpdateCharts()
+				end
+			end
+			
+			for i=1, 6 do
+				if IsMouseGucci(_screen.cx, (_screen.cy + 45) + (i*25), 320, 24) then
+					t.WheelWithFocus:scroll_by_amount(i)
+					SOUND:PlayOnce( THEME:GetPathS("MusicWheel", "change.ogg") )
+					stop_music()
+					ChartUpdater.UpdateCharts()
+				end
+			end
+			
+			if IsMouseGucci(_screen.cx, (_screen.cy + 45), 320, 24) then
+				if t.WheelWithFocus == SongWheel then
+					if didSelectSong then
+						SOUND:PlayOnce( THEME:GetPathS("Common", "start.ogg") )
+						SCREENMAN:SetNewScreen("ScreenPlayerOptions")
+						return false
+					end
+					if t.WheelWithFocus:get_info_at_focus_pos() ~= "CloseThisFolder" then
+						didSelectSong = true
+						TransitionTime = 0
+						PressStartForOptions = true
+						SOUND:PlayOnce( THEME:GetPathS("Common", "start.ogg") )
+						MESSAGEMAN:Broadcast('ShowOptionsJawn')
+					elseif t.WheelWithFocus:get_info_at_focus_pos() == "CloseThisFolder" then
+						SOUND:PlayOnce( THEME:GetPathS("MusicWheel", "expand.ogg") )
+						CloseCurrentFolder()
+						return false
+					end
+				elseif t.WheelWithFocus == GroupWheel then
+					if NameOfGroup == "RANDOM-PORTAL" then
+						didSelectSong = true
+						TransitionTime = 0
+						PressStartForOptions = true
+						SOUND:PlayOnce( THEME:GetPathS("Common", "start.ogg") )
+						MESSAGEMAN:Broadcast('ShowOptionsJawn')
+						t.WheelWithFocus = SongWheel
+					else
+						SOUND:PlayOnce( THEME:GetPathS("MusicWheel", "expand.ogg") )
+						t.WheelWithFocus.container:queuecommand("Start")
+						SwitchInputFocus(event.DeviceInput.button)
+
+						if t.WheelWithFocus.container then
+							t.WheelWithFocus.container:queuecommand("Unhide")
+						end
+					end
+				end
+			end
+			
+		end
+	end
+	
 	-- if any of these, don't attempt to handle input
 	if t.Enabled == false or not event or not event.PlayerNumber or not event.button or SearchInput then
 		return false

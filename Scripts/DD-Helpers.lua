@@ -861,4 +861,4 @@ CalculateExScore = function(player, ex_counts)
 		end
 	end
 		return math.max(0, math.floor(total_points/total_possible * 10000) / 100)
-end 
+end
