@@ -100,7 +100,7 @@ local lastMenuDownPressTime = 0
 t.Handler = function(event)
 	-- Allow Mouse Input here
 	if event.type == "InputEventType_FirstPress" then
-		if event.DeviceInput.button == "DeviceButton_middle mouse button" and t.WheelWithFocus == SongWheel then
+		if event.DeviceInput.button == "DeviceButton_middle mouse button" and t.WheelWithFocus == SongWheel and not didSelectSong then
 			stop_music()
 			SOUND:PlayOnce( THEME:GetPathS("MusicWheel", "expand.ogg") )
 			MESSAGEMAN:Broadcast("CloseCurrentFolder")
