@@ -102,54 +102,6 @@ local t = Def.ActorFrame {
 							CloseCurrentFolder()
 						end
 					end
-					if params.Name == "SortList" or params.Name == "SortList2" then
-						local P1Enabled = GAMESTATE:IsPlayerEnabled(0)
-						local P2Enabled = GAMESTATE:IsPlayerEnabled(1)
-						local OpenSort = false
-						
-						if params.PlayerNumber == 'PlayerNumber_P1' and P1Enabled == true then
-							OpenSort = true
-						elseif params.PlayerNumber == 'PlayerNumber_P2' and P2Enabled == true then
-							OpenSort = true
-						end
-						
-						if OpenSort then
-							isSortMenuVisible = true
-							SOUND:StopMusic()
-							SOUND:PlayOnce( THEME:GetPathS("MusicWheel", "sort.ogg") )
-							if params.PlayerNumber == 'PlayerNumber_P1' then
-								PlayerControllingSort = 'PlayerNumber_P1' 
-							else
-								PlayerControllingSort = 'PlayerNumber_P2'
-							end
-							if GAMESTATE:GetCurrentSong() ~= nil then
-								DDStats.SetStat(PLAYER_1, 'LastSong', GAMESTATE:GetCurrentSong():GetSongDir())
-							end
-							MESSAGEMAN:Broadcast("InitializeDDSortMenu")
-							MESSAGEMAN:Broadcast("ToggleSortMenu")
-						end
-					end
-				end
-			--- do this to close the sort menu for people using 3 button input
-			else 
-				if params.Name == "SortList" or params.Name == "SortList2" then
-					if IsSortMenuInputToggled == false then
-						if SortMenuNeedsUpdating == true then
-							SortMenuNeedsUpdating = false
-							MESSAGEMAN:Broadcast("ToggleSortMenu")
-							MESSAGEMAN:Broadcast("ReloadSSMDD")
-							isSortMenuVisible = false
-							SOUND:PlayOnce( THEME:GetPathS("MusicWheel", "expand.ogg") )
-						elseif SortMenuNeedsUpdating == false then
-							isSortMenuVisible = false
-							SOUND:PlayOnce( THEME:GetPathS("ScreenPlayerOptions", "cancel all.ogg") )
-							MESSAGEMAN:Broadcast("ToggleSortMenu")
-						end
-					else
-						SOUND:PlayOnce( THEME:GetPathS("common", "invalid.ogg") )
-						MESSAGEMAN:Broadcast("UpdateCursorColor")
-						MESSAGEMAN:Broadcast("ToggleSortMenuMovement")
-					end
 				end
 			end
 		end
