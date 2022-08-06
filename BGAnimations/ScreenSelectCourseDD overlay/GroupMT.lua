@@ -8,6 +8,7 @@ local col = args[6]
 local Input = args[7]
 local PruneCoursesFromGroup = args[8]
 local starting_group = args[9]
+local group_info = args[10]
 
 local max_chars = 64
 
@@ -122,7 +123,14 @@ local item_mt = {
 					OnCommand=function(subself)
 					end
 				},
-
+				-- unique songs
+				Def.BitmapText{
+					Font="Common Normal",
+					InitCommand=function(subself)
+						self.Numberbmt = subself
+						subself:zoom(0.8):diffuse(Color.White):xy(IsUsingWideScreen() and 150 or 310,IsUsingWideScreen() and 0 or -113):maxwidth(300):horizalign(right)
+					end,
+				},
 				-- group title bmt
 				Def.BitmapText{
 					Font="Common Normal",
@@ -192,6 +200,7 @@ local item_mt = {
 			self.bmt:diffuse(color("#4ffff3"))
 			-- handle text
 			self.bmt:settext(self.groupName):Truncate(max_chars)
+			self.Numberbmt:settext(group_info[groupName].num_courses)
 		end
 	}
 }

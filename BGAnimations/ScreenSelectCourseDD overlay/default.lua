@@ -36,7 +36,7 @@ local params_for_input = { GroupWheel=GroupWheel, CourseWheel=CourseWheel }
 local Input = LoadActor( "./Input.lua", params_for_input )
 
 -- metatables
-local group_mt = LoadActor("./GroupMT.lua", {GroupWheel,CourseWheel,TransitionTime,steps_type,row,col,Input,setup.PruneCoursesFromGroup,Groups[group_index]})
+local group_mt = LoadActor("./GroupMT.lua", {GroupWheel,CourseWheel,TransitionTime,steps_type,row,col,Input,setup.PruneCoursesFromGroup,Groups[group_index],group_info})
 local course_mt = LoadActor("./CourseMT.lua", {CourseWheel,TransitionTime,row,col})
 
 ---------------------------------------------------------------------------
@@ -143,8 +143,6 @@ local t = Def.ActorFrame {
 	LoadActor("./PaneDisplay.lua"),
 	-- CourseContentsList
 	LoadActor("./CourseContentsList.lua"),
-	-- included, but unused for now
-	LoadActor("./GroupWheelShared.lua", {row, col, group_info}),
 	-- Sort and Filter menu wow
 	LoadActor("./SortMenu/default.lua"),
 	-- a Test Input overlay can be accessed from the SortMenu

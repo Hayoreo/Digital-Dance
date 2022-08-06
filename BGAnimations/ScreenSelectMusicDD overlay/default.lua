@@ -36,7 +36,7 @@ local params_for_input = { GroupWheel=GroupWheel, SongWheel=SongWheel, SortWheel
 local Input = LoadActor( "./Input.lua", params_for_input )
 
 -- metatables
-local group_mt = LoadActor("./GroupMT.lua", {GroupWheel,SongWheel,TransitionTime,steps_type,row,col,Input,setup.PruneSongsFromGroup,Groups[group_index]})
+local group_mt = LoadActor("./GroupMT.lua", {GroupWheel,SongWheel,TransitionTime,steps_type,row,col,Input,setup.PruneSongsFromGroup,Groups[group_index],group_info})
 local song_mt = LoadActor("./SongMT.lua", {SongWheel,TransitionTime,row,col})
 
 ---------------------------------------------------------------------------
@@ -160,8 +160,6 @@ local t = Def.ActorFrame {
 	-- The GrooveStats leaderboard that can (maybe) be accessed from the SortMenu
 	-- This is only added in "dance" mode and if the service is available.
 	LoadActor("./Leaderboard.lua"),
-	-- included, but unused for now
-	LoadActor("./GroupWheelShared.lua", {row, col, group_info}),
 	-- Sort and Filter menu wow
 	LoadActor("./SortMenu/default.lua"),
 	-- a Test Input overlay can be accessed from the SortMenu
