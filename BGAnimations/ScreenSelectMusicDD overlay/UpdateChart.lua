@@ -47,6 +47,76 @@ local function SetChart(playerNum, steps)
 	MESSAGEMAN:Broadcast('CurrentStepsChanged', {playerNum=playerNum, steps=steps})
 end
 
+local function UpdateChartClick(playerNum, targetDif)
+	local song = GAMESTATE:GetCurrentSong()
+	if song == nil then
+		return
+	end
+	local PlayerChartDif = GAMESTATE:GetCurrentSteps(playerNum):GetDifficulty()
+	local LastDifficulty = DDStats.GetStat(playerNum, 'LastDifficulty')
+	local stepses = SongUtil.GetPlayableSteps(song)
+	if #stepses == 0 then
+		return
+	end
+	
+	local minDifficultyDifference = 999
+	local matchingSteps = nil
+	
+	local ChartIndexDiff = (difficultyToIndex[PlayerChartDif] - difficultyToIndex[targetDif])
+	
+	if ChartIndexDiff > 0 then
+		EasierDifficulty = false
+		HarderDifficulty = true
+	elseif ChartIndexDiff < 0 then
+		EasierDifficulty = true
+		HarderDifficulty = false
+	end
+	
+	for steps in ivalues(stepses) do
+		local difficultyDifference = math.abs(difficultyToIndex[steps:GetDifficulty()] - difficultyToIndex[targetDif])
+			
+		if difficultyDifference < minDifficultyDifference and steps:GetDifficulty() == targetDif and steps:GetDifficulty() ~= PlayerChartDif then
+			minDifficultyDifference = difficultyDifference
+			matchingSteps = steps
+		end
+		if steps:GetDifficulty() == PlayerChartDif and LastDifficulty ~= PlayerChartDif then
+			if GAMESTATE:IsPlayerEnabled(PLAYER_1) then
+				local PlayerOneChart = GAMESTATE:GetCurrentSteps(0)
+				DDStats.SetStat(PLAYER_1, 'LastDifficulty', PlayerOneChart:GetDifficulty())
+				DDStats.Save(PLAYER_1)
+			end
+			
+			if GAMESTATE:IsPlayerEnabled(PLAYER_2) then
+				local PlayerTwoChart = GAMESTATE:GetCurrentSteps(1)
+				DDStats.SetStat(PLAYER_2, 'LastDifficulty', PlayerTwoChart:GetDifficulty())
+				DDStats.Save(PLAYER_2)
+			end
+		end
+	end
+	
+	if matchingSteps ~= nil then
+		SetChart(playerNum, matchingSteps)
+		if EasierDifficulty then
+			SOUND:PlayOnce( THEME:GetPathS("", "_easier.ogg") )
+		elseif HarderDifficulty then
+			SOUND:PlayOnce( THEME:GetPathS("", "_harder.ogg") )
+		end
+		if GAMESTATE:IsPlayerEnabled(PLAYER_1) then
+			local PlayerOneChart = GAMESTATE:GetCurrentSteps(0)
+			DDStats.SetStat(PLAYER_1, 'LastDifficulty', PlayerOneChart:GetDifficulty())
+			DDStats.Save(PLAYER_1)
+		end
+		
+		if GAMESTATE:IsPlayerEnabled(PLAYER_2) then
+			local PlayerTwoChart = GAMESTATE:GetCurrentSteps(1)
+			DDStats.SetStat(PLAYER_2, 'LastDifficulty', PlayerTwoChart:GetDifficulty())
+			DDStats.Save(PLAYER_2)
+		end
+		return
+	end
+	
+end
+
 local function UpdateChart(playerNum, difficultyChange)
 	local song = GAMESTATE:GetCurrentSong()
 	if song == nil then
@@ -204,5 +274,27 @@ return {
 		EasierDifficulty = false
 		HarderDifficulty = true
 		UpdateChart(playerNum, -1)
+	end,
+	ClickDifficulty=function(playerNum, targetDif)
+		local LastDifficulty = DDStats.GetStat(playerNum, 'LastDifficulty')
+		if LastDifficulty == targetDif then return end
+		
+		-- This only works if the chart has one edit, if it has multiple edit charts this does not work as intended.
+		--(neither does the normal input for difficulty select for that matter)
+		if LastDifficulty == "Difficulty_Edit" then
+			if targetDif == "Difficulty_Challenge" then
+				targetDif = "Difficulty_Edit"
+			elseif targetDif == "Difficulty_Hard" then
+				targetDif = "Difficulty_Challenge"
+			elseif targetDif == "Difficulty_Medium" then
+				targetDif = "Difficulty_Hard"
+			elseif targetDif == "Difficulty_Easy" then
+				targetDif = "Difficulty_Medium"
+			elseif targetDif == "Difficulty_Beginner" then
+				targetDif = "Difficulty_Easy"
+			end
+		end
+		
+		UpdateChartClick(playerNum, targetDif)
 	end,
 }

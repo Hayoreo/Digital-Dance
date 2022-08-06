@@ -180,6 +180,43 @@ t.Handler = function(event)
 					end
 				end
 				
+				-- Change the difficulty of the song when a player left clicks a chart.
+				if GAMESTATE:IsSideJoined('PlayerNumber_P1') then
+					-- Novice position
+					if IsMouseGucci(9, WideScale(358,288), 65, 46, "left", "top", 0.75) then
+						ChartUpdater.ClickDifficulty("PlayerNumber_P1", "Difficulty_Beginner")
+					-- Easy Position
+					elseif IsMouseGucci(59, WideScale(358,288), 65, 46, "left", "top", 0.75) then
+						ChartUpdater.ClickDifficulty('PlayerNumber_P1', "Difficulty_Easy")
+					-- Medium Position
+					elseif IsMouseGucci(110, WideScale(358,288), 64, 46, "left", "top", 0.75)  then
+						ChartUpdater.ClickDifficulty('PlayerNumber_P1', "Difficulty_Medium")
+					-- Hard Position
+					elseif IsMouseGucci(160, WideScale(358,288), 65, 46, "left", "top", 0.75) then
+						ChartUpdater.ClickDifficulty('PlayerNumber_P1', "Difficulty_Hard")
+					-- Expert/Edit Position
+					elseif IsMouseGucci(210, WideScale(358,288), 65, 46, "left", "top", 0.75) then
+						ChartUpdater.ClickDifficulty('PlayerNumber_P1', "Difficulty_Challenge")
+					end
+				end
+				if GAMESTATE:IsSideJoined('PlayerNumber_P2') then
+					-- Novice position
+					if IsMouseGucci(SCREEN_WIDTH - 258, WideScale(358,288), 65, 46, "left", "top", 0.75) then
+						ChartUpdater.ClickDifficulty("PlayerNumber_P2", "Difficulty_Beginner")	
+					-- Easy Position
+					elseif IsMouseGucci(SCREEN_WIDTH - 208, WideScale(358,288), 64, 46, "left", "top", 0.75) then
+						ChartUpdater.ClickDifficulty('PlayerNumber_P2', "Difficulty_Easy")
+					-- Medium Position
+					elseif IsMouseGucci(SCREEN_WIDTH - 158.5, WideScale(358,288), 65, 46, "left", "top", 0.75)  then
+						ChartUpdater.ClickDifficulty('PlayerNumber_P2', "Difficulty_Medium")
+					-- Hard Position
+					elseif IsMouseGucci(SCREEN_WIDTH - 109, WideScale(358,288), 66, 46, "left", "top", 0.75) then
+						ChartUpdater.ClickDifficulty('PlayerNumber_P2', "Difficulty_Hard")
+					-- Expert/Edit Position
+					elseif IsMouseGucci(SCREEN_WIDTH - 58, WideScale(358,288), 64, 46, "left", "top", 0.75) then
+						ChartUpdater.ClickDifficulty('PlayerNumber_P2', "Difficulty_Challenge")
+					end
+				end
 			end
 			
 			-- Open the sort menu if the right mouse button is clicked.
