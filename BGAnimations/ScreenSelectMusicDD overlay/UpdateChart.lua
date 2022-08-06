@@ -277,11 +277,12 @@ return {
 	end,
 	ClickDifficulty=function(playerNum, targetDif)
 		local LastDifficulty = DDStats.GetStat(playerNum, 'LastDifficulty')
+		local PlayerChart = GAMESTATE:GetCurrentSteps(playerNum):GetDifficulty()
 		if LastDifficulty == targetDif then return end
 		
 		-- This only works if the chart has one edit, if it has multiple edit charts this does not work as intended.
 		--(neither does the normal input for difficulty select for that matter)
-		if LastDifficulty == "Difficulty_Edit" then
+		if PlayerChart == "Difficulty_Edit" then
 			if targetDif == "Difficulty_Challenge" then
 				targetDif = "Difficulty_Edit"
 			elseif targetDif == "Difficulty_Hard" then
