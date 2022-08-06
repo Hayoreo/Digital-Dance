@@ -100,69 +100,103 @@ local lastMenuDownPressTime = 0
 t.Handler = function(event)
 	-- Allow Mouse Input here
 	if event.type == "InputEventType_FirstPress" then
-		if event.DeviceInput.button == "DeviceButton_middle mouse button" and t.WheelWithFocus == SongWheel and not didSelectSong then
-			stop_music()
-			SOUND:PlayOnce( THEME:GetPathS("MusicWheel", "expand.ogg") )
-			MESSAGEMAN:Broadcast("CloseCurrentFolder")
-			CloseCurrentFolder()
-		end
-		if event.DeviceInput.button == "DeviceButton_left mouse button" then
-			for i=1, 4 do
-				if IsMouseGucci(_screen.cx, (_screen.cy + 45) - (i*25), 320, 24) then
-					t.WheelWithFocus:scroll_by_amount(-i)
-					SOUND:PlayOnce( THEME:GetPathS("MusicWheel", "change.ogg") )
-					stop_music()
-					ChartUpdater.UpdateCharts()
-				end
+		if not isSortMenuVisible and not LeadboardHasFocus then
+			-- Close the song folder and switch to group wheel if mouse wheel is pressed.
+			if event.DeviceInput.button == "DeviceButton_middle mouse button" and t.WheelWithFocus == SongWheel and not didSelectSong then
+				stop_music()
+				SOUND:PlayOnce( THEME:GetPathS("MusicWheel", "expand.ogg") )
+				MESSAGEMAN:Broadcast("CloseCurrentFolder")
+				CloseCurrentFolder()
 			end
 			
-			for i=1, 6 do
-				if IsMouseGucci(_screen.cx, (_screen.cy + 45) + (i*25), 320, 24) then
-					t.WheelWithFocus:scroll_by_amount(i)
-					SOUND:PlayOnce( THEME:GetPathS("MusicWheel", "change.ogg") )
-					stop_music()
-					ChartUpdater.UpdateCharts()
-				end
+			-- Scroll the song wheel up/down with the mouse wheel.
+			if event.DeviceInput.button == "DeviceButton_mousewheel up" then
+				t.WheelWithFocus:scroll_by_amount(-1)
+				SOUND:PlayOnce( THEME:GetPathS("MusicWheel", "change.ogg") )
+				stop_music()
+				ChartUpdater.UpdateCharts()
+			elseif event.DeviceInput.button == "DeviceButton_mousewheel down" then
+				t.WheelWithFocus:scroll_by_amount(1)
+				SOUND:PlayOnce( THEME:GetPathS("MusicWheel", "change.ogg") )
+				stop_music()
+				ChartUpdater.UpdateCharts()
 			end
 			
-			if IsMouseGucci(_screen.cx, (_screen.cy + 45), 320, 24) then
-				if t.WheelWithFocus == SongWheel then
-					if didSelectSong then
-						SOUND:PlayOnce( THEME:GetPathS("Common", "start.ogg") )
-						SCREENMAN:SetNewScreen("ScreenPlayerOptions")
-						return false
+			-- Jump the songwheel to a song/group clicked on by the left mouse button.
+			if event.DeviceInput.button == "DeviceButton_left mouse button" then
+				for i=1, 4 do
+					if IsMouseGucci(_screen.cx, (_screen.cy + 45) - (i*25), 320, 24) then
+						t.WheelWithFocus:scroll_by_amount(-i)
+						SOUND:PlayOnce( THEME:GetPathS("MusicWheel", "change.ogg") )
+						stop_music()
+						ChartUpdater.UpdateCharts()
 					end
-					if t.WheelWithFocus:get_info_at_focus_pos() ~= "CloseThisFolder" then
-						didSelectSong = true
-						TransitionTime = 0
-						PressStartForOptions = true
-						SOUND:PlayOnce( THEME:GetPathS("Common", "start.ogg") )
-						MESSAGEMAN:Broadcast('ShowOptionsJawn')
-					elseif t.WheelWithFocus:get_info_at_focus_pos() == "CloseThisFolder" then
-						SOUND:PlayOnce( THEME:GetPathS("MusicWheel", "expand.ogg") )
-						CloseCurrentFolder()
-						return false
+				end
+				
+				for i=1, 6 do
+					if IsMouseGucci(_screen.cx, (_screen.cy + 45) + (i*25), 320, 24) then
+						t.WheelWithFocus:scroll_by_amount(i)
+						SOUND:PlayOnce( THEME:GetPathS("MusicWheel", "change.ogg") )
+						stop_music()
+						ChartUpdater.UpdateCharts()
 					end
-				elseif t.WheelWithFocus == GroupWheel then
-					if NameOfGroup == "RANDOM-PORTAL" then
-						didSelectSong = true
-						TransitionTime = 0
-						PressStartForOptions = true
-						SOUND:PlayOnce( THEME:GetPathS("Common", "start.ogg") )
-						MESSAGEMAN:Broadcast('ShowOptionsJawn')
-						t.WheelWithFocus = SongWheel
-					else
-						SOUND:PlayOnce( THEME:GetPathS("MusicWheel", "expand.ogg") )
-						t.WheelWithFocus.container:queuecommand("Start")
-						SwitchInputFocus(event.DeviceInput.button)
+				end
+				
+				if IsMouseGucci(_screen.cx, (_screen.cy + 45), 320, 24) then
+					if t.WheelWithFocus == SongWheel then
+						if didSelectSong then
+							SOUND:PlayOnce( THEME:GetPathS("Common", "start.ogg") )
+							SCREENMAN:SetNewScreen("ScreenPlayerOptions")
+							return false
+						end
+						if t.WheelWithFocus:get_info_at_focus_pos() ~= "CloseThisFolder" then
+							didSelectSong = true
+							TransitionTime = 0
+							PressStartForOptions = true
+							SOUND:PlayOnce( THEME:GetPathS("Common", "start.ogg") )
+							MESSAGEMAN:Broadcast('ShowOptionsJawn')
+						elseif t.WheelWithFocus:get_info_at_focus_pos() == "CloseThisFolder" then
+							SOUND:PlayOnce( THEME:GetPathS("MusicWheel", "expand.ogg") )
+							CloseCurrentFolder()
+							return false
+						end
+					elseif t.WheelWithFocus == GroupWheel then
+						if NameOfGroup == "RANDOM-PORTAL" then
+							didSelectSong = true
+							TransitionTime = 0
+							PressStartForOptions = true
+							SOUND:PlayOnce( THEME:GetPathS("Common", "start.ogg") )
+							MESSAGEMAN:Broadcast('ShowOptionsJawn')
+							t.WheelWithFocus = SongWheel
+						else
+							SOUND:PlayOnce( THEME:GetPathS("MusicWheel", "expand.ogg") )
+							t.WheelWithFocus.container:queuecommand("Start")
+							SwitchInputFocus(event.DeviceInput.button)
 
-						if t.WheelWithFocus.container then
-							t.WheelWithFocus.container:queuecommand("Unhide")
+							if t.WheelWithFocus.container then
+								t.WheelWithFocus.container:queuecommand("Unhide")
+							end
 						end
 					end
 				end
+				
 			end
 			
+			-- Open the sort menu if the right mouse button is clicked.
+			if isSortMenuVisible == false then
+				if event.type ~= "InputEventType_Release" then
+					if event.DeviceInput.button == "DeviceButton_right mouse button" and PressStartForOptions == false then
+						local mpn = GAMESTATE:GetMasterPlayerNumber()
+						PlayerControllingSort = mpn 
+						MESSAGEMAN:Broadcast("InitializeDDSortMenu")
+						MESSAGEMAN:Broadcast("CheckForSongLeaderboard")
+						isSortMenuVisible = true
+						SOUND:PlayOnce( THEME:GetPathS("MusicWheel", "sort.ogg") )
+						stop_music()
+						MESSAGEMAN:Broadcast("ToggleSortMenu")
+					end
+				end
+			end
 		end
 	end
 	
