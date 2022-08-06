@@ -170,6 +170,8 @@ local t = Def.ActorFrame {
 	LoadActor('./EscapeFromEventMode.lua'),
 	-- For transitioning to either gameplay or player options.
 	LoadActor('./OptionsMessage.lua'),
+	-- Mouse Cursor
+	LoadActor(THEME:GetPathB("", "_modules/Mouse Cursor/default.lua"))
 }
 
 return t

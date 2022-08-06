@@ -157,6 +157,7 @@ t.Handler = function(event)
 							MESSAGEMAN:Broadcast('ShowOptionsJawn')
 						elseif t.WheelWithFocus:get_info_at_focus_pos() == "CloseThisFolder" then
 							SOUND:PlayOnce( THEME:GetPathS("MusicWheel", "expand.ogg") )
+							MESSAGEMAN:Broadcast("CloseCurrentFolder")
 							CloseCurrentFolder()
 							return false
 						end

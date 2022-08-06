@@ -169,13 +169,15 @@ SL = {
 			EventMode=1,
 			CoinMode="Home",
 			
+			ShowMouseCursor=false,
+			
 			TimingWindowAdd=0.0015,
 			RegenComboAfterMiss=5,
 			MaxRegenComboAfterMiss=10,
 			MinTNSToHideNotes="TapNoteScore_W3",
 			HarshHotLifePenalty=true,
 			MusicWheelSwitchSpeed=15,
-
+			
 			PercentageScoring=true,
 			AllowW1="AllowW1_Everywhere",
 			SubSortByNumSteps=true,
@@ -196,6 +198,8 @@ SL = {
 			-- always force Event Mode and set Coin Mode to home
 			EventMode=1,
 			CoinMode="Home",
+			
+			ShowMouseCursor=false,
 			
 			TimingWindowAdd=0.0015,
 			RegenComboAfterMiss=5,
