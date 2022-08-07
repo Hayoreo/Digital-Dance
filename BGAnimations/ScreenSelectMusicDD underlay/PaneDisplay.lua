@@ -647,7 +647,7 @@ af[#af+1] = RequestResponseActor("GetScores", 10, CirclePositionX, CirclePositio
 		if sendRequest then
 			MESSAGEMAN:Broadcast("GetScores", {
 				data=data,
-				args=SCREENMAN:GetTopScreen():GetChild("Overlay"):GetChild("PaneDisplayMaster"),
+				args=SCREENMAN:GetTopScreen():GetChild("Underlay"):GetChild("PaneDisplayMaster"),
 				callback=GetScoresRequestProcessor
 			})
 		end

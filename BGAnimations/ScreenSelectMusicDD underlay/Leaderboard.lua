@@ -263,7 +263,7 @@ local af = Def.ActorFrame{
 			if sendRequest then
 				MESSAGEMAN:Broadcast("Leaderboard", {
 					data=data,
-					args=SCREENMAN:GetTopScreen():GetChild("Overlay"):GetChild("LeaderboardMaster"),
+					args=SCREENMAN:GetTopScreen():GetChild("Underlay"):GetChild("LeaderboardMaster"),
 					callback=LeaderboardRequestProcessor
 				})
 			end

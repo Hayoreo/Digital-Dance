@@ -1,29 +1,6 @@
 DDSortMenuCursorPosition = 1
 IsSortMenuInputToggled = false
 
-local function GetMaxCursorPosition()
-	local curSong = GAMESTATE:GetCurrentSong()
-	local SongIsSelected
-	
-	if curSong then 
-		SongIsSelected = true
-	else
-		SongIsSelected = false
-	end
-	
-	-- the minimum amount of items
-	local MaxCursorPosition = 12
-	
-	if GAMESTATE:GetCurrentStyle():GetStyleType() ~= 'StyleType_TwoPlayersTwoSides' then
-		MaxCursorPosition = MaxCursorPosition + 1
-	end
-	
-	if IsServiceAllowed(SL.GrooveStats.Leaderboard) and SongIsSelected then
-		MaxCursorPosition = MaxCursorPosition + 1
-	end
-	return tonumber(MaxCursorPosition)
-end
-
 local t = Def.ActorFrame{
 	Name="MenuCursor",
 	InitCommand=function(self)
@@ -115,6 +92,10 @@ local t = Def.ActorFrame{
 						self:playcommand("UpdateCursor")
 					end
 				else end
+			end,
+			MoveCursorMouseClickMessageCommand=function(self, param)
+				DDSortMenuCursorPosition = param.TargetPosition
+				self:playcommand("UpdateCursor")
 			end,
 			
 		---- This is telling the cursor where to go for each movement.

@@ -109,3 +109,26 @@ function GetTopGrade(player, song, chart)
 	else end
 	return nil
 end
+
+GetMaxCursorPosition = function()
+	local curSong = GAMESTATE:GetCurrentSong()
+	local SongIsSelected
+	
+	if curSong then 
+		SongIsSelected = true
+	else
+		SongIsSelected = false
+	end
+	
+	-- the minimum amount of items
+	local MaxCursorPosition = 12
+	
+	if GAMESTATE:GetCurrentStyle():GetStyleType() ~= 'StyleType_TwoPlayersTwoSides' then
+		MaxCursorPosition = MaxCursorPosition + 1
+	end
+	
+	if IsServiceAllowed(SL.GrooveStats.Leaderboard) and SongIsSelected then
+		MaxCursorPosition = MaxCursorPosition + 1
+	end
+	return tonumber(MaxCursorPosition)
+end
