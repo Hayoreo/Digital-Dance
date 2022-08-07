@@ -80,7 +80,7 @@ local t = Def.ActorFrame {
 t[#t+1] = Def.ActorFrame {
 
 	--fallback banner
-	LoadActor( THEME:GetPathB("ScreenSelectMusicDD", "overlay/default banner.png"))..{
+	LoadActor( THEME:GetPathB("ScreenSelectMusicDD", "underlay/default banner.png"))..{
 		OnCommand=cmd(xy, _screen.cx, 121.5; zoom, 0.7)
 	},
 

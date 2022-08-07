@@ -2,6 +2,7 @@ local MouseX
 local MouseY
 local XMax = SCREEN_WIDTH
 local YMax = SCREEN_HEIGHT
+local Refresh = 1/PREFSMAN:GetPreference("RefreshRate")
 
 local af = Def.ActorFrame{
 	Def.Sprite{
@@ -31,7 +32,16 @@ local af = Def.ActorFrame{
 				self:visible(true)
 			end
 			self:xy(MouseX,MouseY)
-			self:sleep(0.005):queuecommand("UpdateMouse")
+			self:sleep(Refresh):queuecommand("UpdateMouse")
+		end,
+		HideMouseMessageCommand=function(self)
+			self:stoptweening()
+			self:visible(false)
+		end,
+		ShowMouseMessageCommand=function(self)
+			self:stoptweening()
+			self:visible(true)
+			self:playcommand("UpdateMouse")
 		end,
 	}
 }

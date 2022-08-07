@@ -9,7 +9,7 @@ SearchInput = false
 ChartUpdater.UpdateCharts()
 
 if setup == nil then
-	return LoadActor(THEME:GetPathB("ScreenSelectMusicDD", "overlay/NoValidSongs.lua"))
+	return LoadActor(THEME:GetPathB("ScreenSelectMusicDD", "underlay/NoValidSongs.lua"))
 end
 
 local steps_type = setup.steps_type
@@ -153,7 +153,7 @@ local t = Def.ActorFrame {
 	LoadActor("./PaneDisplay.lua"),
 	-- this includes the stepartist boxes and the PaneDisplays (number of steps, jumps, holds, etc.)
 	LoadActor("./PerPlayer/Under.lua"),
-	-- elements we need two of that draw over the StepsDisplayList (just the bouncing cursors, really)
+		-- elements we need two of that draw over the StepsDisplayList (just the bouncing cursors, really)
 	LoadActor("./PerPlayer/Over.lua"),
 	-- grid of Difficulty Blocks (normal) or CourseContentsList (CourseMode)
 	LoadActor("./StepsDisplayList/default.lua"),
@@ -170,8 +170,6 @@ local t = Def.ActorFrame {
 	LoadActor('./EscapeFromEventMode.lua'),
 	-- For transitioning to either gameplay or player options.
 	LoadActor('./OptionsMessage.lua'),
-	-- Mouse Cursor
-	LoadActor(THEME:GetPathB("", "_modules/Mouse Cursor/default.lua"))
 }
 
 return t

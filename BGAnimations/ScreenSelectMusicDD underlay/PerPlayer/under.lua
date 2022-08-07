@@ -11,4 +11,6 @@ for player in ivalues( PlayerNumber ) do
 	t[#t+1] = LoadActor("./DensityGraph.lua", player)
 end
 
+	t[#t+1] = LoadActor("./DifficultyBG.lua")
+
 return t

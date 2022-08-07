@@ -18,6 +18,11 @@ isSortMenuVisible = false
 InputMenuHasFocus = false
 LeadboardHasFocus = false
 
+local MouseX
+local MouseY
+local XMax = SCREEN_WIDTH
+local YMax = SCREEN_HEIGHT
+
 -----------------------------------------------------
 -- input handler
 local t = {}
@@ -26,7 +31,6 @@ local t = {}
 
 local SwitchInputFocus = function(button)
 	if button == "Start" or "DeviceButton_left mouse button" then
-
 		if t.WheelWithFocus == GroupWheel then
 			if NameOfGroup == "RANDOM-PORTAL" then
 				didSelectSong = true
@@ -100,6 +104,9 @@ local lastMenuDownPressTime = 0
 t.Handler = function(event)
 	-- Allow Mouse Input here
 	if event.type == "InputEventType_FirstPress" then
+		MouseX = INPUTFILTER:GetMouseX()
+		MouseY = INPUTFILTER:GetMouseY()
+		if (MouseX < 0 or MouseX > XMax) or (MouseY < 0 or MouseY > YMax) then return false end
 		if not isSortMenuVisible and not LeadboardHasFocus then
 			-- Close the song folder and switch to group wheel if mouse wheel is pressed.
 			if event.DeviceInput.button == "DeviceButton_middle mouse button" and t.WheelWithFocus == SongWheel and not didSelectSong then
@@ -110,12 +117,12 @@ t.Handler = function(event)
 			end
 			
 			-- Scroll the song wheel up/down with the mouse wheel.
-			if event.DeviceInput.button == "DeviceButton_mousewheel up" then
+			if event.DeviceInput.button == "DeviceButton_mousewheel up" and not PressStartForOptions then
 				t.WheelWithFocus:scroll_by_amount(-1)
 				SOUND:PlayOnce( THEME:GetPathS("MusicWheel", "change.ogg") )
 				stop_music()
 				ChartUpdater.UpdateCharts()
-			elseif event.DeviceInput.button == "DeviceButton_mousewheel down" then
+			elseif event.DeviceInput.button == "DeviceButton_mousewheel down" and not PressStartForOptions then
 				t.WheelWithFocus:scroll_by_amount(1)
 				SOUND:PlayOnce( THEME:GetPathS("MusicWheel", "change.ogg") )
 				stop_music()
@@ -123,7 +130,7 @@ t.Handler = function(event)
 			end
 			
 			-- Jump the songwheel to a song/group clicked on by the left mouse button.
-			if event.DeviceInput.button == "DeviceButton_left mouse button" then
+			if event.DeviceInput.button == "DeviceButton_left mouse button" and not PressStartForOptions then
 				for i=1, 4 do
 					if IsMouseGucci(_screen.cx, (_screen.cy + 45) - (i*25), 320, 24) then
 						t.WheelWithFocus:scroll_by_amount(-i)
@@ -144,11 +151,6 @@ t.Handler = function(event)
 				
 				if IsMouseGucci(_screen.cx, (_screen.cy + 45), 320, 24) then
 					if t.WheelWithFocus == SongWheel then
-						if didSelectSong then
-							SOUND:PlayOnce( THEME:GetPathS("Common", "start.ogg") )
-							SCREENMAN:SetNewScreen("ScreenPlayerOptions")
-							return false
-						end
 						if t.WheelWithFocus:get_info_at_focus_pos() ~= "CloseThisFolder" then
 							didSelectSong = true
 							TransitionTime = 0
@@ -218,6 +220,10 @@ t.Handler = function(event)
 						ChartUpdater.ClickDifficulty('PlayerNumber_P2', "Difficulty_Challenge")
 					end
 				end
+			elseif event.DeviceInput.button == "DeviceButton_left mouse button" and PressStartForOptions then
+				SOUND:PlayOnce( THEME:GetPathS("Common", "start.ogg") )
+				SCREENMAN:SetNewScreen("ScreenPlayerOptions")
+				return false
 			end
 			
 			-- Open the sort menu if the right mouse button is clicked.
@@ -232,6 +238,24 @@ t.Handler = function(event)
 						SOUND:PlayOnce( THEME:GetPathS("MusicWheel", "sort.ogg") )
 						stop_music()
 						MESSAGEMAN:Broadcast("ToggleSortMenu")
+					end
+				end
+			end
+		elseif isSortMenuVisible and not LeadboardHasFocus then
+			if event.type ~= "InputEventType_Release" then
+				if event.DeviceInput.button == "DeviceButton_right mouse button" then
+					if IsSortMenuInputToggled == false then
+						if SortMenuNeedsUpdating == true then
+							SortMenuNeedsUpdating = false
+							MESSAGEMAN:Broadcast("ToggleSortMenu")
+							MESSAGEMAN:Broadcast("ReloadSSMDD")
+							isSortMenuVisible = false
+							SOUND:PlayOnce( THEME:GetPathS("MusicWheel", "expand.ogg") )
+						elseif SortMenuNeedsUpdating == false then
+							isSortMenuVisible = false
+							SOUND:PlayOnce( THEME:GetPathS("ScreenPlayerOptions", "cancel all.ogg") )
+							MESSAGEMAN:Broadcast("ToggleSortMenu")
+						end
 					end
 				end
 			end

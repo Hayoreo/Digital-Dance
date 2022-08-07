@@ -28,7 +28,7 @@ local t = Def.ActorFrame{
 			self:visible(true)
 		end,
 
-		LoadActor(THEME:GetPathB("ScreenSelectMusicDD", "overlay/default banner.png"))..{
+		LoadActor(THEME:GetPathB("ScreenSelectMusicDD", "underlay/default banner.png"))..{
 			Name="FallbackBanner",
 			OnCommand=cmd(setsize,418,164)
 		},

@@ -4,6 +4,7 @@ return Def.ActorFrame {
 		self:draworder(108)
 	end,
 	ShowOptionsJawnMessageCommand=function(self)
+		MESSAGEMAN:Broadcast("HideMouse")
 		self:visible(true)
 		self
 			:diffusealpha(0)
@@ -16,6 +17,7 @@ return Def.ActorFrame {
 		SCREENMAN:SetNewScreen("ScreenGameplay")
 	end,
 	HideOptionsJawnMessageCommand=function(self)
+		MESSAGEMAN:Broadcast("ShowMouse")
 		self:stoptweening()
 		self:visible(false)
 	end,
