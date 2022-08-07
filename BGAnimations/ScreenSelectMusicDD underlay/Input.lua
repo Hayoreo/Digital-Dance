@@ -353,14 +353,26 @@ t.Handler = function(event)
 							SOUND:PlayOnce( THEME:GetPathS("ScreenPlayerOptions", "cancel all.ogg") )
 							MESSAGEMAN:Broadcast("ToggleSortMenu")
 						end
+					elseif IsSortMenuInputToggled then
+						SOUND:PlayOnce( THEME:GetPathS("common", "invalid.ogg") )
+						MESSAGEMAN:Broadcast("UpdateCursorColor")
+						MESSAGEMAN:Broadcast("ToggleSortMenuMovement")
 					end
 				end
 				if event.DeviceInput.button == "DeviceButton_mousewheel up" then
-					MESSAGEMAN:Broadcast("MoveCursorLeft")
-					SOUND:PlayOnce( THEME:GetPathS("", "_prev row.ogg") )
+					if not IsSortMenuInputToggled then
+						MESSAGEMAN:Broadcast("MoveCursorLeft")
+						SOUND:PlayOnce( THEME:GetPathS("", "_prev row.ogg") )
+					elseif IsSortMenuInputToggled then
+						MESSAGEMAN:Broadcast("MoveSortMenuOptionLeft")
+					end
 				elseif event.DeviceInput.button == "DeviceButton_mousewheel down" then
-					MESSAGEMAN:Broadcast("MoveCursorRight")
-					SOUND:PlayOnce( THEME:GetPathS("", "_next row.ogg") )
+					if not IsSortMenuInputToggled then
+						MESSAGEMAN:Broadcast("MoveCursorRight")
+						SOUND:PlayOnce( THEME:GetPathS("", "_next row.ogg") )
+					elseif IsSortMenuInputToggled then
+						MESSAGEMAN:Broadcast("MoveSortMenuOptionRight")
+					end
 				end
 				if event.DeviceInput.button == "DeviceButton_left mouse button" then
 					-- The top half of the sort menu
@@ -475,6 +487,7 @@ t.Handler = function(event)
 						for i=1, GetMaxCursorPosition() - 9 do
 							if IsMouseGucci(_screen.cx + 85, (_screen.cy + 5) + (i*25), 170, 20, "right") then
 								MESSAGEMAN:Broadcast("MoveCursorMouseClick", {TargetPosition = i+9})
+								SOUND:PlayOnce( THEME:GetPathS("common", "start.ogg") )
 								SortMenuCursorLogic()
 							end
 						end
