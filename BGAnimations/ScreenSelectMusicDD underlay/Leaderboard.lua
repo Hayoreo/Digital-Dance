@@ -232,6 +232,50 @@ local af = Def.ActorFrame{
 			end
 		end
 	end,
+	LeaderboardMouseInputEventMessageCommand=function(self, event)
+		local mpn = GAMESTATE:GetMasterPlayerNumber()
+		local nsj = GAMESTATE:GetNumSidesJoined()
+		local pn
+		if nsj == 1 then
+			pn = ToEnumShortString(mpn)
+		elseif nsj == 2 then
+			if IsMouseGucci(_screen.cx + 160 * -1, _screen.cy - 15, 230, 360) then
+				pn = "P1"
+			elseif IsMouseGucci(_screen.cx + 160 * 1, _screen.cy - 15, 230, 360) then
+				pn = "P2"
+			else
+				return
+			end
+		end
+		
+		if #self[pn].Leaderboards == 0 then return end
+
+		if event.type == "InputEventType_FirstPress" then
+			-- We don't use modulus because #Leaderboards might be zero.
+			if event.DeviceInput.button == "DeviceButton_mousewheel down" then
+				self[pn].LeaderboardIndex = self[pn].LeaderboardIndex - 1
+
+				if self[pn].LeaderboardIndex == 0 then
+					-- Wrap around if we decremented from 1 to 0.
+					self[pn].LeaderboardIndex = #self[pn].Leaderboards
+				end
+			elseif event.DeviceInput.button == "DeviceButton_mousewheel up" then
+				self[pn].LeaderboardIndex = self[pn].LeaderboardIndex + 1
+				
+				if self[pn].LeaderboardIndex > #self[pn].Leaderboards then
+					-- Wrap around if we incremented past #Leaderboards
+					self[pn].LeaderboardIndex = 1
+				end
+			end
+
+			if event.DeviceInput.button == "DeviceButton_mousewheel down" or event.DeviceInput.button == "DeviceButton_mousewheel up" then
+				local leaderboard = self:GetChild(pn.."Leaderboard")
+				local leaderboardList = self[pn]["Leaderboards"]
+				local leaderboardData = leaderboardList[self[pn].LeaderboardIndex]
+				SetLeaderboardForPlayer("P1" == pn and 1 or 2, leaderboard, leaderboardData, self[pn].isRanked)
+			end
+		end
+	end,
 
 	Def.Quad{ InitCommand=function(self) self:FullScreen():diffuse(0,0,0,0.875) end },
 	LoadFont("Common Normal")..{

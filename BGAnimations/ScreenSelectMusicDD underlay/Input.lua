@@ -503,12 +503,16 @@ t.Handler = function(event)
 				end
 				-- Leaderboard input mouse controls
 			elseif LeadboardHasFocus and not isSortMenuVisible and not InputMenuHasFocus then
-				if event.DeviceInput.button == "DeviceButton_right mouse button" then
+				if event.DeviceInput.button == "DeviceButton_right mouse button" or event.DeviceInput.button == "DeviceButton_left mouse button" then
 					LeadboardHasFocus = false
 					SOUND:PlayOnce( THEME:GetPathS("common", "start.ogg") )
 					MESSAGEMAN:Broadcast("HideLeaderboard")
 				end
 				if event.DeviceInput.button == "DeviceButton_mousewheel up" or event.DeviceInput.button == "DeviceButton_mousewheel down" then
+					if event.type ~= "InputEventType_Repeat" then
+						MESSAGEMAN:Broadcast("LeaderboardMouseInputEvent", event)
+					end
+					
 				end
 			end
 		end
