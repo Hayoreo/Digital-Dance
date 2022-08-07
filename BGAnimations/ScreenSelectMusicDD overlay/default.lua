@@ -96,7 +96,7 @@ local t = Def.ActorFrame {
 		
 		-- Don't do these codes if the sort menu is open or if going to the options screen
 		if LeavingScreenSelectMusicDD == false then
-			if isSortMenuVisible == false then
+			if isSortMenuVisible == false and LeadboardHasFocus == false then
 				if InputMenuHasFocus == false then
 					if params.Name == "CancelSingleSong" then
 						-- otherwise, run the function to cancel this single song choice
