@@ -203,312 +203,313 @@ t.Handler = function(event)
 	if event.type == "InputEventType_FirstPress" then
 		MouseX = INPUTFILTER:GetMouseX()
 		MouseY = INPUTFILTER:GetMouseY()
-		if (MouseX < 0 or MouseX > XMax) or (MouseY < 0 or MouseY > YMax) then return false end
-		if not isSortMenuVisible and not LeadboardHasFocus and not InputMenuHasFocus then
-			-- Close the song folder and switch to group wheel if mouse wheel is pressed.
-			if event.DeviceInput.button == "DeviceButton_middle mouse button" and t.WheelWithFocus == SongWheel and not didSelectSong then
-				stop_music()
-				SOUND:PlayOnce( THEME:GetPathS("MusicWheel", "expand.ogg") )
-				MESSAGEMAN:Broadcast("CloseCurrentFolder")
-				CloseCurrentFolder()
-			end
-			
-			-- Scroll the song wheel up/down with the mouse wheel.
-			if event.DeviceInput.button == "DeviceButton_mousewheel up" and not PressStartForOptions then
-				t.WheelWithFocus:scroll_by_amount(-1)
-				SOUND:PlayOnce( THEME:GetPathS("MusicWheel", "change.ogg") )
-				stop_music()
-				ChartUpdater.UpdateCharts()
-			elseif event.DeviceInput.button == "DeviceButton_mousewheel down" and not PressStartForOptions then
-				t.WheelWithFocus:scroll_by_amount(1)
-				SOUND:PlayOnce( THEME:GetPathS("MusicWheel", "change.ogg") )
-				stop_music()
-				ChartUpdater.UpdateCharts()
-			end
-			
-			-- Jump the songwheel to a song/group clicked on by the left mouse button.
-			if event.DeviceInput.button == "DeviceButton_left mouse button" and not PressStartForOptions then
-				for i=1, 4 do
-					if IsMouseGucci(_screen.cx, (_screen.cy + 45) - (i*25), 320, 24) then
-						t.WheelWithFocus:scroll_by_amount(-i)
-						SOUND:PlayOnce( THEME:GetPathS("MusicWheel", "change.ogg") )
-						stop_music()
-						ChartUpdater.UpdateCharts()
-					end
+		if not (MouseX < 0 or MouseX > XMax) or (MouseY < 0 or MouseY > YMax) then
+			if not isSortMenuVisible and not LeadboardHasFocus and not InputMenuHasFocus then
+				-- Close the song folder and switch to group wheel if mouse wheel is pressed.
+				if event.DeviceInput.button == "DeviceButton_middle mouse button" and t.WheelWithFocus == SongWheel and not didSelectSong then
+					stop_music()
+					SOUND:PlayOnce( THEME:GetPathS("MusicWheel", "expand.ogg") )
+					MESSAGEMAN:Broadcast("CloseCurrentFolder")
+					CloseCurrentFolder()
 				end
 				
-				for i=1, 6 do
-					if IsMouseGucci(_screen.cx, (_screen.cy + 45) + (i*25), 320, 24) then
-						t.WheelWithFocus:scroll_by_amount(i)
-						SOUND:PlayOnce( THEME:GetPathS("MusicWheel", "change.ogg") )
-						stop_music()
-						ChartUpdater.UpdateCharts()
-					end
+				-- Scroll the song wheel up/down with the mouse wheel.
+				if event.DeviceInput.button == "DeviceButton_mousewheel up" and not PressStartForOptions then
+					t.WheelWithFocus:scroll_by_amount(-1)
+					SOUND:PlayOnce( THEME:GetPathS("MusicWheel", "change.ogg") )
+					stop_music()
+					ChartUpdater.UpdateCharts()
+				elseif event.DeviceInput.button == "DeviceButton_mousewheel down" and not PressStartForOptions then
+					t.WheelWithFocus:scroll_by_amount(1)
+					SOUND:PlayOnce( THEME:GetPathS("MusicWheel", "change.ogg") )
+					stop_music()
+					ChartUpdater.UpdateCharts()
 				end
 				
-				if IsMouseGucci(_screen.cx, (_screen.cy + 45), 320, 24) then
-					if t.WheelWithFocus == SongWheel then
-						if t.WheelWithFocus:get_info_at_focus_pos() ~= "CloseThisFolder" then
-							didSelectSong = true
-							TransitionTime = 0
-							PressStartForOptions = true
-							SOUND:PlayOnce( THEME:GetPathS("Common", "start.ogg") )
-							MESSAGEMAN:Broadcast('ShowOptionsJawn')
-						elseif t.WheelWithFocus:get_info_at_focus_pos() == "CloseThisFolder" then
-							SOUND:PlayOnce( THEME:GetPathS("MusicWheel", "expand.ogg") )
-							MESSAGEMAN:Broadcast("CloseCurrentFolder")
-							CloseCurrentFolder()
-							return false
-						end
-					elseif t.WheelWithFocus == GroupWheel then
-						if NameOfGroup == "RANDOM-PORTAL" then
-							didSelectSong = true
-							TransitionTime = 0
-							PressStartForOptions = true
-							SOUND:PlayOnce( THEME:GetPathS("Common", "start.ogg") )
-							MESSAGEMAN:Broadcast('ShowOptionsJawn')
-							t.WheelWithFocus = SongWheel
-						else
-							SOUND:PlayOnce( THEME:GetPathS("MusicWheel", "expand.ogg") )
-							t.WheelWithFocus.container:queuecommand("Start")
-							SwitchInputFocus(event.DeviceInput.button)
-
-							if t.WheelWithFocus.container then
-								t.WheelWithFocus.container:queuecommand("Unhide")
-							end
-						end
-					end
-				end
-				
-				-- Change the difficulty of the song when a player left clicks a chart.
-				if GAMESTATE:IsSideJoined('PlayerNumber_P1') then
-					-- Novice position
-					if IsMouseGucci(9, WideScale(358,288), 65, 46, "left", "top", 0.75) then
-						ChartUpdater.ClickDifficulty("PlayerNumber_P1", "Difficulty_Beginner")
-					-- Easy Position
-					elseif IsMouseGucci(59, WideScale(358,288), 65, 46, "left", "top", 0.75) then
-						ChartUpdater.ClickDifficulty('PlayerNumber_P1', "Difficulty_Easy")
-					-- Medium Position
-					elseif IsMouseGucci(110, WideScale(358,288), 64, 46, "left", "top", 0.75)  then
-						ChartUpdater.ClickDifficulty('PlayerNumber_P1', "Difficulty_Medium")
-					-- Hard Position
-					elseif IsMouseGucci(160, WideScale(358,288), 65, 46, "left", "top", 0.75) then
-						ChartUpdater.ClickDifficulty('PlayerNumber_P1', "Difficulty_Hard")
-					-- Expert/Edit Position
-					elseif IsMouseGucci(210, WideScale(358,288), 65, 46, "left", "top", 0.75) then
-						ChartUpdater.ClickDifficulty('PlayerNumber_P1', "Difficulty_Challenge")
-					end
-				end
-				if GAMESTATE:IsSideJoined('PlayerNumber_P2') then
-					-- Novice position
-					if IsMouseGucci(SCREEN_WIDTH - 258, WideScale(358,288), 65, 46, "left", "top", 0.75) then
-						ChartUpdater.ClickDifficulty("PlayerNumber_P2", "Difficulty_Beginner")	
-					-- Easy Position
-					elseif IsMouseGucci(SCREEN_WIDTH - 208, WideScale(358,288), 64, 46, "left", "top", 0.75) then
-						ChartUpdater.ClickDifficulty('PlayerNumber_P2', "Difficulty_Easy")
-					-- Medium Position
-					elseif IsMouseGucci(SCREEN_WIDTH - 158.5, WideScale(358,288), 65, 46, "left", "top", 0.75)  then
-						ChartUpdater.ClickDifficulty('PlayerNumber_P2', "Difficulty_Medium")
-					-- Hard Position
-					elseif IsMouseGucci(SCREEN_WIDTH - 109, WideScale(358,288), 66, 46, "left", "top", 0.75) then
-						ChartUpdater.ClickDifficulty('PlayerNumber_P2', "Difficulty_Hard")
-					-- Expert/Edit Position
-					elseif IsMouseGucci(SCREEN_WIDTH - 58, WideScale(358,288), 64, 46, "left", "top", 0.75) then
-						ChartUpdater.ClickDifficulty('PlayerNumber_P2', "Difficulty_Challenge")
-					end
-				end
-			elseif event.DeviceInput.button == "DeviceButton_left mouse button" and PressStartForOptions then
-				SOUND:PlayOnce( THEME:GetPathS("Common", "start.ogg") )
-				SCREENMAN:SetNewScreen("ScreenPlayerOptions")
-				return false
-			end
-			
-			-- Open the sort menu if the right mouse button is clicked.
-			if isSortMenuVisible == false then
-				if event.type ~= "InputEventType_Release" then
-					if event.DeviceInput.button == "DeviceButton_right mouse button" and PressStartForOptions == false then
-						local mpn = GAMESTATE:GetMasterPlayerNumber()
-						PlayerControllingSort = mpn 
-						MESSAGEMAN:Broadcast("InitializeDDSortMenu")
-						MESSAGEMAN:Broadcast("CheckForSongLeaderboard")
-						isSortMenuVisible = true
-						SOUND:PlayOnce( THEME:GetPathS("MusicWheel", "sort.ogg") )
-						stop_music()
-						MESSAGEMAN:Broadcast("ToggleSortMenu")
-					end
-				end
-			end
-		elseif isSortMenuVisible and not LeadboardHasFocus and not InputMenuHasFocus then
-			if event.type ~= "InputEventType_Release" then
-				if event.DeviceInput.button == "DeviceButton_right mouse button" then
-					if IsSortMenuInputToggled == false then
-						if SortMenuNeedsUpdating == true then
-							SortMenuNeedsUpdating = false
-							MESSAGEMAN:Broadcast("ToggleSortMenu")
-							MESSAGEMAN:Broadcast("ReloadSSMDD")
-							isSortMenuVisible = false
-							SOUND:PlayOnce( THEME:GetPathS("MusicWheel", "expand.ogg") )
-						elseif SortMenuNeedsUpdating == false then
-							isSortMenuVisible = false
-							SOUND:PlayOnce( THEME:GetPathS("ScreenPlayerOptions", "cancel all.ogg") )
-							MESSAGEMAN:Broadcast("ToggleSortMenu")
-						end
-					elseif IsSortMenuInputToggled then
-						SOUND:PlayOnce( THEME:GetPathS("common", "invalid.ogg") )
-						MESSAGEMAN:Broadcast("UpdateCursorColor")
-						MESSAGEMAN:Broadcast("ToggleSortMenuMovement")
-					end
-				end
-				if event.DeviceInput.button == "DeviceButton_mousewheel up" then
-					if not IsSortMenuInputToggled then
-						MESSAGEMAN:Broadcast("MoveCursorLeft")
-						SOUND:PlayOnce( THEME:GetPathS("", "_prev row.ogg") )
-					elseif IsSortMenuInputToggled then
-						MESSAGEMAN:Broadcast("MoveSortMenuOptionLeft")
-					end
-				elseif event.DeviceInput.button == "DeviceButton_mousewheel down" then
-					if not IsSortMenuInputToggled then
-						MESSAGEMAN:Broadcast("MoveCursorRight")
-						SOUND:PlayOnce( THEME:GetPathS("", "_next row.ogg") )
-					elseif IsSortMenuInputToggled then
-						MESSAGEMAN:Broadcast("MoveSortMenuOptionRight")
-					end
-				end
-				if event.DeviceInput.button == "DeviceButton_left mouse button" then
-					-- The top half of the sort menu
-					if IsMouseGucci(SCREEN_CENTER_X + 145,SCREEN_CENTER_Y - 135, 190, 20, "right") then
-						if not IsSortMenuInputToggled then
-							DDSortMenuCursorPosition = 1
-							MESSAGEMAN:Broadcast("MoveCursorMouseClick", {TargetPosition = 1})
-							SortMenuCursorLogic()
-							MESSAGEMAN:Broadcast("SortMenuOptionSelected")
-							SOUND:PlayOnce( THEME:GetPathS("common", "start.ogg") )
-						elseif DDSortMenuCursorPosition == 1 then
-							SortMenuCursorLogic()
-							MESSAGEMAN:Broadcast("SortMenuOptionSelected")
-							SOUND:PlayOnce( THEME:GetPathS("common", "start.ogg") )
-						end
-					elseif IsMouseGucci(SCREEN_CENTER_X + 145,SCREEN_CENTER_Y - 110, 190, 20, "right") then
-						if not IsSortMenuInputToggled then
-							DDSortMenuCursorPosition = 2
-							MESSAGEMAN:Broadcast("MoveCursorMouseClick", {TargetPosition = 2})
-							SortMenuCursorLogic()
-							MESSAGEMAN:Broadcast("SortMenuOptionSelected")
-							SOUND:PlayOnce( THEME:GetPathS("common", "start.ogg") )
-						elseif DDSortMenuCursorPosition == 2 then
-							SortMenuCursorLogic()
-							MESSAGEMAN:Broadcast("SortMenuOptionSelected")
-							SOUND:PlayOnce( THEME:GetPathS("common", "start.ogg") )	
-						end
-					elseif IsMouseGucci(SCREEN_CENTER_X + 55,SCREEN_CENTER_Y - 85, 40, 20, "right") then
-						if not IsSortMenuInputToggled then
-							DDSortMenuCursorPosition = 3
-							MESSAGEMAN:Broadcast("MoveCursorMouseClick", {TargetPosition = 3})
-							SortMenuCursorLogic()
-							MESSAGEMAN:Broadcast("SortMenuOptionSelected")
-							SOUND:PlayOnce( THEME:GetPathS("common", "start.ogg") )
-						elseif DDSortMenuCursorPosition == 3 then
-							SortMenuCursorLogic()
-							MESSAGEMAN:Broadcast("SortMenuOptionSelected")
-							SOUND:PlayOnce( THEME:GetPathS("common", "start.ogg") )	
-						end
-					elseif IsMouseGucci(SCREEN_CENTER_X + 135,SCREEN_CENTER_Y - 85, 40, 20, "right") then
-						if not IsSortMenuInputToggled then
-							DDSortMenuCursorPosition = 4
-							MESSAGEMAN:Broadcast("MoveCursorMouseClick", {TargetPosition = 4})
-							SortMenuCursorLogic()
-							MESSAGEMAN:Broadcast("SortMenuOptionSelected")
-							SOUND:PlayOnce( THEME:GetPathS("common", "start.ogg") )
-						elseif DDSortMenuCursorPosition == 4 then
-							SortMenuCursorLogic()
-							MESSAGEMAN:Broadcast("SortMenuOptionSelected")
-							SOUND:PlayOnce( THEME:GetPathS("common", "start.ogg") )	
-						end
-					elseif IsMouseGucci(SCREEN_CENTER_X,SCREEN_CENTER_Y - 60, 40, 20, "right") then
-						if not IsSortMenuInputToggled then
-							DDSortMenuCursorPosition = 5
-							MESSAGEMAN:Broadcast("MoveCursorMouseClick", {TargetPosition = 5})
-							SortMenuCursorLogic()
-							MESSAGEMAN:Broadcast("SortMenuOptionSelected")
-							SOUND:PlayOnce( THEME:GetPathS("common", "start.ogg") )
-						elseif DDSortMenuCursorPosition == 5 then
-							SortMenuCursorLogic()
-							MESSAGEMAN:Broadcast("SortMenuOptionSelected")
-							SOUND:PlayOnce( THEME:GetPathS("common", "start.ogg") )	
-						end
-					elseif IsMouseGucci(SCREEN_CENTER_X + 80,SCREEN_CENTER_Y - 60, 40, 20, "right") then
-						if not IsSortMenuInputToggled then
-							DDSortMenuCursorPosition = 6
-							MESSAGEMAN:Broadcast("MoveCursorMouseClick", {TargetPosition = 6})
-							SortMenuCursorLogic()
-							MESSAGEMAN:Broadcast("SortMenuOptionSelected")
-							SOUND:PlayOnce( THEME:GetPathS("common", "start.ogg") )
-						elseif DDSortMenuCursorPosition == 6 then
-							SortMenuCursorLogic()
-							MESSAGEMAN:Broadcast("SortMenuOptionSelected")
-							SOUND:PlayOnce( THEME:GetPathS("common", "start.ogg") )	
-						end
-					elseif IsMouseGucci(SCREEN_CENTER_X + 48.5,SCREEN_CENTER_Y - 35, 65, 20, "right") then
-						if not IsSortMenuInputToggled then
-							DDSortMenuCursorPosition = 7
-							MESSAGEMAN:Broadcast("MoveCursorMouseClick", {TargetPosition = 7})
-							SortMenuCursorLogic()
-							MESSAGEMAN:Broadcast("SortMenuOptionSelected")
-							SOUND:PlayOnce( THEME:GetPathS("common", "start.ogg") )
-						elseif DDSortMenuCursorPosition == 7 then
-							SortMenuCursorLogic()
-							MESSAGEMAN:Broadcast("SortMenuOptionSelected")
-							SOUND:PlayOnce( THEME:GetPathS("common", "start.ogg") )	
-						end
-					elseif IsMouseGucci(SCREEN_CENTER_X + 147.5,SCREEN_CENTER_Y - 35, 65, 20, "right") then
-						if not IsSortMenuInputToggled then
-							DDSortMenuCursorPosition = 8
-							MESSAGEMAN:Broadcast("MoveCursorMouseClick", {TargetPosition = 8})
-							SortMenuCursorLogic()
-							MESSAGEMAN:Broadcast("SortMenuOptionSelected")
-							SOUND:PlayOnce( THEME:GetPathS("common", "start.ogg") )
-						elseif DDSortMenuCursorPosition == 8 then
-							SortMenuCursorLogic()
-							MESSAGEMAN:Broadcast("SortMenuOptionSelected")
-							SOUND:PlayOnce( THEME:GetPathS("common", "start.ogg") )	
-						end
-					elseif IsMouseGucci(SCREEN_CENTER_X + 122,SCREEN_CENTER_Y - 10, 65, 20, "right") then
-						if not IsSortMenuInputToggled then
-							DDSortMenuCursorPosition = 9
-							MESSAGEMAN:Broadcast("MoveCursorMouseClick", {TargetPosition = 9})
-							SortMenuCursorLogic()
-							MESSAGEMAN:Broadcast("SortMenuOptionSelected")
-							SOUND:PlayOnce( THEME:GetPathS("common", "start.ogg") )
+				-- Jump the songwheel to a song/group clicked on by the left mouse button.
+				if event.DeviceInput.button == "DeviceButton_left mouse button" and not PressStartForOptions then
+					for i=1, 4 do
+						if IsMouseGucci(_screen.cx, (_screen.cy + 45) - (i*25), 320, 24) then
+							t.WheelWithFocus:scroll_by_amount(-i)
+							SOUND:PlayOnce( THEME:GetPathS("MusicWheel", "change.ogg") )
+							stop_music()
+							ChartUpdater.UpdateCharts()
 						end
 					end
 					
-					-- The bottom half of the sort menu
-					if not IsSortMenuInputToggled then
-						for i=1, GetMaxCursorPosition() - 9 do
-							if IsMouseGucci(_screen.cx + 85, (_screen.cy + 5) + (i*25), 170, 20, "right") then
-								MESSAGEMAN:Broadcast("MoveCursorMouseClick", {TargetPosition = i+9})
-								SOUND:PlayOnce( THEME:GetPathS("common", "start.ogg") )
+					for i=1, 6 do
+						if IsMouseGucci(_screen.cx, (_screen.cy + 45) + (i*25), 320, 24) then
+							t.WheelWithFocus:scroll_by_amount(i)
+							SOUND:PlayOnce( THEME:GetPathS("MusicWheel", "change.ogg") )
+							stop_music()
+							ChartUpdater.UpdateCharts()
+						end
+					end
+					
+					if IsMouseGucci(_screen.cx, (_screen.cy + 45), 320, 24) then
+						if t.WheelWithFocus == SongWheel then
+							if t.WheelWithFocus:get_info_at_focus_pos() ~= "CloseThisFolder" then
+								didSelectSong = true
+								TransitionTime = 0
+								PressStartForOptions = true
+								SOUND:PlayOnce( THEME:GetPathS("Common", "start.ogg") )
+								MESSAGEMAN:Broadcast('ShowOptionsJawn')
+							elseif t.WheelWithFocus:get_info_at_focus_pos() == "CloseThisFolder" then
+								SOUND:PlayOnce( THEME:GetPathS("MusicWheel", "expand.ogg") )
+								MESSAGEMAN:Broadcast("CloseCurrentFolder")
+								CloseCurrentFolder()
+								return false
+							end
+						elseif t.WheelWithFocus == GroupWheel then
+							if NameOfGroup == "RANDOM-PORTAL" then
+								didSelectSong = true
+								TransitionTime = 0
+								PressStartForOptions = true
+								SOUND:PlayOnce( THEME:GetPathS("Common", "start.ogg") )
+								MESSAGEMAN:Broadcast('ShowOptionsJawn')
+								t.WheelWithFocus = SongWheel
+							else
+								SOUND:PlayOnce( THEME:GetPathS("MusicWheel", "expand.ogg") )
+								t.WheelWithFocus.container:queuecommand("Start")
+								SwitchInputFocus(event.DeviceInput.button)
+
+								if t.WheelWithFocus.container then
+									t.WheelWithFocus.container:queuecommand("Unhide")
+								end
+							end
+						end
+					end
+					
+					-- Change the difficulty of the song when a player left clicks a chart.
+					if GAMESTATE:IsSideJoined('PlayerNumber_P1') then
+						-- Novice position
+						if IsMouseGucci(9, WideScale(358,288), 65, 46, "left", "top", 0.75) then
+							ChartUpdater.ClickDifficulty("PlayerNumber_P1", "Difficulty_Beginner")
+						-- Easy Position
+						elseif IsMouseGucci(59, WideScale(358,288), 65, 46, "left", "top", 0.75) then
+							ChartUpdater.ClickDifficulty('PlayerNumber_P1', "Difficulty_Easy")
+						-- Medium Position
+						elseif IsMouseGucci(110, WideScale(358,288), 64, 46, "left", "top", 0.75)  then
+							ChartUpdater.ClickDifficulty('PlayerNumber_P1', "Difficulty_Medium")
+						-- Hard Position
+						elseif IsMouseGucci(160, WideScale(358,288), 65, 46, "left", "top", 0.75) then
+							ChartUpdater.ClickDifficulty('PlayerNumber_P1', "Difficulty_Hard")
+						-- Expert/Edit Position
+						elseif IsMouseGucci(210, WideScale(358,288), 65, 46, "left", "top", 0.75) then
+							ChartUpdater.ClickDifficulty('PlayerNumber_P1', "Difficulty_Challenge")
+						end
+					end
+					if GAMESTATE:IsSideJoined('PlayerNumber_P2') then
+						-- Novice position
+						if IsMouseGucci(SCREEN_WIDTH - 258, WideScale(358,288), 65, 46, "left", "top", 0.75) then
+							ChartUpdater.ClickDifficulty("PlayerNumber_P2", "Difficulty_Beginner")	
+						-- Easy Position
+						elseif IsMouseGucci(SCREEN_WIDTH - 208, WideScale(358,288), 64, 46, "left", "top", 0.75) then
+							ChartUpdater.ClickDifficulty('PlayerNumber_P2', "Difficulty_Easy")
+						-- Medium Position
+						elseif IsMouseGucci(SCREEN_WIDTH - 158.5, WideScale(358,288), 65, 46, "left", "top", 0.75)  then
+							ChartUpdater.ClickDifficulty('PlayerNumber_P2', "Difficulty_Medium")
+						-- Hard Position
+						elseif IsMouseGucci(SCREEN_WIDTH - 109, WideScale(358,288), 66, 46, "left", "top", 0.75) then
+							ChartUpdater.ClickDifficulty('PlayerNumber_P2', "Difficulty_Hard")
+						-- Expert/Edit Position
+						elseif IsMouseGucci(SCREEN_WIDTH - 58, WideScale(358,288), 64, 46, "left", "top", 0.75) then
+							ChartUpdater.ClickDifficulty('PlayerNumber_P2', "Difficulty_Challenge")
+						end
+					end
+				elseif event.DeviceInput.button == "DeviceButton_left mouse button" and PressStartForOptions then
+					SOUND:PlayOnce( THEME:GetPathS("Common", "start.ogg") )
+					SCREENMAN:SetNewScreen("ScreenPlayerOptions")
+					return false
+				end
+				
+				-- Open the sort menu if the right mouse button is clicked.
+				if isSortMenuVisible == false then
+					if event.type ~= "InputEventType_Release" then
+						if event.DeviceInput.button == "DeviceButton_right mouse button" and PressStartForOptions == false then
+							local mpn = GAMESTATE:GetMasterPlayerNumber()
+							PlayerControllingSort = mpn 
+							MESSAGEMAN:Broadcast("InitializeDDSortMenu")
+							MESSAGEMAN:Broadcast("CheckForSongLeaderboard")
+							isSortMenuVisible = true
+							SOUND:PlayOnce( THEME:GetPathS("MusicWheel", "sort.ogg") )
+							stop_music()
+							MESSAGEMAN:Broadcast("ToggleSortMenu")
+						end
+					end
+				end
+			elseif isSortMenuVisible and not LeadboardHasFocus and not InputMenuHasFocus then
+				if event.type ~= "InputEventType_Release" then
+					if event.DeviceInput.button == "DeviceButton_right mouse button" then
+						if IsSortMenuInputToggled == false then
+							if SortMenuNeedsUpdating == true then
+								SortMenuNeedsUpdating = false
+								MESSAGEMAN:Broadcast("ToggleSortMenu")
+								MESSAGEMAN:Broadcast("ReloadSSMDD")
+								isSortMenuVisible = false
+								SOUND:PlayOnce( THEME:GetPathS("MusicWheel", "expand.ogg") )
+							elseif SortMenuNeedsUpdating == false then
+								isSortMenuVisible = false
+								SOUND:PlayOnce( THEME:GetPathS("ScreenPlayerOptions", "cancel all.ogg") )
+								MESSAGEMAN:Broadcast("ToggleSortMenu")
+							end
+						elseif IsSortMenuInputToggled then
+							SOUND:PlayOnce( THEME:GetPathS("common", "invalid.ogg") )
+							MESSAGEMAN:Broadcast("UpdateCursorColor")
+							MESSAGEMAN:Broadcast("ToggleSortMenuMovement")
+						end
+					end
+					if event.DeviceInput.button == "DeviceButton_mousewheel up" then
+						if not IsSortMenuInputToggled then
+							MESSAGEMAN:Broadcast("MoveCursorLeft")
+							SOUND:PlayOnce( THEME:GetPathS("", "_prev row.ogg") )
+						elseif IsSortMenuInputToggled then
+							MESSAGEMAN:Broadcast("MoveSortMenuOptionLeft")
+						end
+					elseif event.DeviceInput.button == "DeviceButton_mousewheel down" then
+						if not IsSortMenuInputToggled then
+							MESSAGEMAN:Broadcast("MoveCursorRight")
+							SOUND:PlayOnce( THEME:GetPathS("", "_next row.ogg") )
+						elseif IsSortMenuInputToggled then
+							MESSAGEMAN:Broadcast("MoveSortMenuOptionRight")
+						end
+					end
+					if event.DeviceInput.button == "DeviceButton_left mouse button" then
+						-- The top half of the sort menu
+						if IsMouseGucci(SCREEN_CENTER_X + 145,SCREEN_CENTER_Y - 135, 190, 20, "right") then
+							if not IsSortMenuInputToggled then
+								DDSortMenuCursorPosition = 1
+								MESSAGEMAN:Broadcast("MoveCursorMouseClick", {TargetPosition = 1})
 								SortMenuCursorLogic()
+								MESSAGEMAN:Broadcast("SortMenuOptionSelected")
+								SOUND:PlayOnce( THEME:GetPathS("common", "start.ogg") )
+							elseif DDSortMenuCursorPosition == 1 then
+								SortMenuCursorLogic()
+								MESSAGEMAN:Broadcast("SortMenuOptionSelected")
+								SOUND:PlayOnce( THEME:GetPathS("common", "start.ogg") )
+							end
+						elseif IsMouseGucci(SCREEN_CENTER_X + 145,SCREEN_CENTER_Y - 110, 190, 20, "right") then
+							if not IsSortMenuInputToggled then
+								DDSortMenuCursorPosition = 2
+								MESSAGEMAN:Broadcast("MoveCursorMouseClick", {TargetPosition = 2})
+								SortMenuCursorLogic()
+								MESSAGEMAN:Broadcast("SortMenuOptionSelected")
+								SOUND:PlayOnce( THEME:GetPathS("common", "start.ogg") )
+							elseif DDSortMenuCursorPosition == 2 then
+								SortMenuCursorLogic()
+								MESSAGEMAN:Broadcast("SortMenuOptionSelected")
+								SOUND:PlayOnce( THEME:GetPathS("common", "start.ogg") )	
+							end
+						elseif IsMouseGucci(SCREEN_CENTER_X + 55,SCREEN_CENTER_Y - 85, 40, 20, "right") then
+							if not IsSortMenuInputToggled then
+								DDSortMenuCursorPosition = 3
+								MESSAGEMAN:Broadcast("MoveCursorMouseClick", {TargetPosition = 3})
+								SortMenuCursorLogic()
+								MESSAGEMAN:Broadcast("SortMenuOptionSelected")
+								SOUND:PlayOnce( THEME:GetPathS("common", "start.ogg") )
+							elseif DDSortMenuCursorPosition == 3 then
+								SortMenuCursorLogic()
+								MESSAGEMAN:Broadcast("SortMenuOptionSelected")
+								SOUND:PlayOnce( THEME:GetPathS("common", "start.ogg") )	
+							end
+						elseif IsMouseGucci(SCREEN_CENTER_X + 135,SCREEN_CENTER_Y - 85, 40, 20, "right") then
+							if not IsSortMenuInputToggled then
+								DDSortMenuCursorPosition = 4
+								MESSAGEMAN:Broadcast("MoveCursorMouseClick", {TargetPosition = 4})
+								SortMenuCursorLogic()
+								MESSAGEMAN:Broadcast("SortMenuOptionSelected")
+								SOUND:PlayOnce( THEME:GetPathS("common", "start.ogg") )
+							elseif DDSortMenuCursorPosition == 4 then
+								SortMenuCursorLogic()
+								MESSAGEMAN:Broadcast("SortMenuOptionSelected")
+								SOUND:PlayOnce( THEME:GetPathS("common", "start.ogg") )	
+							end
+						elseif IsMouseGucci(SCREEN_CENTER_X,SCREEN_CENTER_Y - 60, 40, 20, "right") then
+							if not IsSortMenuInputToggled then
+								DDSortMenuCursorPosition = 5
+								MESSAGEMAN:Broadcast("MoveCursorMouseClick", {TargetPosition = 5})
+								SortMenuCursorLogic()
+								MESSAGEMAN:Broadcast("SortMenuOptionSelected")
+								SOUND:PlayOnce( THEME:GetPathS("common", "start.ogg") )
+							elseif DDSortMenuCursorPosition == 5 then
+								SortMenuCursorLogic()
+								MESSAGEMAN:Broadcast("SortMenuOptionSelected")
+								SOUND:PlayOnce( THEME:GetPathS("common", "start.ogg") )	
+							end
+						elseif IsMouseGucci(SCREEN_CENTER_X + 80,SCREEN_CENTER_Y - 60, 40, 20, "right") then
+							if not IsSortMenuInputToggled then
+								DDSortMenuCursorPosition = 6
+								MESSAGEMAN:Broadcast("MoveCursorMouseClick", {TargetPosition = 6})
+								SortMenuCursorLogic()
+								MESSAGEMAN:Broadcast("SortMenuOptionSelected")
+								SOUND:PlayOnce( THEME:GetPathS("common", "start.ogg") )
+							elseif DDSortMenuCursorPosition == 6 then
+								SortMenuCursorLogic()
+								MESSAGEMAN:Broadcast("SortMenuOptionSelected")
+								SOUND:PlayOnce( THEME:GetPathS("common", "start.ogg") )	
+							end
+						elseif IsMouseGucci(SCREEN_CENTER_X + 48.5,SCREEN_CENTER_Y - 35, 65, 20, "right") then
+							if not IsSortMenuInputToggled then
+								DDSortMenuCursorPosition = 7
+								MESSAGEMAN:Broadcast("MoveCursorMouseClick", {TargetPosition = 7})
+								SortMenuCursorLogic()
+								MESSAGEMAN:Broadcast("SortMenuOptionSelected")
+								SOUND:PlayOnce( THEME:GetPathS("common", "start.ogg") )
+							elseif DDSortMenuCursorPosition == 7 then
+								SortMenuCursorLogic()
+								MESSAGEMAN:Broadcast("SortMenuOptionSelected")
+								SOUND:PlayOnce( THEME:GetPathS("common", "start.ogg") )	
+							end
+						elseif IsMouseGucci(SCREEN_CENTER_X + 147.5,SCREEN_CENTER_Y - 35, 65, 20, "right") then
+							if not IsSortMenuInputToggled then
+								DDSortMenuCursorPosition = 8
+								MESSAGEMAN:Broadcast("MoveCursorMouseClick", {TargetPosition = 8})
+								SortMenuCursorLogic()
+								MESSAGEMAN:Broadcast("SortMenuOptionSelected")
+								SOUND:PlayOnce( THEME:GetPathS("common", "start.ogg") )
+							elseif DDSortMenuCursorPosition == 8 then
+								SortMenuCursorLogic()
+								MESSAGEMAN:Broadcast("SortMenuOptionSelected")
+								SOUND:PlayOnce( THEME:GetPathS("common", "start.ogg") )	
+							end
+						elseif IsMouseGucci(SCREEN_CENTER_X + 122,SCREEN_CENTER_Y - 10, 65, 20, "right") then
+							if not IsSortMenuInputToggled then
+								DDSortMenuCursorPosition = 9
+								MESSAGEMAN:Broadcast("MoveCursorMouseClick", {TargetPosition = 9})
+								SortMenuCursorLogic()
+								MESSAGEMAN:Broadcast("SortMenuOptionSelected")
+								SOUND:PlayOnce( THEME:GetPathS("common", "start.ogg") )
+							end
+						end
+						
+						-- The bottom half of the sort menu
+						if not IsSortMenuInputToggled then
+							for i=1, GetMaxCursorPosition() - 9 do
+								if IsMouseGucci(_screen.cx + 85, (_screen.cy + 5) + (i*25), 170, 20, "right") then
+									MESSAGEMAN:Broadcast("MoveCursorMouseClick", {TargetPosition = i+9})
+									SOUND:PlayOnce( THEME:GetPathS("common", "start.ogg") )
+									SortMenuCursorLogic()
+								end
 							end
 						end
 					end
 				end
-			end
-			--- Test input mouse controls
-		elseif InputMenuHasFocus and not isSortMenuVisible and not LeadboardHasFocus then
-			if event.DeviceInput.button == "DeviceButton_left mouse button" or event.DeviceInput.button == "DeviceButton_right mouse button" then
-				InputMenuHasFocus = false
-				SOUND:PlayOnce( THEME:GetPathS("common", "start.ogg") )
-				MESSAGEMAN:Broadcast("HideTestInput")
-			end
-			-- Leaderboard input mouse controls
-		elseif LeadboardHasFocus and not isSortMenuVisible and not InputMenuHasFocus then
-			if event.DeviceInput.button == "DeviceButton_right mouse button" then
-				LeadboardHasFocus = false
-				SOUND:PlayOnce( THEME:GetPathS("common", "start.ogg") )
-				MESSAGEMAN:Broadcast("HideLeaderboard")
-			end
-			if event.DeviceInput.button == "DeviceButton_mousewheel up" or event.DeviceInput.button == "DeviceButton_mousewheel down" then
+				--- Test input mouse controls
+			elseif InputMenuHasFocus and not isSortMenuVisible and not LeadboardHasFocus then
+				if event.DeviceInput.button == "DeviceButton_left mouse button" or event.DeviceInput.button == "DeviceButton_right mouse button" then
+					InputMenuHasFocus = false
+					SOUND:PlayOnce( THEME:GetPathS("common", "start.ogg") )
+					MESSAGEMAN:Broadcast("HideTestInput")
+				end
+				-- Leaderboard input mouse controls
+			elseif LeadboardHasFocus and not isSortMenuVisible and not InputMenuHasFocus then
+				if event.DeviceInput.button == "DeviceButton_right mouse button" then
+					LeadboardHasFocus = false
+					SOUND:PlayOnce( THEME:GetPathS("common", "start.ogg") )
+					MESSAGEMAN:Broadcast("HideLeaderboard")
+				end
+				if event.DeviceInput.button == "DeviceButton_mousewheel up" or event.DeviceInput.button == "DeviceButton_mousewheel down" then
+				end
 			end
 		end
 	end
