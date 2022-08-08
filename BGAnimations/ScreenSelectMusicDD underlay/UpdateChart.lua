@@ -47,12 +47,11 @@ local function SetChart(playerNum, steps)
 	MESSAGEMAN:Broadcast('CurrentStepsChanged', {playerNum=playerNum, steps=steps})
 end
 
-local function UpdateChartClick(playerNum, targetDif)
+local function UpdateChartClick(playerNum, targetDif, PlayerChart)
 	local song = GAMESTATE:GetCurrentSong()
 	if song == nil then
 		return
 	end
-	local PlayerChartDif = GAMESTATE:GetCurrentSteps(playerNum):GetDifficulty()
 	local LastDifficulty = DDStats.GetStat(playerNum, 'LastDifficulty')
 	local stepses = SongUtil.GetPlayableSteps(song)
 	if #stepses == 0 then
@@ -62,7 +61,7 @@ local function UpdateChartClick(playerNum, targetDif)
 	local minDifficultyDifference = 999
 	local matchingSteps = nil
 	
-	local ChartIndexDiff = (difficultyToIndex[PlayerChartDif] - difficultyToIndex[targetDif])
+	local ChartIndexDiff = (difficultyToIndex[PlayerChart] - difficultyToIndex[targetDif])
 	
 	if ChartIndexDiff > 0 then
 		EasierDifficulty = false
@@ -276,10 +275,10 @@ return {
 		UpdateChart(playerNum, -1)
 	end,
 	ClickDifficulty=function(playerNum, targetDif)
-		local LastDifficulty = DDStats.GetStat(playerNum, 'LastDifficulty')
 		local PlayerChart = GAMESTATE:GetCurrentSteps(playerNum):GetDifficulty()
-		if LastDifficulty == targetDif then return end
 		
+		if PlayerChart == targetDif then return end
+
 		-- This only works if the chart has one edit, if it has multiple edit charts this does not work as intended.
 		--(neither does the normal input for difficulty select for that matter)
 		if PlayerChart == "Difficulty_Edit" then
@@ -296,6 +295,6 @@ return {
 			end
 		end
 		
-		UpdateChartClick(playerNum, targetDif)
+		UpdateChartClick(playerNum, targetDif, PlayerChart)
 	end,
 }
