@@ -213,19 +213,6 @@ t.Handler = function(event)
 					CloseCurrentFolder()
 				end
 				
-				-- Scroll the song wheel up/down with the mouse wheel.
-				if event.DeviceInput.button == "DeviceButton_mousewheel up" and not PressStartForOptions then
-					t.WheelWithFocus:scroll_by_amount(-1)
-					SOUND:PlayOnce( THEME:GetPathS("MusicWheel", "change.ogg") )
-					stop_music()
-					ChartUpdater.UpdateCharts()
-				elseif event.DeviceInput.button == "DeviceButton_mousewheel down" and not PressStartForOptions then
-					t.WheelWithFocus:scroll_by_amount(1)
-					SOUND:PlayOnce( THEME:GetPathS("MusicWheel", "change.ogg") )
-					stop_music()
-					ChartUpdater.UpdateCharts()
-				end
-				
 				-- Jump the songwheel to a song/group clicked on by the left mouse button.
 				if event.DeviceInput.button == "DeviceButton_left mouse button" and not PressStartForOptions then
 					for i=1, 4 do
@@ -512,11 +499,28 @@ t.Handler = function(event)
 					if event.type ~= "InputEventType_Repeat" then
 						MESSAGEMAN:Broadcast("LeaderboardMouseInputEvent", event)
 					end
-					
 				end
 			end
 		end
 	end
+	
+	if not isSortMenuVisible and not LeadboardHasFocus and not InputMenuHasFocus then
+		if not (MouseX < 0 or MouseX > XMax) or (MouseY < 0 or MouseY > YMax) then
+			-- Scroll the song wheel up/down with the mouse wheel.
+			if event.DeviceInput.button == "DeviceButton_mousewheel up" and not PressStartForOptions then
+				t.WheelWithFocus:scroll_by_amount(-1)
+				SOUND:PlayOnce( THEME:GetPathS("MusicWheel", "change.ogg") )
+				stop_music()
+				ChartUpdater.UpdateCharts()
+			elseif event.DeviceInput.button == "DeviceButton_mousewheel down" and not PressStartForOptions then
+				t.WheelWithFocus:scroll_by_amount(1)
+				SOUND:PlayOnce( THEME:GetPathS("MusicWheel", "change.ogg") )
+				stop_music()
+				ChartUpdater.UpdateCharts()
+			end
+		end
+	end
+				
 	
 	-- if any of these, don't attempt to handle input
 	if t.Enabled == false or not event or not event.PlayerNumber or not event.button or SearchInput then
