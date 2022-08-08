@@ -213,6 +213,19 @@ t.Handler = function(event)
 					CloseCurrentFolder()
 				end
 				
+				-- Scroll the song wheel up/down with the mouse wheel.
+				if event.DeviceInput.button == "DeviceButton_mousewheel up" and not PressStartForOptions then
+					t.WheelWithFocus:scroll_by_amount(-1)
+					SOUND:PlayOnce( THEME:GetPathS("MusicWheel", "change.ogg") )
+					stop_music()
+					ChartUpdater.UpdateCharts()
+				elseif event.DeviceInput.button == "DeviceButton_mousewheel down" and not PressStartForOptions then
+					t.WheelWithFocus:scroll_by_amount(1)
+					SOUND:PlayOnce( THEME:GetPathS("MusicWheel", "change.ogg") )
+					stop_music()
+					ChartUpdater.UpdateCharts()
+				end
+				
 				-- Jump the songwheel to a song/group clicked on by the left mouse button.
 				if event.DeviceInput.button == "DeviceButton_left mouse button" and not PressStartForOptions then
 					for i=1, 4 do
@@ -372,6 +385,7 @@ t.Handler = function(event)
 								SOUND:PlayOnce( THEME:GetPathS("common", "start.ogg") )
 							elseif DDSortMenuCursorPosition == 1 then
 								SortMenuCursorLogic()
+								MESSAGEMAN:Broadcast("SetSortMenuTopStats")
 								MESSAGEMAN:Broadcast("SortMenuOptionSelected")
 								SOUND:PlayOnce( THEME:GetPathS("common", "start.ogg") )
 							end
@@ -384,6 +398,7 @@ t.Handler = function(event)
 								SOUND:PlayOnce( THEME:GetPathS("common", "start.ogg") )
 							elseif DDSortMenuCursorPosition == 2 then
 								SortMenuCursorLogic()
+								MESSAGEMAN:Broadcast("SetSortMenuTopStats")
 								MESSAGEMAN:Broadcast("SortMenuOptionSelected")
 								SOUND:PlayOnce( THEME:GetPathS("common", "start.ogg") )	
 							end
@@ -396,6 +411,7 @@ t.Handler = function(event)
 								SOUND:PlayOnce( THEME:GetPathS("common", "start.ogg") )
 							elseif DDSortMenuCursorPosition == 3 then
 								SortMenuCursorLogic()
+								MESSAGEMAN:Broadcast("SetSortMenuTopStats")
 								MESSAGEMAN:Broadcast("SortMenuOptionSelected")
 								SOUND:PlayOnce( THEME:GetPathS("common", "start.ogg") )	
 							end
@@ -408,6 +424,7 @@ t.Handler = function(event)
 								SOUND:PlayOnce( THEME:GetPathS("common", "start.ogg") )
 							elseif DDSortMenuCursorPosition == 4 then
 								SortMenuCursorLogic()
+								MESSAGEMAN:Broadcast("SetSortMenuTopStats")
 								MESSAGEMAN:Broadcast("SortMenuOptionSelected")
 								SOUND:PlayOnce( THEME:GetPathS("common", "start.ogg") )	
 							end
@@ -420,6 +437,7 @@ t.Handler = function(event)
 								SOUND:PlayOnce( THEME:GetPathS("common", "start.ogg") )
 							elseif DDSortMenuCursorPosition == 5 then
 								SortMenuCursorLogic()
+								MESSAGEMAN:Broadcast("SetSortMenuTopStats")
 								MESSAGEMAN:Broadcast("SortMenuOptionSelected")
 								SOUND:PlayOnce( THEME:GetPathS("common", "start.ogg") )	
 							end
@@ -432,6 +450,7 @@ t.Handler = function(event)
 								SOUND:PlayOnce( THEME:GetPathS("common", "start.ogg") )
 							elseif DDSortMenuCursorPosition == 6 then
 								SortMenuCursorLogic()
+								MESSAGEMAN:Broadcast("SetSortMenuTopStats")
 								MESSAGEMAN:Broadcast("SortMenuOptionSelected")
 								SOUND:PlayOnce( THEME:GetPathS("common", "start.ogg") )	
 							end
@@ -444,6 +463,7 @@ t.Handler = function(event)
 								SOUND:PlayOnce( THEME:GetPathS("common", "start.ogg") )
 							elseif DDSortMenuCursorPosition == 7 then
 								SortMenuCursorLogic()
+								MESSAGEMAN:Broadcast("SetSortMenuTopStats")
 								MESSAGEMAN:Broadcast("SortMenuOptionSelected")
 								SOUND:PlayOnce( THEME:GetPathS("common", "start.ogg") )	
 							end
@@ -456,6 +476,7 @@ t.Handler = function(event)
 								SOUND:PlayOnce( THEME:GetPathS("common", "start.ogg") )
 							elseif DDSortMenuCursorPosition == 8 then
 								SortMenuCursorLogic()
+								MESSAGEMAN:Broadcast("SetSortMenuTopStats")
 								MESSAGEMAN:Broadcast("SortMenuOptionSelected")
 								SOUND:PlayOnce( THEME:GetPathS("common", "start.ogg") )	
 							end
@@ -464,6 +485,7 @@ t.Handler = function(event)
 								DDSortMenuCursorPosition = 9
 								MESSAGEMAN:Broadcast("MoveCursorMouseClick", {TargetPosition = 9})
 								SortMenuCursorLogic()
+								MESSAGEMAN:Broadcast("SetSortMenuTopStats")
 								MESSAGEMAN:Broadcast("SortMenuOptionSelected")
 								SOUND:PlayOnce( THEME:GetPathS("common", "start.ogg") )
 							end
@@ -500,23 +522,6 @@ t.Handler = function(event)
 						MESSAGEMAN:Broadcast("LeaderboardMouseInputEvent", event)
 					end
 				end
-			end
-		end
-	end
-	
-	if not isSortMenuVisible and not LeadboardHasFocus and not InputMenuHasFocus then
-		if not (MouseX < 0 or MouseX > XMax) or (MouseY < 0 or MouseY > YMax) then
-			-- Scroll the song wheel up/down with the mouse wheel.
-			if event.DeviceInput.button == "DeviceButton_mousewheel up" and not PressStartForOptions then
-				t.WheelWithFocus:scroll_by_amount(-1)
-				SOUND:PlayOnce( THEME:GetPathS("MusicWheel", "change.ogg") )
-				stop_music()
-				ChartUpdater.UpdateCharts()
-			elseif event.DeviceInput.button == "DeviceButton_mousewheel down" and not PressStartForOptions then
-				t.WheelWithFocus:scroll_by_amount(1)
-				SOUND:PlayOnce( THEME:GetPathS("MusicWheel", "change.ogg") )
-				stop_music()
-				ChartUpdater.UpdateCharts()
 			end
 		end
 	end
