@@ -215,15 +215,35 @@ t.Handler = function(event)
 				
 				-- Scroll the song wheel up/down with the mouse wheel.
 				if event.DeviceInput.button == "DeviceButton_mousewheel up" and not PressStartForOptions then
-					t.WheelWithFocus:scroll_by_amount(-1)
-					SOUND:PlayOnce( THEME:GetPathS("MusicWheel", "change.ogg") )
-					stop_music()
-					ChartUpdater.UpdateCharts()
+					if IsMouseGucci(0, (_screen.cy + 63.5), WideScale(160,267), 56, "left", "middle") then
+						if GAMESTATE:IsHumanPlayer("PlayerNumber_P1") then
+							ChartUpdater.DecreaseDifficulty("PlayerNumber_P1")
+						end
+					elseif IsMouseGucci(SCREEN_RIGHT, (_screen.cy + 63.5), WideScale(160,267), 56, "right", "middle") then
+						if GAMESTATE:IsHumanPlayer("PlayerNumber_P2") then
+							ChartUpdater.DecreaseDifficulty("PlayerNumber_P2")
+						end
+					else
+						t.WheelWithFocus:scroll_by_amount(-1)
+						SOUND:PlayOnce( THEME:GetPathS("MusicWheel", "change.ogg") )
+						stop_music()
+						ChartUpdater.UpdateCharts()
+					end
 				elseif event.DeviceInput.button == "DeviceButton_mousewheel down" and not PressStartForOptions then
-					t.WheelWithFocus:scroll_by_amount(1)
-					SOUND:PlayOnce( THEME:GetPathS("MusicWheel", "change.ogg") )
-					stop_music()
-					ChartUpdater.UpdateCharts()
+					if IsMouseGucci(0, (_screen.cy + 63.5), WideScale(160,267), 56, "left", "middle") then
+						if GAMESTATE:IsHumanPlayer("PlayerNumber_P1") then
+							ChartUpdater.IncreaseDifficulty("PlayerNumber_P1")
+						end
+					elseif IsMouseGucci(SCREEN_RIGHT, (_screen.cy + 63.5), WideScale(160,267), 56, "right", "middle") then
+						if GAMESTATE:IsHumanPlayer("PlayerNumber_P2") then
+							ChartUpdater.IncreaseDifficulty("PlayerNumber_P2")
+						end
+					else
+						t.WheelWithFocus:scroll_by_amount(1)
+						SOUND:PlayOnce( THEME:GetPathS("MusicWheel", "change.ogg") )
+						stop_music()
+						ChartUpdater.UpdateCharts()
+					end
 				end
 				
 				-- Jump the songwheel to a song/group clicked on by the left mouse button.
