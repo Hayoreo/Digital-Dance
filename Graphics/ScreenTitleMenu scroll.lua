@@ -8,7 +8,7 @@ local InputHandler = function(event)
 	-- if (somehow) there's no event, bail
 	if not event then return end
 
-	if event.type == "InputEventType_FirstPress" then
+	if event.type == "InputEventType_FirstPress" and  event.type ~= "InputEventType_Release" then
 		
 		if event.DeviceInput.button == "DeviceButton_mousewheel up" or event.GameButton == "MenuLeft" or event.GameButton == "MenuUp" then
 			if VirtualIndex == 1 then
@@ -19,7 +19,7 @@ local InputHandler = function(event)
 			MESSAGEMAN:Broadcast("UpdateScroll")
 			-- the engine will already play this with the menu buttons, so we only need to do it for the mouse.
 			if event.DeviceInput.button == "DeviceButton_mousewheel up" then
-				SOUND:PlayOnce( THEME:GetPathS("MusicWheel", "change.ogg") )
+				SOUND:PlayOnce( THEME:GetPathS("MusicWheel", "change.ogg"), true )
 			end
 		end
 		
@@ -32,7 +32,7 @@ local InputHandler = function(event)
 			MESSAGEMAN:Broadcast("UpdateScroll")
 			-- the engine will already play this with the menu buttons, so we only need to do it for the mouse.
 			if event.DeviceInput.button == "DeviceButton_mousewheel down" then
-				SOUND:PlayOnce( THEME:GetPathS("MusicWheel", "change.ogg") )
+				SOUND:PlayOnce( THEME:GetPathS("MusicWheel", "change.ogg"), true )
 			end
 		end
 		
