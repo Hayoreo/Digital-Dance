@@ -4,8 +4,8 @@ local XMax = SCREEN_WIDTH
 local YMax = SCREEN_HEIGHT
 local RefreshRate = PREFSMAN:GetPreference("RefreshRate")
 local Refresh = 1/RefreshRate
-local HideMouseCounter = 0
 local MaxMouseCounter = RefreshRate * 3
+local HideMouseCounter = MaxMouseCounter
 
 local af = Def.ActorFrame{
 	Def.Sprite{
@@ -14,11 +14,7 @@ local af = Def.ActorFrame{
 		InitCommand=function(self)
 			MouseX = INPUTFILTER:GetMouseX()
 			MouseY = INPUTFILTER:GetMouseY()
-			if (MouseX < 0 or MouseX > XMax) or (MouseY < 0 or MouseY > YMax) then
-				self:visible(false)
-			else
-				self:visible(true)
-			end
+			self:visible(false)
 			self:vertalign(top)
 			self:horizalign(left)
 			self:xy(MouseX,MouseY)
