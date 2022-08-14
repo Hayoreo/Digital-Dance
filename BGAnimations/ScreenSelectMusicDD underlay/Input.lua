@@ -218,10 +218,20 @@ t.Handler = function(event)
 					if IsMouseGucci(0, (_screen.cy + 63.5), WideScale(160,267), 56, "left", "middle") then
 						if GAMESTATE:IsHumanPlayer("PlayerNumber_P1") then
 							ChartUpdater.DecreaseDifficulty("PlayerNumber_P1")
+						else
+							t.WheelWithFocus:scroll_by_amount(1)
+							SOUND:PlayOnce( THEME:GetPathS("MusicWheel", "change.ogg") )
+							stop_music()
+							ChartUpdater.UpdateCharts()
 						end
 					elseif IsMouseGucci(SCREEN_RIGHT, (_screen.cy + 63.5), WideScale(160,267), 56, "right", "middle") then
 						if GAMESTATE:IsHumanPlayer("PlayerNumber_P2") then
 							ChartUpdater.DecreaseDifficulty("PlayerNumber_P2")
+						else
+							t.WheelWithFocus:scroll_by_amount(1)
+							SOUND:PlayOnce( THEME:GetPathS("MusicWheel", "change.ogg") )
+							stop_music()
+							ChartUpdater.UpdateCharts()
 						end
 					else
 						t.WheelWithFocus:scroll_by_amount(-1)
@@ -233,10 +243,20 @@ t.Handler = function(event)
 					if IsMouseGucci(0, (_screen.cy + 63.5), WideScale(160,267), 56, "left", "middle") then
 						if GAMESTATE:IsHumanPlayer("PlayerNumber_P1") then
 							ChartUpdater.IncreaseDifficulty("PlayerNumber_P1")
+						else
+							t.WheelWithFocus:scroll_by_amount(1)
+							SOUND:PlayOnce( THEME:GetPathS("MusicWheel", "change.ogg") )
+							stop_music()
+							ChartUpdater.UpdateCharts()
 						end
 					elseif IsMouseGucci(SCREEN_RIGHT, (_screen.cy + 63.5), WideScale(160,267), 56, "right", "middle") then
 						if GAMESTATE:IsHumanPlayer("PlayerNumber_P2") then
 							ChartUpdater.IncreaseDifficulty("PlayerNumber_P2")
+						else
+							t.WheelWithFocus:scroll_by_amount(1)
+							SOUND:PlayOnce( THEME:GetPathS("MusicWheel", "change.ogg") )
+							stop_music()
+							ChartUpdater.UpdateCharts()
 						end
 					else
 						t.WheelWithFocus:scroll_by_amount(1)
