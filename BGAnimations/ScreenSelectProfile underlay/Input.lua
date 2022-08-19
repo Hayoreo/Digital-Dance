@@ -173,7 +173,7 @@ Handle.Select = Handle.Back
 
 local InputHandler = function(event)
 	-- Let's do mouse input here.
-	if event.type == "InputEventType_FirstPress" and event.type ~= "InputEventType_Release" then
+	if event.type == "InputEventType_FirstPress" and event.type ~= "InputEventType_Release" and ThemePrefs.Get("MouseInput") then
 		if event.DeviceInput.button == "DeviceButton_left mouse button" then
 			-- Player one join
 			if IsMouseGucci(_screen.cx - 150, _screen.cy,184,216, "center", "middle") then

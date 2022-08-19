@@ -169,7 +169,7 @@ SL = {
 			EventMode=1,
 			CoinMode="Home",
 			
-			ShowMouseCursor=false,
+			ShowMouseCursor=not ThemePrefs.Get("MouseInput"),
 			
 			TimingWindowAdd=0.0015,
 			RegenComboAfterMiss=5,
@@ -199,7 +199,7 @@ SL = {
 			EventMode=1,
 			CoinMode="Home",
 			
-			ShowMouseCursor=false,
+			ShowMouseCursor=not ThemePrefs.Get("MouseInput"),
 			
 			TimingWindowAdd=0.0015,
 			RegenComboAfterMiss=5,
@@ -313,6 +313,7 @@ function InitializeSimplyLove()
 	SL.P1:initialize()
 	SL.P2:initialize()
 	SL.Global:initialize()
+	SetGameModePreferences()
 end
 
 InitializeSimplyLove()

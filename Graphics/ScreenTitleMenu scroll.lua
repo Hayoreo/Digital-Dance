@@ -4,8 +4,8 @@ local MaxIndex = 4
 local Scroller
 
 local InputHandler = function(event)
-	-- Don't run any mouse input if the mouse is offscreen.
-	if not IsMouseOnScreen() then return end
+	-- Don't run any mouse input if the mouse is offscreen or if the theme preference is off.
+	if not IsMouseOnScreen() or not ThemePrefs.Get("MouseInput") then return end
 
 	-- if (somehow) there's no event, bail
 	if not event then return end

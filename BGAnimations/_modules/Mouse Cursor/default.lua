@@ -1,3 +1,6 @@
+-- don't even run this if the theme preference for this is off
+if not ThemePrefs.Get("MouseInput") then return end
+
 local MouseX
 local MouseY
 local RefreshRate = PREFSMAN:GetPreference("RefreshRate")

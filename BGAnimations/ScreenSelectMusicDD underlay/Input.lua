@@ -196,7 +196,7 @@ local lastMenuDownPressTime = 0
 t.Handler = function(event)
 	-- Allow Mouse Input here
 	if event.type == "InputEventType_FirstPress" then
-		if IsMouseOnScreen() then
+		if IsMouseOnScreen() and ThemePrefs.Get("MouseInput") then
 			if not isSortMenuVisible and not LeadboardHasFocus and not InputMenuHasFocus then
 				-- Close the song folder and switch to group wheel if mouse wheel is pressed.
 				if event.DeviceInput.button == "DeviceButton_middle mouse button" and t.WheelWithFocus == SongWheel and not didSelectSong then
