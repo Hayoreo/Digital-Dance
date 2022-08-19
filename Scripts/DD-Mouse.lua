@@ -10,13 +10,11 @@
 IsMouseGucci = function(QuadX, QuadY, QuadWidth, QuadHeight, Horizontal, Vertical, Zoom)
 	local MouseX = INPUTFILTER:GetMouseX()
 	local MouseY = INPUTFILTER:GetMouseY()
-	local XMax = SCREEN_WIDTH
-	local YMax = SCREEN_HEIGHT
 	local IsXGucci = false
 	local IsYGucci = false
 	
 	-- If the mouse is not in the SM window then don't check anything else.
-	if (MouseX < 0 or MouseX > XMax) or (MouseY < 0 or MouseY > YMax) then return false end
+	if not IsMouseOnScreen() then return false end
 	
 	Zoom = Zoom or 1
 	QuadX = QuadX
@@ -71,4 +69,18 @@ IsMouseGucci = function(QuadX, QuadY, QuadWidth, QuadHeight, Horizontal, Vertica
 	else
 		return false
 	end
+end
+
+IsMouseOnScreen = function()
+	local MouseX = INPUTFILTER:GetMouseX()
+	local MouseY = INPUTFILTER:GetMouseY()
+	local XMax = SCREEN_WIDTH
+	local YMax = SCREEN_HEIGHT
+	
+	if (MouseX < 0 or MouseX > XMax) or (MouseY < 0 or MouseY > YMax) then 
+		return false 
+	else
+		return true
+	end
+	
 end

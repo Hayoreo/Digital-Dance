@@ -1,7 +1,5 @@
 local MouseX
 local MouseY
-local XMax = SCREEN_WIDTH
-local YMax = SCREEN_HEIGHT
 local RefreshRate = PREFSMAN:GetPreference("RefreshRate")
 local Refresh = 1/RefreshRate
 local MaxMouseCounter = RefreshRate * 3
@@ -38,7 +36,7 @@ local af = Def.ActorFrame{
 			end
 			
 			-- If the mouse is out of bounds hide it. If the mouse has been stationary for more than 3 seconds also hide it.
-			if (MouseX < 0 or MouseX > XMax) or (MouseY < 0 or MouseY > YMax) then
+			if not IsMouseOnScreen() then
 				self:visible(false)
 			elseif HideMouseCounter >= MaxMouseCounter then
 				self:visible(false)

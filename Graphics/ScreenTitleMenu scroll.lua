@@ -4,6 +4,8 @@ local MaxIndex = 4
 local Scroller
 
 local InputHandler = function(event)
+	-- Don't run any mouse input if the mouse is offscreen.
+	if not IsMouseOnScreen() then return end
 
 	-- if (somehow) there's no event, bail
 	if not event then return end
@@ -40,7 +42,6 @@ local InputHandler = function(event)
 		-- Advance to the next screen on enter.
 		if event.GameButton == "Start" then
 			if VirtualIndex == 1 then
-				SOUND:PlayOnce( THEME:GetPathS("Common", "start.ogg"), true )
 				SCREENMAN:SetNewScreen("ScreenSelectProfile")
 			elseif VirtualIndex == 2 then
 				SCREENMAN:SetNewScreen("ScreenEditMenu")
@@ -52,7 +53,7 @@ local InputHandler = function(event)
 		end
 		
 		-- or a left click
-		if event.DeviceInput.button == "DeviceButton_left mouse button" and event.type ~= "InputEventType_Release" and event.type == "InputEventType_FirstPress"then
+		if event.DeviceInput.button == "DeviceButton_left mouse button" then
 			-- check which choice is selected to determine the zoom.
 			if IsMouseGucci(_screen.cx-2,_screen.cy-81, 670, 105, "center", "middle", VirtualIndex ==1 and 0.4 or 0.3) then
 				SOUND:PlayOnce( THEME:GetPathS("Common", "start.ogg"), true )

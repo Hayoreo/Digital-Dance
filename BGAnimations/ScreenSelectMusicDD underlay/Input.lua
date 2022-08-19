@@ -18,11 +18,6 @@ isSortMenuVisible = false
 InputMenuHasFocus = false
 LeadboardHasFocus = false
 
-local MouseX
-local MouseY
-local XMax = SCREEN_WIDTH
-local YMax = SCREEN_HEIGHT
-
 -----------------------------------------------------
 -- input handler
 local t = {}
@@ -201,9 +196,7 @@ local lastMenuDownPressTime = 0
 t.Handler = function(event)
 	-- Allow Mouse Input here
 	if event.type == "InputEventType_FirstPress" then
-		MouseX = INPUTFILTER:GetMouseX()
-		MouseY = INPUTFILTER:GetMouseY()
-		if not (MouseX < 0 or MouseX > XMax) or (MouseY < 0 or MouseY > YMax) then
+		if IsMouseOnScreen() then
 			if not isSortMenuVisible and not LeadboardHasFocus and not InputMenuHasFocus then
 				-- Close the song folder and switch to group wheel if mouse wheel is pressed.
 				if event.DeviceInput.button == "DeviceButton_middle mouse button" and t.WheelWithFocus == SongWheel and not didSelectSong then
@@ -219,7 +212,7 @@ t.Handler = function(event)
 						if GAMESTATE:IsHumanPlayer("PlayerNumber_P1") then
 							ChartUpdater.DecreaseDifficulty("PlayerNumber_P1")
 						else
-							t.WheelWithFocus:scroll_by_amount(1)
+							t.WheelWithFocus:scroll_by_amount(-1)
 							SOUND:PlayOnce( THEME:GetPathS("MusicWheel", "change.ogg") )
 							stop_music()
 							ChartUpdater.UpdateCharts()
@@ -228,7 +221,7 @@ t.Handler = function(event)
 						if GAMESTATE:IsHumanPlayer("PlayerNumber_P2") then
 							ChartUpdater.DecreaseDifficulty("PlayerNumber_P2")
 						else
-							t.WheelWithFocus:scroll_by_amount(1)
+							t.WheelWithFocus:scroll_by_amount(-1)
 							SOUND:PlayOnce( THEME:GetPathS("MusicWheel", "change.ogg") )
 							stop_music()
 							ChartUpdater.UpdateCharts()
