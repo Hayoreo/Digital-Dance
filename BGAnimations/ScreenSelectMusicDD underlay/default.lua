@@ -96,7 +96,7 @@ local t = Def.ActorFrame {
 		
 		-- Don't do these codes if the sort menu is open or if going to the options screen
 		if LeavingScreenSelectMusicDD == false then
-			if isSortMenuVisible == false and LeadboardHasFocus == false then
+			if not isSortMenuVisible and not LeadboardHasFocus and not IsSearchMenuVisible then
 				if InputMenuHasFocus == false then
 					if params.Name == "CancelSingleSong" then
 						-- otherwise, run the function to cancel this single song choice
@@ -165,7 +165,7 @@ local t = Def.ActorFrame {
 	-- a Test Input overlay can be accessed from the SortMenu
 	LoadActor("./TestInput.lua"),
 	-- Handles song search data
-	LoadActor("./SongSearch.lua"),
+	LoadActor("./SearchMenu/default.lua"),
 	-- For backing out of SSMDD.
 	LoadActor('./EscapeFromEventMode.lua'),
 	-- For transitioning to either gameplay or player options.

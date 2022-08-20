@@ -15,6 +15,7 @@ local ActiveOptionRow
 local didSelectSong = false
 local PressStartForOptions = false
 isSortMenuVisible = false
+IsSearchMenuVisible = false
 InputMenuHasFocus = false
 LeadboardHasFocus = false
 
@@ -25,7 +26,7 @@ local t = {}
 
 
 local SwitchInputFocus = function(button)
-	if button == "Start" or "DeviceButton_left mouse button" then
+	if button == "Start" or "DeviceButton_left mouse button" and not IsSearchMenuVisible then
 		if t.WheelWithFocus == GroupWheel then
 			if NameOfGroup == "RANDOM-PORTAL" then
 				didSelectSong = true
@@ -47,7 +48,7 @@ local SwitchInputFocus = function(button)
 			MESSAGEMAN:Broadcast('ShowOptionsJawn')
 		end
 	elseif button == "Select" or button == "Back" then
-		if t.WheelWithFocus == SongWheel then
+		if t.WheelWithFocus == SongWheel and not IsSearchMenuVisible then
 			t.WheelWithFocus = GroupWheel
 		end
 
@@ -194,8 +195,29 @@ local lastMenuUpPressTime = 0
 local lastMenuDownPressTime = 0
 
 t.Handler = function(event)
+	if event.type == "InputEventType_FirstPress" and event.type ~= "InputEventType_Release" then
+		if not IsSearchMenuVisible then
+			if event.DeviceInput.button == "DeviceButton_left ctrl" then
+				holdingCtrl = true
+			end
+			
+			if holdingCtrl then
+				if event.DeviceInput.button == "DeviceButton_f" then
+					SOUND:PlayOnce( THEME:GetPathS("MusicWheel", "sort.ogg") )
+					stop_music()
+					MESSAGEMAN:Broadcast("InitializeSearchMenu")
+					MESSAGEMAN:Broadcast("ToggleSearchMenu")
+				end
+			end
+		end
+		
+		if event.DeviceInput.button == "DeviceButton_escape" and IsSearchMenuVisible then
+			SOUND:PlayOnce( THEME:GetPathS("ScreenPlayerOptions", "cancel all.ogg") )
+			MESSAGEMAN:Broadcast("ToggleSearchMenu")
+		end
+	end
 	-- Allow Mouse Input here
-	if event.type == "InputEventType_FirstPress" then
+	if event.type == "InputEventType_FirstPress" and event.type ~= "InputEventType_Release" and not IsSearchMenuVisible then
 		if IsMouseOnScreen() and ThemePrefs.Get("MouseInput") then
 			if not isSortMenuVisible and not LeadboardHasFocus and not InputMenuHasFocus then
 				-- Close the song folder and switch to group wheel if mouse wheel is pressed.
@@ -561,7 +583,7 @@ t.Handler = function(event)
 				
 	
 	-- if any of these, don't attempt to handle input
-	if t.Enabled == false or not event or not event.PlayerNumber or not event.button or SearchInput then
+	if t.Enabled == false or not event or not event.PlayerNumber or not event.button or IsSearchMenuVisible then
 		return false
 	end
 	
@@ -723,11 +745,12 @@ t.Handler = function(event)
 		t.enabled = false
 	end
 	
-if not GAMESTATE:IsSideJoined(event.PlayerNumber) then
+	if not GAMESTATE:IsSideJoined(event.PlayerNumber) then
 		if not t.AllowLateJoin() then return false end
+		if IsSearchMenuVisible or isSortMenuVisible or LeadboardHasFocus or InputMenuHasFocus then return false end
 
 		-- latejoin
-		if event.GameButton == "Start" and not SearchInput then
+		if event.GameButton == "Start" then
 			GAMESTATE:JoinPlayer( event.PlayerNumber )
 			Players = GAMESTATE:GetHumanPlayers()
 			MESSAGEMAN:Broadcast("ReloadSSMDD")
@@ -761,7 +784,7 @@ if not GAMESTATE:IsSideJoined(event.PlayerNumber) then
 		end
 		--------------------------------------------------------------
 		-- proceed to the next wheel
-		if event.GameButton == "Start" then
+		if event.GameButton == "Start" and not IsSearchMenuVisible then
 			if event.type == "InputEventType_FirstPress" then
 				if didSelectSong then
 					SOUND:PlayOnce( THEME:GetPathS("Common", "start.ogg") )

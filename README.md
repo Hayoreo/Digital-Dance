@@ -1,8 +1,9 @@
 # Digital Dance v1.0.6
 
 # ------------ Differences from 1.0.5 ------------
-- Mouse input and custom mouse cursor for ScreenSelectMusicDD
+- Mouse input and custom mouse cursor for some screens
 - Song search is now accessed via "Ctrl + F" on select music rather than through the sort menu.
+- Song search now uses custom text entry fields for better control
 - Players can toggle whether jumps and hands count towards the NPS of a chart.
 
 ## Aspect Ratio Support

@@ -29,7 +29,7 @@ local function getInputHandler(actor, player)
 	return (function(event)
 		if event.GameButton == "Start" and event.PlayerNumber == player and not GAMESTATE:IsHumanPlayer(event.PlayerNumber) and not IsUsingWideScreen() then
 			actor:visible(false)
-		elseif event.GameButton == "Start" and event.PlayerNumber == player and not GAMESTATE:IsHumanPlayer(event.PlayerNumber) and not SearchInput then
+		elseif event.GameButton == "Start" and event.PlayerNumber == player and not GAMESTATE:IsHumanPlayer(event.PlayerNumber) and not isSortMenuVisible and not IsSearchMenuVisible and not LeadboardHasFocus and not InputMenuHasFocus then
 			actor:visible(true)
 		end
 	end)

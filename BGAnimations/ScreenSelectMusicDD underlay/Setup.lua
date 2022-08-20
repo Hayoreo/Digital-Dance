@@ -261,7 +261,7 @@ local UpdatePrunedSongs = function()
 	local songs_by_group
 	if SongSearchSSMDD then
 		songs_by_group = {}
-		songs_by_group['Song Search'] = SONGMAN:GetAllSongs()
+		songs_by_group['Search Results'] = SONGMAN:GetAllSongs()
 	elseif sort_pref == 1 then
 		songs_by_group = GroupSongsBy(function(song) return song:GetGroupName() end)
 	elseif sort_pref == 2 then
@@ -354,28 +354,41 @@ local UpdatePrunedSongs = function()
 				
 				----- Filter For song search
 				if SongSearchSSMDD == true then
-					local match = false
+					local match = true
 					local title = song:GetDisplayFullTitle():lower()
 					local artist = song:GetDisplayArtist():lower()
 					-- the query "xl grind" will match a song called "Axle Grinder" no matter
 					-- what the chart info says
-					if title:match(SongSearchAnswer:lower()) then
-						match = true
-					elseif artist:match(SongSearchAnswer:lower()) then
-						match = true
+					if title == "Random-Portal" or title == "RANDOM-PORTAL" then
+						match = false
 					end
-					if not match then
-						for i, steps in ipairs(song:GetStepsByStepsType(steps_type)) do
-							local chartStr = steps:GetAuthorCredit().." "..steps:GetDescription()
-							if chartStr:lower():match(SongSearchAnswer:lower()) then
-								match = true
-							else
-								match = false
-							end
+					
+					if SongSearchAnswer ~= "" and match then
+						if not title:match(SongSearchAnswer:lower()) then
+							match = false
 						end
 					end
 					
-					if match == false then
+					if ArtistSearchAnswer ~= "" and match then
+						if not artist:match(ArtistSearchAnswer:lower()) then
+							match = false
+						end
+					end
+					
+					if ChartSearchAnswer ~= "" and match then
+						local chartMatch = false
+						for i, steps in ipairs(song:GetStepsByStepsType(steps_type)) do
+							local chartStr = steps:GetAuthorCredit().." "..steps:GetDescription()
+							if chartStr:lower():match(ChartSearchAnswer:lower()) then
+								chartMatch = true
+							end
+						end
+						if not chartMatch then
+							match = false
+						end
+					end
+					
+					if not match then
 						passesFilters = false
 					end
 				end
@@ -463,7 +476,7 @@ end
 
 local GetGroups = function()
 	if SongSearchSSMDD == true then
-		return {'Song Search'}
+		return {'Search Results'}
 	end	
 	
 	local sort_pref = GetMainSortPreference()
@@ -523,6 +536,9 @@ end
 -- to the 1st song in the 1st folder.
 
 local GetDefaultSong = function(groups)
+	if SongSearchSSMDD then
+		return PruneSongsFromGroup( groups[2] )[1]
+	end
 	local songs = {}
 	local playerNum
 	if GAMESTATE:IsPlayerEnabled(PLAYER_1) then
