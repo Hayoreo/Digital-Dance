@@ -115,23 +115,25 @@ local InputHandler = function( event )
 			end
 			
 			-- jump cursor to target based on mouse location.
-			if event.DeviceInput.button == "DeviceButton_left mouse button" then
-				for i=1, 3 do
-					if IsMouseGucci(SCREEN_CENTER_X + 180,(YPosition-30) + 30*i ,boxwidth, boxheight, "right") then
-						if i ~= SearchCursorIndex then
-							MESSAGEMAN:Broadcast("MoveSearchCursorMouse",{TargetPosition = i})
-							updateAllText()
+			if ThemePrefs.Get("MouseInput") then
+				if event.DeviceInput.button == "DeviceButton_left mouse button" then
+					for i=1, 3 do
+						if IsMouseGucci(SCREEN_CENTER_X + 180,(YPosition-30) + 30*i ,boxwidth, boxheight, "right") then
+							if i ~= SearchCursorIndex then
+								MESSAGEMAN:Broadcast("MoveSearchCursorMouse",{TargetPosition = i})
+								updateAllText()
+							end
 						end
 					end
-				end
-				if IsMouseGucci(SCREEN_CENTER_X,YPosition + 90,searchbox, boxheight, "center") then
-					if i ~= SearchCursorIndex then
-						if SongSearchAnswer ~= "" or ArtistSearchAnswer ~= "" or ChartSearchAnswer ~= "" then
-							SOUND:PlayOnce( THEME:GetPathS("Common", "start.ogg") )
-						else
-							SOUND:PlayOnce( THEME:GetPathS("ScreenPlayerOptions", "cancel all.ogg") )
+					if IsMouseGucci(SCREEN_CENTER_X,YPosition + 90,searchbox, boxheight, "center") then
+						if i ~= SearchCursorIndex then
+							if SongSearchAnswer ~= "" or ArtistSearchAnswer ~= "" or ChartSearchAnswer ~= "" then
+								SOUND:PlayOnce( THEME:GetPathS("Common", "start.ogg") )
+							else
+								SOUND:PlayOnce( THEME:GetPathS("ScreenPlayerOptions", "cancel all.ogg") )
+							end
+							MESSAGEMAN:Broadcast("SongSearchSSMDD")
 						end
-						MESSAGEMAN:Broadcast("SongSearchSSMDD")
 					end
 				end
 			end
