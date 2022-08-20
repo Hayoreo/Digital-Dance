@@ -4,7 +4,7 @@ local boxheight = 20
 local YPosition = SCREEN_CENTER_Y - 30
 local searchbox = 54
 
-local holdingShift = false
+local holdingShift = 0
 
 SearchCursorIndex = 1
 SongSearchAnswer = ''
@@ -65,7 +65,7 @@ local getLetterForButton = function(button)
 	local buttonStr = tostring(button):sub(14)
 
 	local characterTable
-	if holdingShift then
+	if holdingShift > 0 then
 		characterTable = uppercaseSpecialCharacters
 	else
 		characterTable = lowercaseSpecialCharacters
@@ -77,7 +77,7 @@ local getLetterForButton = function(button)
 	end
 
 	if buttonStr:len() == 1 then
-		if holdingShift then
+		if holdingShift > 0 then
 			return buttonStr:upper()
 		else
 			return buttonStr
@@ -98,8 +98,8 @@ local InputHandler = function( event )
 	
 	if IsSearchMenuVisible then
 		if event.type == "InputEventType_FirstPress" then
-			if event.DeviceInput.button == "DeviceButton_left shift" then
-				holdingShift = true
+			if event.DeviceInput.button == "DeviceButton_left shift" or event.DeviceInput.button == "DeviceButton_right shift" then
+				holdingShift = holdingShift + 1
 			end
 			-- move cursor up/down
 			if event.GameButton == "MenuLeft" or event.GameButton == "MenuUp" then
@@ -112,6 +112,9 @@ local InputHandler = function( event )
 					MESSAGEMAN:Broadcast("MoveSearchCursorDown")
 					updateAllText()
 				end
+			elseif event.DeviceInput.button == "DeviceButton_tab" then
+				MESSAGEMAN:Broadcast("MoveSearchCursorDown")
+				updateAllText()
 			end
 			
 			-- jump cursor to target based on mouse location.
@@ -199,8 +202,8 @@ local InputHandler = function( event )
 				end
 			end
 		elseif event.type == "InputEventType_Release" then
-			if event.DeviceInput.button == "DeviceButton_left shift" then
-				holdingShift = false
+			if event.DeviceInput.button == "DeviceButton_left shift" or event.DeviceInput.button == "DeviceButton_right shift" then
+				holdingShift = holdingShift - 1
 			end
 		end
 	end
