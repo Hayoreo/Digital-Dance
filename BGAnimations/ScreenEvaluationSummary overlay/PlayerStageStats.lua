@@ -82,7 +82,7 @@ af[#af+1] = LoadFont("Common Normal")..{
 			-- remove the first two sections, transforming something like "StepsType_Dance_Single" into "Single"
 			stepstype = stepstype:gsub("%w+_%w+_", "")
 			-- localize
-			stepstype = THEME:GetString("ScreenSelectMusic", stepstype)
+			stepstype = THEME:GetString("ScreenSelectMusicDD", stepstype)
 		end
 
 		local diff_text = ""

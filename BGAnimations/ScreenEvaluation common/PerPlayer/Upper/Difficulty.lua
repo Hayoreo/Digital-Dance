@@ -12,7 +12,7 @@ return Def.ActorFrame{
 			
 			local style = GAMESTATE:GetCurrentStyle():GetName()
 			if style == "versus" then style = "single" end
-			style =  THEME:GetString("ScreenSelectMusic", style:gsub("^%l", string.upper))
+			style =  THEME:GetString("ScreenSelectMusicDD", style:gsub("^%l", string.upper))
 
 			local steps = GAMESTATE:GetCurrentSteps(player)
 			-- GetDifficulty() returns a value from the Difficulty Enum such as "Difficulty_Hard"
