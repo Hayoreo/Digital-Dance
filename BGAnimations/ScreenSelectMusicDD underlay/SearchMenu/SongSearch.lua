@@ -18,13 +18,13 @@ SongSearchSSMDDMessageCommand = function(self)
 			end
 
 			if SongSearchAnswer ~= "" then
-				if not title:match(SongSearchAnswer:lower()) then
+				if not title:find(SongSearchAnswer:lower(), 1, true) then
 					match = false
 				end
 			end
 			
 			if ArtistSearchAnswer ~= "" then
-				if not artist:match(ArtistSearchAnswer:lower()) then
+				if not artist:find(ArtistSearchAnswer:lower(), 1, true) then
 					match = false
 				end
 			end
@@ -32,11 +32,11 @@ SongSearchSSMDDMessageCommand = function(self)
 			if ChartSearchAnswer ~= "" then
 				local chartMatch = false
 				for i, steps in ipairs(song:GetStepsByStepsType(steps_type)) do
-					local chartStr = steps:GetAuthorCredit().." "..steps:GetDescription()
+					local chartStr = steps:GetAuthorCredit():lower().." "..steps:GetDescription():lower()
 					-- the query "br xo fs" will match any song with at least one chart that
 					-- has "br", "xo" and "fs" in its AuthorCredit + Description
 					
-					if chartStr:lower():match(ChartSearchAnswer:lower()) then
+					if chartStr:find(ChartSearchAnswer:lower(), 1, true) then
 						chartMatch = true
 					end
 				end

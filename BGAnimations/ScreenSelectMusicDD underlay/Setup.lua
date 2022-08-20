@@ -364,13 +364,13 @@ local UpdatePrunedSongs = function()
 					end
 					
 					if SongSearchAnswer ~= "" and match then
-						if not title:match(SongSearchAnswer:lower()) then
+						if not title:find(SongSearchAnswer:lower(), 1, true) then
 							match = false
 						end
 					end
 					
 					if ArtistSearchAnswer ~= "" and match then
-						if not artist:match(ArtistSearchAnswer:lower()) then
+						if not artist:find(ArtistSearchAnswer:lower(), 1, true) then
 							match = false
 						end
 					end
@@ -378,8 +378,8 @@ local UpdatePrunedSongs = function()
 					if ChartSearchAnswer ~= "" and match then
 						local chartMatch = false
 						for i, steps in ipairs(song:GetStepsByStepsType(steps_type)) do
-							local chartStr = steps:GetAuthorCredit().." "..steps:GetDescription()
-							if chartStr:lower():match(ChartSearchAnswer:lower()) then
+							local chartStr = steps:GetAuthorCredit():lower().." "..steps:GetDescription():lower()
+							if chartStr:find(ChartSearchAnswer:lower(), 1, true) then
 								chartMatch = true
 							end
 						end
