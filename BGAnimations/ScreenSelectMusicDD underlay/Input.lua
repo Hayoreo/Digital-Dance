@@ -3,6 +3,8 @@ local args = ...
 local GroupWheel = args.GroupWheel
 local SongWheel = args.SongWheel
 local nsj = GAMESTATE:GetNumSidesJoined()
+local holdingCtrl
+local CtrlHeld = 0
 
 local ChartUpdater = LoadActor("./UpdateChart.lua")
 local screen = SCREENMAN:GetTopScreen()
@@ -195,9 +197,14 @@ local lastMenuUpPressTime = 0
 local lastMenuDownPressTime = 0
 
 t.Handler = function(event)
+	-- Input to open the song search menu. Keep track of both left and right Ctrl being held.
 	if event.type == "InputEventType_FirstPress" and event.type ~= "InputEventType_Release" then
 		if not IsSearchMenuVisible then
-			if event.DeviceInput.button == "DeviceButton_left ctrl" then
+			if event.DeviceInput.button == "DeviceButton_left ctrl" or event.DeviceInput.button == "DeviceButton_right ctrl" then
+				CtrlHeld = CtrlHeld + 1
+			end
+			
+			if CtrlHeld > 0 then
 				holdingCtrl = true
 			end
 			
@@ -214,6 +221,15 @@ t.Handler = function(event)
 		if event.DeviceInput.button == "DeviceButton_escape" and IsSearchMenuVisible then
 			SOUND:PlayOnce( THEME:GetPathS("ScreenPlayerOptions", "cancel all.ogg") )
 			MESSAGEMAN:Broadcast("ToggleSearchMenu")
+		end
+	end
+	
+	if event.type == "InputEventType_Release" then
+		if event.DeviceInput.button == "DeviceButton_left ctrl" or event.DeviceInput.button == "DeviceButton_right ctrl" then
+			CtrlHeld = CtrlHeld - 1
+		end
+		if CtrlHeld == 0 then
+			holdingCtrl = false
 		end
 	end
 	-- Allow Mouse Input here
