@@ -97,7 +97,6 @@ local FindOptionRowIndex = function(ScreenOptions, Name)
 		end
 	end
 end
-
 ------------------------------------------------------------
 
 -- SpeedModBMTs is a table that will contain the BitmapText actors within the SpeedMod OptionRow for available players
