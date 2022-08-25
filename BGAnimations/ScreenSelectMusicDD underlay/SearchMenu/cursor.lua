@@ -101,17 +101,14 @@ local InputHandler = function( event )
 			if event.DeviceInput.button == "DeviceButton_left shift" or event.DeviceInput.button == "DeviceButton_right shift" then
 				holdingShift = holdingShift + 1
 			end
+			
 			-- move cursor up/down
-			if event.GameButton == "MenuLeft" or event.GameButton == "MenuUp" then
-				if GAMESTATE:IsSideJoined(event.PlayerNumber) then
-					MESSAGEMAN:Broadcast("MoveSearchCursorUp")
-					updateAllText()
-				end
-			elseif event.GameButton == "MenuRight" or event.GameButton == "MenuDown" then
-				if GAMESTATE:IsSideJoined(event.PlayerNumber) then
-					MESSAGEMAN:Broadcast("MoveSearchCursorDown")
-					updateAllText()
-				end
+			if event.DeviceInput.button == "DeviceButton_pgup" or event.DeviceInput.button == "DeviceButton_up" or event.DeviceInput.button == "DeviceButton_left" or event.DeviceInput.button == "DeviceButton_mousewheel up" then
+				MESSAGEMAN:Broadcast("MoveSearchCursorUp")
+				updateAllText()
+			elseif event.DeviceInput.button == "DeviceButton_pgdn" or event.DeviceInput.button == "DeviceButton_down" or event.DeviceInput.button == "DeviceButton_right" or event.DeviceInput.button == "DeviceButton_mousewheel down" then
+				MESSAGEMAN:Broadcast("MoveSearchCursorDown")
+				updateAllText()
 			elseif event.DeviceInput.button == "DeviceButton_tab" then
 				MESSAGEMAN:Broadcast("MoveSearchCursorDown")
 				updateAllText()

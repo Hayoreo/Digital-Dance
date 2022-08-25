@@ -241,6 +241,14 @@ local t = Def.ActorFrame{
 				end
 			end,
 		},
+		
+		Def.BitmapText{
+			Font="Common Normal",
+			InitCommand=function(self)
+				self:settext(THEME:GetString("ScreenSelectMusicDD", "SearchMenuHelpText"))
+				self:xy(_screen.cx, _screen.h-120):zoom(1.1) 
+			end,
+		},
 
 	SongSearchSSMDDMessageCommand = function(self)
 	end,
