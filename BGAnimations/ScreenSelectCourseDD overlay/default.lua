@@ -83,7 +83,7 @@ local t = Def.ActorFrame {
 	end,
 	CodeMessageCommand=function(self, params)
 		-- I'm using Metrics-based code detection because the engine is already good at handling
-		-- simultaneous button presses (CancelSingleSong when ThreeKeyNavigation=1),
+		-- simultaneous button presses,
 		-- as well as long input patterns (Exit from EventMode) and I see no need to
 		-- reinvent that functionality for the Lua InputCallback that I'm using otherwise.
 		
@@ -91,12 +91,8 @@ local t = Def.ActorFrame {
 		if LeavingScreenSelectMusicDD == false then
 			if isSortMenuVisible == false then
 				if InputMenuHasFocus == false then
-					if params.Name == "CancelSingleSong" then
-						-- otherwise, run the function to cancel this single song choice
-						Input.CancelSongChoice()
-					end
 					if params.Name == "CloseCurrentFolder" or params.Name == "CloseCurrentFolder2" then
-						if Input.WheelWithFocus == CourseWheel then
+						if Input.WheelWithFocus == CourseWheel and GAMESTATE:IsPlayerEnabled(params.PlayerNumber) then
 							SOUND:PlayOnce( THEME:GetPathS("MusicWheel", "expand.ogg") )
 							MESSAGEMAN:Broadcast("CloseCurrentFolder")
 							CloseCurrentFolder()
