@@ -3,6 +3,7 @@ if GAMESTATE:IsCourseMode() or GAMESTATE:GetCurrentGame():GetName() ~= "dance" t
 
 local player = ...
 local BreakTime
+local IsMineCue = false
 
 --- A list of potential mods the player will have active.
 local mods = SL[ToEnumShortString(player)].ActiveModifiers
@@ -194,9 +195,15 @@ for ColumnIndex=1,NumColumns do
 				timeIndex = timeIndex + 1
 				flashDuration = nextTime.duration
 				if nextTime.noteType == 'M' then
+					IsMineCue = true
 					color = {1,0.4,0.4,0.12}
 				else
-					color = {0.3,1,1,0.12}
+					if IsMineCue then
+						color = {1.29,0,2.36,0.12}
+					else
+						color = {0.3,1,1,0.12}
+					end
+					IsMineCue = false
 				end
 			end
 
