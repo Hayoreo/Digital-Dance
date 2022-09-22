@@ -286,6 +286,7 @@ local GetMeasureInfo = function(Steps, measuresString)
 	local notesPerMeasure = {}
 	local measureCount = 1
 	local notesInMeasure = 0
+	local npsInMeasure = 0
 
 	-- NPS and Density Graph Variables
 	local NPSperMeasure = {}
@@ -315,7 +316,7 @@ local GetMeasureInfo = function(Steps, measuresString)
 			if durationOfMeasureInSeconds <= 0.02 then
 				NPSForThisMeasure = 0
 			else
-				NPSForThisMeasure = notesInMeasure/durationOfMeasureInSeconds
+				NPSForThisMeasure = npsInMeasure/durationOfMeasureInSeconds
 			end
 
 			NPSperMeasure[measureCount] = NPSForThisMeasure
@@ -327,18 +328,23 @@ local GetMeasureInfo = function(Steps, measuresString)
 
 			-- Reset iterative variables
 			notesInMeasure = 0
+			npsInMeasure = 0
 			measureCount = measureCount + 1
 		else
 			-- Is this a note? (Tap, Hold Head, Roll Head)
+			-- Count jumps/hands towards NPS (if enabled), but not towards the measure counter.
 			if ThemePrefs.Get("JumpsHandsNPS") then 
 				for i=1,#line do
 					if line:sub(i,i):match("[124]") then
-						notesInMeasure = notesInMeasure + 1
+						npsInMeasure = npsInMeasure + 1
 					end
 				end
-			else
-				if(line:match("[124]")) then
-					notesInMeasure = notesInMeasure + 1
+			end
+			
+			if(line:match("[124]")) then
+				notesInMeasure = notesInMeasure + 1
+				if not ThemePrefs.Get("JumpsHandsNPS") then 
+					npsInMeasure = npsInMeasure + 1
 				end
 			end
 		end
