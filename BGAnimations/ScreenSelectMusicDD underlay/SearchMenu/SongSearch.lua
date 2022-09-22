@@ -54,9 +54,11 @@ SongSearchSSMDDMessageCommand = function(self)
 			SongSearchWheelNeedsResetting = true
 			self:sleep(0.25):queuecommand("ReloadScreen")
 		else
+			MESSAGEMAN:Broadcast("UpdateSearchInput")
 			SM("No songs found!")
 		end
 	else
+		MESSAGEMAN:Broadcast("UpdateSearchInput")
 		SongSearchAnswer = ""
 		ArtistSearchAnswer = ""
 		ChartSearchAnswer = ""

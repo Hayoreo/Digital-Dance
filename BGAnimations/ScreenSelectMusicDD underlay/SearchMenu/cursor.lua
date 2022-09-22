@@ -5,6 +5,7 @@ local YPosition = SCREEN_CENTER_Y - 30
 local searchbox = 54
 
 local holdingShift = 0
+local EnterSearch = false
 
 SearchCursorIndex = 1
 SongSearchAnswer = ''
@@ -94,7 +95,7 @@ local updateAllText = function()
 end
 
 local InputHandler = function( event )
-	if not event then return end
+	if not event or EnterSearch then return end
 	
 	if IsSearchMenuVisible then
 		if event.type == "InputEventType_FirstPress" then
@@ -128,6 +129,7 @@ local InputHandler = function( event )
 					if IsMouseGucci(SCREEN_CENTER_X,YPosition + 90,searchbox, boxheight, "center") then
 						if i ~= SearchCursorIndex then
 							if SongSearchAnswer ~= "" or ArtistSearchAnswer ~= "" or ChartSearchAnswer ~= "" then
+								EnterSearch = true
 								SOUND:PlayOnce( THEME:GetPathS("Common", "start.ogg") )
 							else
 								SOUND:PlayOnce( THEME:GetPathS("ScreenPlayerOptions", "cancel all.ogg") )
@@ -141,6 +143,7 @@ local InputHandler = function( event )
 			if event.DeviceInput.button == "DeviceButton_enter" then
 				if SongSearchAnswer ~= "" or ArtistSearchAnswer ~= "" or ChartSearchAnswer ~= "" then
 					SOUND:PlayOnce( THEME:GetPathS("Common", "start.ogg") )
+					EnterSearch = true
 				else
 					SOUND:PlayOnce( THEME:GetPathS("ScreenPlayerOptions", "cancel all.ogg") )
 				end
@@ -220,6 +223,9 @@ local t = Def.ActorFrame{
 		end	
 	end,
 	InitCommand=function(self)
+	end,
+	UpdateSearchInputMessageCommand=function(self)
+		EnterSearch = false
 	end,
 	
 	Def.Quad{
