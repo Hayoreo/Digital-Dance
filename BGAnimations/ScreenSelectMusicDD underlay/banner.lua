@@ -1,86 +1,74 @@
 local SongOrCourse
-local CurrentSong
 local CurrentGroup
-local GroupJawn
-local GroupScrollBanners
 
 local t = Def.ActorFrame{
 	OnCommand=function(self)
 		if IsUsingWideScreen() then
 			self:zoom(0.7655)
-			self:xy(_screen.cx, WideScale(62,62.75))
+			if GAMESTATE:IsCourseMode() then
+				self:zoom(0.7655)
+				self:xy(164 - 5, WideScale(62,62.75))
+			else
+				self:xy(_screen.cx, WideScale(62,62.75))
+			end
 		else
 			self:zoom(0.75)
 			self:xy(_screen.cx - 166, 61)
 		end
 	end,
-
+	
+	-- Just keep the fallback banner loaded in.
 	Def.ActorFrame{
-		CurrentSongChangedMessageCommand=function(self) self:playcommand("Set") end,
-		CurrentCourseChangedMessageCommand=function(self) self:playcommand("Set") end,
-		CloseThisFolderHasFocusMessageCommand=function(self) self:playcommand("Set") end,
-		SwitchFocusToGroupsMessageCommand=function(self) self:playcommand("Set") end,
-		SwitchFocusToSongsMessageCommand=function(self) self:playcommand("Set") end,
-		GroupsHaveChangedMessageCommand=function(self) self:visible(true):playcommand("Set")
-		end,
-		SetCommand=function(self)
-			SongOrCourse = GAMESTATE:IsCourseMode() and GAMESTATE:GetCurrentCourse() or GAMESTATE:GetCurrentSong()
-			BannerOfGroup = BannerOfGroup
-			self:visible(true)
-		end,
-
 		LoadActor("default banner")..{
 			Name="FallbackBanner",
 			OnCommand=cmd(setsize,418,164)
 		},
 	},
-
+	
+	-- Song/Course Banner
 	Def.Sprite{
 		Name="LoadFromSong",
-		CurrentSongChangedMessageCommand=function(self) self:playcommand("Set") end,
-		CurrentCourseChangedMessageCommand=function(self) self:playcommand("Set") end,
-		CloseThisFolderHasFocusMessageCommand=function(self) self:visible(false) 
+		CurrentSongChangedMessageCommand=function(self) self:stoptweening():sleep(0.2):queuecommand("UpdateSongBanner") end,
+		CurrentCourseChangedMessageCommand=function(self) self:stoptweening():sleep(0.2):queuecommand("UpdateSongBanner") end,
+		SwitchFocusToSongsMessageCommand=function(self) self:stoptweening():sleep(0.2):queuecommand("UpdateSongBanner") end,
+		SwitchFocusToGroupsMessageCommand=function(self) self:visible(false) end,
+		CloseThisFolderHasFocusMessageCommand=function(self) self:stoptweening():sleep(0.25):queuecommand("UpdateVisibility") end,
+		UpdateVisibilityCommand=function(self)
+			self:visible(false)
 		end,
-		GroupsHaveChangedMessageCommand=function(self) self:visible(false) end,
-		SetCommand=function(self)
-		CurrentSong = GAMESTATE:GetCurrentSong()
+		UpdateSongBannerCommand=function(self)
+			SongOrCourse = GAMESTATE:IsCourseMode() and GAMESTATE:GetCurrentCourse() or GAMESTATE:GetCurrentSong()
+			CurrentGroup = NameOfGroup
 			if SongOrCourse and SongOrCourse:HasBanner() then
+				self:LoadFromSongBanner(SongOrCourse)
+				self:zoomto(418,164)
 				self:visible(true)
 			else
 				self:visible(false)
 			end
-			OnCommand=cmd(setsize,418,164)
-			self:LoadFromSongBanner(CurrentSong)
-			self:zoomto(418,164)
 		end
 	},
 	
+	-- Group Banner
 	Def.Banner{
 		Name="LoadFromGroup",
-		CurrentSongChangedMessageCommand=function(self) GroupScrollBanners = false GroupJawn = false self:playcommand("Set") end,
-		CurrentCourseChangedMessageCommand=function(self) GroupScrollBanners = false GroupJawn = false self:playcommand("Set") end,
-		GroupsHaveChangedMessageCommand=function(self) 
-			GroupScrollBanners = true
-			GroupJawn = false 
-			self
-			:playcommand("Set") 
-			:visible(true)
-			end,
-		CloseThisFolderHasFocusMessageCommand=function(self) BannerOfGroup = NameOfGroup GroupJawn = true self:visible(true):playcommand("Set") end,
-		SetCommand=function(self)
-			if BannerOfGroup == nil then
+		CurrentSongChangedMessageCommand=function(self) self:stoptweening():sleep(0.2):queuecommand("UpdateVisibility") end,
+		CurrentCourseChangedMessageCommand=function(self) self:visible(false) end,
+		SwitchFocusToSongsMessageCommand=function(self) CurrentGroup = NameOfGroup self:playcommand("UpdateGroupBanner") end,
+		SwitchFocusToGroupsMessageCommand=function(self)  CurrentGroup = NameOfGroup self:playcommand("UpdateGroupBanner") end,
+		GroupsHaveChangedMessageCommand=function(self) CurrentGroup = NameOfGroup self:stoptweening():sleep(0.2):queuecommand("UpdateGroupBanner") end,
+		CloseThisFolderHasFocusMessageCommand=function(self) self:stoptweening():sleep(0.2):queuecommand("UpdateGroupBanner") end,
+		UpdateVisibilityCommand=function(self)
+			self:visible(false)
+		end,
+		UpdateGroupBannerCommand=function(self)
+			if GetMainCourseSortPreference() ~= 1 then
 				self:visible(false)
-			elseif GroupJawn == true then
-				self:visible(true)
-				self:LoadFromSongGroup(BannerOfGroup)
-			elseif GroupScrollBanners == true then
-				self:visible(true)
-				self:LoadFromSongGroup(BannerOfGroup)
 			else
-				self:visible(false)
+				self:LoadFromSongGroup(CurrentGroup)
+				self:zoomto(418,164)
+				self:visible(true)
 			end
-			OnCommand=cmd(setsize,418,164)
-			self:zoomto(418,164)
 		end
 	},
 	
@@ -108,6 +96,7 @@ local t = Def.ActorFrame{
 	Def.ActorFrame{
 		CloseThisFolderHasFocusMessageCommand=function(self) self:visible(GetMainSortPreference() ~= 1):playcommand("Set") end,
 		CurrentSongChangedMessageCommand=function(self) self:visible(false) end,
+		CurrentCourseChangedMessageCommand=function(self) self:visible(false) end,
 		SwitchFocusToGroupsMessageCommand=function(self) self:visible(GetMainSortPreference() ~= 1):playcommand("Set") end,
 		GroupsHaveChangedMessageCommand=function(self) self:stoptweening():sleep(0.1):visible(GetMainSortPreference() ~= 1):queuecommand("Set") end,
 		

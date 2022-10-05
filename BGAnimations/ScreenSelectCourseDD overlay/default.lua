@@ -130,7 +130,7 @@ local t = Def.ActorFrame {
 	-- The highlight for the current song/group
 	LoadActor("./WheelHighlight.lua"),
 	-- Graphical Banner
-	LoadActor("./banner.lua"),
+	LoadActor("../ScreenSelectMusicDD underlay/banner.lua"),
 	LoadActor("../ScreenSelectMusicDD underlay/footer.lua"),
 	-- Song info like artist, bpm, and song length.
 	LoadActor("./courseDescription.lua"),
