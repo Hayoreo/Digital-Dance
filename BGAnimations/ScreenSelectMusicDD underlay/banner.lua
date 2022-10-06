@@ -28,6 +28,7 @@ local t = Def.ActorFrame{
 	-- Song/Course Banner
 	Def.Sprite{
 		Name="LoadFromSong",
+		InitCommand=function(self) self:playcommand("UpdateSongBanner") end,
 		CurrentSongChangedMessageCommand=function(self) self:stoptweening():sleep(0.2):queuecommand("UpdateSongBanner") end,
 		CurrentCourseChangedMessageCommand=function(self) self:stoptweening():sleep(0.2):queuecommand("UpdateSongBanner") end,
 		SwitchFocusToSongsMessageCommand=function(self) self:stoptweening():sleep(0.2):queuecommand("UpdateSongBanner") end,
@@ -46,15 +47,15 @@ local t = Def.ActorFrame{
 			else
 				self:visible(false)
 			end
-		end
+		end,
 	},
 	
 	-- Group Banner
 	Def.Banner{
 		Name="LoadFromGroup",
+		InitCommand=function(self) self:visible(false) end,
 		CurrentSongChangedMessageCommand=function(self) self:stoptweening():sleep(0.2):queuecommand("UpdateVisibility") end,
 		CurrentCourseChangedMessageCommand=function(self) self:visible(false) end,
-		SwitchFocusToSongsMessageCommand=function(self) CurrentGroup = NameOfGroup self:playcommand("UpdateGroupBanner") end,
 		SwitchFocusToGroupsMessageCommand=function(self)  CurrentGroup = NameOfGroup self:playcommand("UpdateGroupBanner") end,
 		GroupsHaveChangedMessageCommand=function(self) CurrentGroup = NameOfGroup self:stoptweening():sleep(0.2):queuecommand("UpdateGroupBanner") end,
 		CloseThisFolderHasFocusMessageCommand=function(self) self:stoptweening():sleep(0.2):queuecommand("UpdateGroupBanner") end,
@@ -69,7 +70,7 @@ local t = Def.ActorFrame{
 				self:zoomto(418,164)
 				self:visible(true)
 			end
-		end
+		end,
 	},
 	
 	-- the MusicRate Quad and text
@@ -94,11 +95,13 @@ local t = Def.ActorFrame{
 	
 	--- Add text on top of the fallback banner when Main Sort isn't set to Groups.
 	Def.ActorFrame{
-		CloseThisFolderHasFocusMessageCommand=function(self) self:visible(GetMainSortPreference() ~= 1):playcommand("Set") end,
-		CurrentSongChangedMessageCommand=function(self) self:visible(false) end,
-		CurrentCourseChangedMessageCommand=function(self) self:visible(false) end,
-		SwitchFocusToGroupsMessageCommand=function(self) self:visible(GetMainSortPreference() ~= 1):playcommand("Set") end,
-		GroupsHaveChangedMessageCommand=function(self) self:stoptweening():sleep(0.1):visible(GetMainSortPreference() ~= 1):queuecommand("Set") end,
+		InitCommand=function(self) self:visible(false) end,
+		CloseThisFolderHasFocusMessageCommand=function(self) self:stoptweening():sleep(0.2):queuecommand("Set"):queuecommand("UpdateVisibility") end,
+		CurrentSongChangedMessageCommand=function(self) self:stoptweening():sleep(0.2):visible(false) end,
+		CurrentCourseChangedMessageCommand=function(self) self:stoptweening():sleep(0.2):visible(false) end,
+		SwitchFocusToGroupsMessageCommand=function(self) self:stoptweening():sleep(0.2):visible(GetMainSortPreference() ~= 1):queuecommand("Set") end,
+		GroupsHaveChangedMessageCommand=function(self) self:stoptweening():sleep(0.2):visible(GetMainSortPreference() ~= 1):queuecommand("Set") end,
+		UpdateVisibilityCommand=function(self) self:visible(GetMainSortPreference() ~= 1) end,
 		
 		--- diffuse black bg to make more legible
 		Def.Quad{
@@ -106,7 +109,7 @@ local t = Def.ActorFrame{
 				self:diffuse( color("#000000") )
 				self:zoomto(418,80)
 				self:diffusealpha(0.5)
-			end
+			end,
 		},
 		
 		--- group "name" text
