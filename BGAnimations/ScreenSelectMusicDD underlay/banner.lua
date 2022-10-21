@@ -53,10 +53,18 @@ local t = Def.ActorFrame{
 	-- Group Banner
 	Def.Banner{
 		Name="LoadFromGroup",
-		InitCommand=function(self) self:visible(false) end,
+		InitCommand=function(self) 
+			if GetMainCourseSortPreference() ~= 1 then
+				self:visible(false)
+			else
+				self:LoadFromSongGroup(CurrentGroup)
+				self:zoomto(418,164)
+				self:visible(false)
+			end
+		end,
 		CurrentSongChangedMessageCommand=function(self) self:stoptweening():sleep(0.2):queuecommand("UpdateVisibility") end,
 		CurrentCourseChangedMessageCommand=function(self) self:visible(false) end,
-		SwitchFocusToGroupsMessageCommand=function(self)  CurrentGroup = NameOfGroup self:playcommand("UpdateGroupBanner") end,
+		SwitchFocusToGroupsMessageCommand=function(self) CurrentGroup = NameOfGroup self:playcommand("UpdateGroupBanner") end,
 		GroupsHaveChangedMessageCommand=function(self) CurrentGroup = NameOfGroup self:stoptweening():sleep(0.2):queuecommand("UpdateGroupBanner") end,
 		CloseThisFolderHasFocusMessageCommand=function(self) self:stoptweening():sleep(0.2):queuecommand("UpdateGroupBanner") end,
 		UpdateVisibilityCommand=function(self)
