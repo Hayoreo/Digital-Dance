@@ -39,12 +39,12 @@ local af = Def.ActorFrame{
 		self:xy(_screen.cx - (IsUsingWideScreen() and 0 or 165), _screen.cy - 92)
 	end,
 
-	CurrentSongChangedMessageCommand=function(self)    self:playcommand("Set") end,
-	CurrentCourseChangedMessageCommand=function(self)  self:playcommand("Set") end,
-	CurrentStepsP1ChangedMessageCommand=function(self) self:playcommand("Set") end,
-	CurrentTrailP1ChangedMessageCommand=function(self) self:playcommand("Set") end,
-	CurrentStepsP2ChangedMessageCommand=function(self) self:playcommand("Set") end,
-	CurrentTrailP2ChangedMessageCommand=function(self) self:playcommand("Set") end,
+	CurrentSongChangedMessageCommand=function(self)    self:stoptweening():sleep(0.2):queuecommand("Set") end,
+	CurrentCourseChangedMessageCommand=function(self)  self:stoptweening():sleep(0.2):queuecommand("Set") end,
+	CurrentStepsP1ChangedMessageCommand=function(self) self:stoptweening():sleep(0.2):queuecommand("Set") end,
+	CurrentTrailP1ChangedMessageCommand=function(self) self:stoptweening():sleep(0.2):queuecommand("Set") end,
+	CurrentStepsP2ChangedMessageCommand=function(self) self:stoptweening():sleep(0.2):queuecommand("Set") end,
+	CurrentTrailP2ChangedMessageCommand=function(self) self:stoptweening():sleep(0.2):queuecommand("Set") end,
 }
 
 -- background Quad for Artist, BPM, and Song Length
@@ -63,9 +63,9 @@ af[#af+1] = Def.ActorFrame{
 	--- CDTitle
 	Def.Sprite{
 		Name="CDTitle",
-		CurrentSongChangedMessageCommand=function(self) self:playcommand("Set") end,
-		CloseThisFolderHasFocusMessageCommand=function(self) self:visible(false) end,
-		GroupsHaveChangedMessageCommand=function(self) self:visible(false) end,
+		CurrentSongChangedMessageCommand=function(self) self:stoptweening():sleep(0.2):queuecommand("SetCD") end,
+		CloseThisFolderHasFocusMessageCommand=function(self) self:stoptweening():sleep(0.2):queuecommand("SetCD") end,
+		GroupsHaveChangedMessageCommand=function(self) self:stoptweening():sleep(0.2):queuecommand("SetCD") end,
 		InitCommand=function(self) 
 			local Height = self:GetHeight()
 			local Width = self:GetWidth()
@@ -78,17 +78,9 @@ af[#af+1] = Def.ActorFrame{
 			self:diffusealpha(0)
 		end,
 		OnCommand=function(self) 
-			self:decelerate(0.4)
 			self:diffusealpha(0.9) 
 		end,
-		SetCommand=function(self)
-			self:stoptweening()
-			local Height = self:GetHeight()
-			local Width = self:GetWidth()
-			local dim1, dim2=math.max(Width, Height), math.min(Width, Height)
-			local ratio=math.max(dim1/dim2, 2)
-			local toScale = Width > Height and Width or Height	
-			
+		SetCDCommand=function(self)
 			if GAMESTATE:GetCurrentSong() ~= nil then
 				if GAMESTATE:GetCurrentSong():HasCDTitle() == true then
 					CDTitlePath = GAMESTATE:GetCurrentSong():GetCDTitlePath()
@@ -97,8 +89,14 @@ af[#af+1] = Def.ActorFrame{
 					self:Load(blank)
 				end
 			end
+			local Height = self:GetHeight()
+			local Width = self:GetWidth()
+			local dim1, dim2=math.max(Width, Height), math.min(Width, Height)
+			local ratio=math.max(dim1/dim2, 2)
+			local toScale = Width > Height and Width or Height
+			
 			self:zoom(22/toScale * ratio)
-			self:visible(true)
+			self:visible(GAMESTATE:GetCurrentSong() ~= nil and true or false)
 		end
 	},
 	
