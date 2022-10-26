@@ -35,7 +35,7 @@ local MusicWheel, SelectedType
 local _w = IsUsingWideScreen() and 320 or 310
 
 local af = Def.ActorFrame{
-	OnCommand=function(self)
+	InitCommand=function(self)
 		self:xy(_screen.cx - (IsUsingWideScreen() and 0 or 165), _screen.cy - 92)
 	end,
 
