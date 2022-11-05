@@ -9,6 +9,7 @@ local GlobalOffsetSeconds = PREFSMAN:GetPreference("GlobalOffsetSeconds")
 local GetStepsToDisplay = LoadActor("../StepsDisplayList/StepsToDisplay.lua")
 
 local RowIndex = 1
+local Initialize = false
 
 if GAMESTATE:IsCourseMode() then
 return Def.ActorFrame { }
@@ -18,9 +19,7 @@ return Def.Sprite{
 	Texture=THEME:GetPathB("ScreenSelectMusicDD","underlay/PerPlayer/highlight.png"),
 	Name="Cursor"..pn,
 	InitCommand=function(self)
-	
-		self:visible( false ):halign( p )
-
+		self:visible(GAMESTATE:IsHumanPlayer(player)):halign( p )
 		self:zoom(IsUsingWideScreen() and WideScale(0.8,1) or 1)
 		-- diffuse with white to make it less #OwMyEyes
 		local color = PlayerColor(player)
@@ -30,7 +29,6 @@ return Def.Sprite{
 		color[3] = 0.8 * color[3] + 0.2
 		self:diffuse(color)
 		
-
 		if player == PLAYER_1 then
 			self:x( IsUsingWideScreen() and _screen.cx-330 or 0)
 			self:y( IsUsingWideScreen() and WideScale(303,305.75) or 194)
@@ -49,25 +47,22 @@ return Def.Sprite{
 					self:align(-0.44,0.48)
 				end
 		end
-
-		self:effectperiod(1):effectoffset( -10 * GlobalOffsetSeconds)
-
-		if GAMESTATE:IsHumanPlayer(player) then
-			self:playcommand( "Appear" .. pn)
+	end,
+	CurrentSongChangedMessageCommand=function(self)
+		if not Initialize then 
+			self:queuecommand("Set")
+		else  
+			self:stoptweening():sleep(0.2):queuecommand("Set") 
 		end
 	end,
-
-	OnCommand=cmd(queuecommand,"Set"),
-	CurrentSongChangedMessageCommand=cmd(queuecommand,"Set"),
-	CurrentCourseChangedMessageCommand=cmd(queuecommand,"Set"),
-
-	CurrentStepsP1ChangedMessageCommand=cmd(queuecommand,"Set"),
-	CurrentTrailP1ChangedMessageCommand=cmd(queuecommand,"Set"),
-	CurrentStepsP2ChangedMessageCommand=cmd(queuecommand,"Set"),
-	CurrentTrailP2ChangedMessageCommand=cmd(queuecommand,"Set"),
+	CurrentCourseChangedMessageCommand=function(self) 	self:stoptweening():sleep(0.2):queuecommand("Set") end,
+	CurrentStepsP1ChangedMessageCommand=function(self) 	self:stoptweening():sleep(0.2):queuecommand("Set") end,
+	CurrentTrailP1ChangedMessageCommand=function(self) 	self:stoptweening():sleep(0.2):queuecommand("Set") end,
+	CurrentStepsP2ChangedMessageCommand=function(self) 	self:stoptweening():sleep(0.2):queuecommand("Set") end,
+	CurrentTrailP2ChangedMessageCommand=function(self) 	self:stoptweening():sleep(0.2):queuecommand("Set") end,
 	
-	CloseThisFolderHasFocusMessageCommand=cmd(queuecommand,"Dissappear"),
-
+	CloseThisFolderHasFocusMessageCommand=function(self) self:stoptweening():sleep(0.2):queuecommand("Dissappear") end,
+	
 	SetCommand=function(self)
 		local song = (GAMESTATE:IsCourseMode() and GAMESTATE:GetCurrentCourse()) or GAMESTATE:GetCurrentSong()
 		if GAMESTATE:IsHumanPlayer(player) then
@@ -86,6 +81,7 @@ return Def.Sprite{
 				self:playcommand("StepsHaveChanged", {Steps=StepsToDisplay, Player=player})
 			end
 		end
+		Initialize = true
 	end,
 
 
@@ -135,7 +131,7 @@ return Def.Sprite{
 			elseif RowIndex < 1 then RowIndex = 1
 			end
 
-			-- update cursor y position
+			-- update cursor x position
 			local sdl = self:GetParent():GetParent():GetChild("StepsDisplayList")
 			if sdl then
 				local grid = sdl:GetChild("Grid")

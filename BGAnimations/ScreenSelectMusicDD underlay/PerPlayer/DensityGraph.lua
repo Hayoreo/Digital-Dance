@@ -62,41 +62,25 @@ local af = Def.ActorFrame{
 	end,
 }
 
--- Background quad for the density graph
-af[#af+1] = Def.Quad{
-	InitCommand=function(self)
-		self:diffuse(color("#1e282f")):zoomto(width, height)
-	end,
-	CloseThisFolderHasFocusMessageCommand=function(self)
-		self:stoptweening()
-		self:visible(false)
-	end,
-	GroupsHaveFocusMessageCommand=function(self)
-		self:stoptweening()
-		self:visible(false)
-	end,
-	ShowBGQuadMessageCommand=function(self)
-		self:visible(true)
-	end,
-}
-
 af[#af+1] = Def.ActorFrame{
 	Name="ChartParser",
 	OnCommand=function(self)
 		self:queuecommand('ShowDensityGraph')
 	end,
 	["CurrentSteps"..pn.."ChangedMessageCommand"]=function(self)
-		self:queuecommand('ShowDensityGraph')
+		self:stoptweening():sleep(0.2):queuecommand('ShowDensityGraph')
 	end,
 	CloseThisFolderHasFocusMessageCommand=function(self)
 		self:stoptweening()
-		self:queuecommand('Hide')
+		self:stoptweening():sleep(0.2):queuecommand('Hide')
 	end,
 	GroupsHaveFocusMessageCommand=function(self)
 		self:stoptweening()
-		self:queuecommand('Hide')
+		self:stoptweening():sleep(0.2):queuecommand('Hide')
 	end,
 	ShowDensityGraphCommand=function(self)
+		-- I don't like how it looks when the bg quad dissappears while scrolling so gonna not do that for now.
+		--self:GetChild("DensityQuad"):visible(false)
 		self:GetChild("DensityGraph"):visible(false)
 		self:GetChild("NPS"):settext("Peak NPS: ")
 		self:GetChild("NPS"):visible(false)
@@ -104,8 +88,9 @@ af[#af+1] = Def.ActorFrame{
 		self:GetChild("Breakdown"):visible(false)
 		self:GetChild("Total Measures"):GetChild("Total Measures Text"):settext("")
 		self:GetChild("Total Measures"):visible(false)
+		
 		self:stoptweening()
-		self:sleep(0.4)
+		self:sleep(0.2)
 		self:queuecommand("ParseChart")
 	end,
 	ParseChartCommand=function(self)
@@ -119,7 +104,7 @@ af[#af+1] = Def.ActorFrame{
 	UnhideCommand=function(self)
 		if GAMESTATE:GetCurrentSteps(player) then
 			MESSAGEMAN:Broadcast(pn.."ChartParsed")
-			MESSAGEMAN:Broadcast("ShowBGQuad")
+			self:GetChild("DensityQuad"):visible(true)
 			self:GetChild("DensityGraph"):visible(true)
 			self:GetChild("NPS"):visible(true)
 			self:GetChild("Breakdown"):visible(true)
@@ -133,10 +118,19 @@ af[#af+1] = Def.ActorFrame{
 		self:GetChild("NPS"):visible(false)
 		self:GetChild("Breakdown"):visible(false)
 		self:GetChild("Total Measures"):visible(false)
+		self:GetChild("DensityQuad"):visible(false)
 	end,
 }
 
 local af2 = af[#af]
+
+-- Background quad for the density graph
+af2[#af2+1] = Def.Quad{
+	Name="DensityQuad",
+	InitCommand=function(self)
+		self:diffuse(color("#1e282f")):zoomto(width, height)
+	end,
+}
 
 -- The Density Graph itself. It already has a "RedrawCommand".
 af2[#af2+1] = NPS_Histogram(player, width, height)..{

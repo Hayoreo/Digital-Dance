@@ -12,10 +12,10 @@ return Def.ActorFrame{
 	Name="StepArtistAF_" .. pn,
 
 	-- song and course changes
-	OnCommand=function(self) self:queuecommand("Reset") end,
-	["CurrentSteps"..pn.."ChangedMessageCommand"]=function(self) self:queuecommand("Reset") end,
-	CurrentSongChangedMessageCommand=function(self) self:queuecommand("Reset") end,
-	CurrentCourseChangedMessageCommand=function(self) self:queuecommand("Reset") end,
+	InitCommand=function(self) self:playcommand("Reset") end,
+	["CurrentSteps"..pn.."ChangedMessageCommand"]=function(self)self:stoptweening():sleep(0.2):queuecommand("Reset") end,
+	CurrentSongChangedMessageCommand=function(self) self:stoptweening():sleep(0.2):queuecommand("Reset") end,
+	CurrentCourseChangedMessageCommand=function(self) self:stoptweening():sleep(0.2):queuecommand("Reset") end,
 
 	PlayerJoinedMessageCommand=function(self, params)
 		if params.Player == player then
@@ -33,7 +33,7 @@ return Def.ActorFrame{
 
 	-- depending on the value of pn, this will either become
 	-- an AppearP1Command or an AppearP2Command when the screen initializes
-	["Appear"..pn.."Command"]=function(self) self:visible(true):ease(0.5, 275):addy(scale(p,0,1,-1,1) * 30) end,
+	["Appear"..pn.."Command"]=function(self) self:visible(true):addy(scale(p,0,1,-1,1) * 30) end,
 
 	InitCommand=function(self)
 		self:visible( false ):halign( p )
@@ -62,7 +62,7 @@ return Def.ActorFrame{
 		end
 
 		if GAMESTATE:IsHumanPlayer(player) then
-			self:queuecommand("Appear" .. pn)
+			self:playcommand("Appear" .. pn)
 		end
 	end,
 
@@ -78,6 +78,7 @@ return Def.ActorFrame{
 					self:addx(4)
 				end
 			end
+			self:playcommand("Reset")
 		end,
 		ResetCommand=function(self)
 			local StepsOrTrail = GAMESTATE:IsCourseMode() and GAMESTATE:GetCurrentTrail(player) or GAMESTATE:GetCurrentSteps(player)

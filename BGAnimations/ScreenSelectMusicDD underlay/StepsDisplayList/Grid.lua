@@ -25,12 +25,18 @@ end
 
 local t = Def.ActorFrame{
 	Name="StepsDisplayList",
-	InitCommand=function(self) self:draworder(0):vertalign(top):xy(IsUsingWideScreen() and _screen.cx-294 or _screen.cx-219.5,IsUsingWideScreen() and _screen.cy - 168 or _screen.cy - 355.8):zoom(IsUsingWideScreen() and WideScale(0.7,1) or 1) end,
+	InitCommand=function(self) 
+	self:
+	draworder(0):
+	vertalign(top):
+	xy(IsUsingWideScreen() and _screen.cx-294 or _screen.cx-219.5,IsUsingWideScreen() and _screen.cy - 168 or _screen.cy - 355.8):zoom(IsUsingWideScreen() and WideScale(0.7,1) or 1):
+	playcommand("RedrawStepsDisplay")
+	end,
 
 	OnCommand=function(self)                           self:queuecommand("RedrawStepsDisplay") end,
-	CurrentSongChangedMessageCommand=function(self)    self:queuecommand("RedrawStepsDisplay") end,
-	CurrentStepsP1ChangedMessageCommand=function(self) self:queuecommand("RedrawStepsDisplay") end,
-	CurrentStepsP2ChangedMessageCommand=function(self) self:queuecommand("RedrawStepsDisplay") end,
+	CurrentSongChangedMessageCommand=function(self)    self:stoptweening():sleep(0.2):queuecommand("RedrawStepsDisplay") end,
+	CurrentStepsP1ChangedMessageCommand=function(self) self:stoptweening():sleep(0.2):queuecommand("RedrawStepsDisplay") end,
+	CurrentStepsP2ChangedMessageCommand=function(self) self:stoptweening():sleep(0.2):queuecommand("RedrawStepsDisplay") end,
 
 
 	
