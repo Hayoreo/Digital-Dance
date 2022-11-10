@@ -34,7 +34,7 @@ return Def.ActorFrame{
 			local steps = GAMESTATE:GetCurrentSteps(player)
 			local meter = steps:GetMeter()
 
-			if meter < 40 then
+			if meter < 100 then
 				self:settext(meter)
 			else
 				self:settext("M")

@@ -38,7 +38,7 @@ end
 ---------- Only do these if the player is currently active or else things will get messy. ----------
 if P1 then
 -- This is to prevent meme rated charts from breaking the average significantly and give a slight rating boost for rate mods.
-	if PlayerOneDifficulty > 40 then
+	if PlayerOneDifficulty > 50 then
 		PlayerOneDifficulty = 10
 		if MusicRate == 1 then
 			PlayerOneREALDifficulty = PlayerOneDifficulty
@@ -67,7 +67,7 @@ end
 
 if P2 then
 -- This is to prevent meme rated charts from breaking the average significantly and give a slight rating boost for rate mods.
-	if PlayerTwoDifficulty > 40 then
+	if PlayerTwoDifficulty > 50 then
 		PlayerTwoDifficulty = 10
 		if MusicRate == 1 then
 			PlayerTwoREALDifficulty = PlayerTwoDifficulty

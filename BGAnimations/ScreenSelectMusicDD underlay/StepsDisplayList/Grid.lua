@@ -141,7 +141,7 @@ for RowNumber=1,num_rows do
 		SetCommand=function(self, params)
 			-- diffuse and set each chart's difficulty meter
 			self:diffuse( Color.Black)
-			if params.Meter < 40 then
+			if params.Meter < 100 then
 				self:settext(params.Meter)
 			else
 				self:settext("M")
@@ -170,7 +170,7 @@ for RowNumber=1,num_rows do
 		SetCommand=function(self, params)
 			-- diffuse and set each chart's difficulty meter
 			self:diffuse( Color.Black)
-			if params.Meter < 40 then
+			if params.Meter < 100 then
 				self:settext(params.Meter)
 			else
 				self:settext("M")
@@ -199,7 +199,7 @@ for RowNumber=1,num_rows do
 		SetCommand=function(self, params)
 			-- diffuse and set each chart's difficulty meter
 			self:diffuse( Color.Black)
-			if params.Meter < 40 then
+			if params.Meter < 100 then
 				self:settext(params.Meter)
 			else
 				self:settext("M")
@@ -228,7 +228,7 @@ for RowNumber=1,num_rows do
 		SetCommand=function(self, params)
 			-- diffuse and set each chart's difficulty meter
 			self:diffuse( Color.Black)
-			if params.Meter < 40 then
+			if params.Meter < 100 then
 				self:settext(params.Meter)
 			else
 				self:settext("M")
@@ -258,7 +258,7 @@ for RowNumber=1,num_rows do
 		SetCommand=function(self, params)
 			-- diffuse and set each chart's difficulty meter
 			self:diffuse( DifficultyColor(params.Difficulty) )
-			if params.Meter < 40 then
+			if params.Meter < 100 then
 				self:settext(params.Meter)
 			else
 				self:settext("M")
@@ -290,7 +290,7 @@ for RowNumber=1,num_rows do
 		SetCommand=function(self, params)
 			-- diffuse and set each chart's difficulty meter
 			self:diffuse( Color.Black)
-			if params.Meter < 40 then
+			if params.Meter < 100 then
 				self:settext(params.Meter)
 			else
 				self:settext("M")
@@ -320,7 +320,7 @@ for RowNumber=1,num_rows do
 		SetCommand=function(self, params)
 			-- diffuse and set each chart's difficulty meter
 			self:diffuse( Color.Black)
-			if params.Meter < 40 then
+			if params.Meter < 100 then
 				self:settext(params.Meter)
 			else
 				self:settext("M")
@@ -350,7 +350,7 @@ for RowNumber=1,num_rows do
 		SetCommand=function(self, params)
 			-- diffuse and set each chart's difficulty meter
 			self:diffuse( Color.Black)
-			if params.Meter < 40 then
+			if params.Meter < 100 then
 				self:settext(params.Meter)
 			else
 				self:settext("M")
@@ -380,7 +380,7 @@ for RowNumber=1,num_rows do
 		SetCommand=function(self, params)
 			-- diffuse and set each chart's difficulty meter
 			self:diffuse( Color.Black)
-			if params.Meter < 40 then
+			if params.Meter < 100 then
 				self:settext(params.Meter)
 			else
 				self:settext("M")
@@ -411,7 +411,7 @@ for RowNumber=1,num_rows do
 		SetCommand=function(self, params)
 			-- diffuse and set each chart's difficulty meter
 			self:diffuse( DifficultyColor(params.Difficulty) )
-			if params.Meter < 40 then
+			if params.Meter < 100 then
 				self:settext(params.Meter)
 			else
 				self:settext("M")

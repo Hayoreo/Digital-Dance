@@ -100,7 +100,7 @@ af[#af+1] = LoadFont("Common Bold")..{
 	DrawStageCommand=function(self)
 		if playerStats and meter then
 			self:diffuse(DifficultyColor(difficulty))
-			if meter < 40 then
+			if meter < 100 then
 				self:settext(meter)
 			else
 				self:settext("M")

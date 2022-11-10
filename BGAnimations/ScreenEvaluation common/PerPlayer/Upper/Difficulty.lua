@@ -57,7 +57,7 @@ return Def.ActorFrame{
 			end
 
 			if meter then 
-				if meter < 40 then
+				if meter < 100 then
 					self:settext(meter)
 				else
 					self:settext("M")
