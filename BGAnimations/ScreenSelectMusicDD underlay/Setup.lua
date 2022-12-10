@@ -341,7 +341,8 @@ local UpdatePrunedSongs = function()
 				if GetAutogenFilter() == 'Yes' then
 					local has_non_autogen = false
 					for steps in ivalues(song:GetStepsByStepsType(steps_type)) do
-						if not steps:GetDescription():match('^AUTO') then
+						local is_auto = steps:GetDescription():match('^AUTO') or steps:GetAuthorCredit():match('^AUTO')
+						if not is_auto then
 							has_non_autogen = true
 							break
 						end
