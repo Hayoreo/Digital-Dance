@@ -36,6 +36,7 @@ local t = Def.ActorFrame{
 		local DefaultLowerLength = 0
 		local DefaultUpperLength = 0
 		local DefaultGroovestats = 'No'
+		local DefaultAutogen = 'No'
 
 		if 
 		SongSearchWheelNeedsResetting == true or
@@ -47,7 +48,9 @@ local t = Def.ActorFrame{
 		GetUpperBPMFilter() ~= DefaultUpperBPM or
 		GetLowerLengthFilter() ~= DefaultLowerLength or
 		GetUpperLengthFilter() ~= DefaultUpperLength or
-		GetGroovestatsFilter() ~= DefaultGroovestats then
+		GetGroovestatsFilter() ~= DefaultGroovestats or
+		GetAutogenFilter() ~= DefaultAutogen
+		then
 			SetMainCourseSortPreference(DefaultMainCourseSort)
 			SetSubSortPreference(DefaultSubSort)
 			SetLowerDifficultyFilter(DefaultLowerDifficulty)
@@ -57,6 +60,7 @@ local t = Def.ActorFrame{
 			SetLowerLengthFilter(DefaultLowerLength)
 			SetUpperLengthFilter(DefaultUpperLength)
 			SetGroovestatsFilter(DefaultGroovestats)
+			SetAutogenFilter(DefaultAutogen)
 			SongSearchWheelNeedsResetting = false
 			SortMenuNeedsUpdating = false
 			MESSAGEMAN:Broadcast("ReloadSSCDD")

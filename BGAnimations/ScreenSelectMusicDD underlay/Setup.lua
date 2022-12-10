@@ -337,6 +337,20 @@ local UpdatePrunedSongs = function()
 					end
 				end
 
+				-- Filter for Autogen
+				if GetAutogenFilter() == 'Yes' then
+					local has_non_autogen = false
+					for steps in ivalues(song:GetStepsByStepsType(steps_type)) do
+						if not steps:GetDescription():match('^AUTO') then
+							has_non_autogen = true
+							break
+						end
+					end
+					if not has_non_autogen then
+						passesFilters = false
+					end
+				end
+
 				---- Filter for Difficulty
 				if GetLowerDifficultyFilter() ~= 0 or GetUpperDifficultyFilter() ~= 0 then
 					local hasPassingDifficulty = false

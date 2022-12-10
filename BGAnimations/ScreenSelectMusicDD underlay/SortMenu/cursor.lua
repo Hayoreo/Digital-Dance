@@ -144,16 +144,21 @@ local t = Def.ActorFrame{
 			elseif DDSortMenuCursorPosition == 9 then
 				self:zoomx(65)
 				self:xy(SCREEN_CENTER_X + 122,SCREEN_CENTER_Y - 10)
+			-- Autogen filter/toggle
+			elseif DDSortMenuCursorPosition == 10 then
+				self:zoomx(65)
+				self:xy(SCREEN_CENTER_X + 122,SCREEN_CENTER_Y + 15)
+				
 			-------------- Bottom half of the sort menu --------------
 			-- Reset sorts
-			elseif DDSortMenuCursorPosition == 10 then
-				self:zoomx(170)
-				self:xy(SCREEN_CENTER_X + 85,SCREEN_CENTER_Y + 30)
-				
-			-- Switch between Song/Course select
 			elseif DDSortMenuCursorPosition == 11 then
 				self:zoomx(170)
 				self:xy(SCREEN_CENTER_X + 85,SCREEN_CENTER_Y + 55)
+				
+			-- Switch between Song/Course select
+			elseif DDSortMenuCursorPosition == 12 then
+				self:zoomx(170)
+				self:xy(SCREEN_CENTER_X + 85,SCREEN_CENTER_Y + 80)
 				
 			-- Mark/Unmark as favorite (add this back later)
 			--[[elseif DDSortMenuCursorPosition == 12 then
@@ -161,17 +166,20 @@ local t = Def.ActorFrame{
 				self:xy(SCREEN_CENTER_X + 80,SCREEN_CENTER_Y + 80)--]]
 				
 			-- Song Search or Switch from single/double
-			elseif DDSortMenuCursorPosition == 12 then
-				self:zoomx(170)
-				self:xy(SCREEN_CENTER_X + 85,SCREEN_CENTER_Y + 80)
-			-- Switch from single/double or GS Leaderboards or test input
 			elseif DDSortMenuCursorPosition == 13 then
 				self:zoomx(170)
 				self:xy(SCREEN_CENTER_X + 85,SCREEN_CENTER_Y + 105)
-			-- test input
+			-- Switch from single/double or GS Leaderboards or test input
 			elseif DDSortMenuCursorPosition == 14 then
 				self:zoomx(170)
 				self:xy(SCREEN_CENTER_X + 85,SCREEN_CENTER_Y + 130)
+			-- test input
+			elseif DDSortMenuCursorPosition == 15 then
+				self:zoomx(170)
+				self:xy(SCREEN_CENTER_X + 85,SCREEN_CENTER_Y + 155)
+			elseif DDSortMenuCursorPosition == 16 then
+				self:zoomx(170)
+				self:xy(SCREEN_CENTER_X + 85,SCREEN_CENTER_Y + 180)
 			end
 			self:queuecommand("FadeOut")
 			

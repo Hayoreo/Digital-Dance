@@ -88,10 +88,10 @@ local SortMenuCursorLogic = function()
 	if DDSortMenuCursorPosition < 9 then
 		MESSAGEMAN:Broadcast("UpdateCursorColor")
 	end
-	-- GS pack filter/toggle
-	if DDSortMenuCursorPosition == 9 then
+	-- GS/Autogen filter/toggle
+	if DDSortMenuCursorPosition == 9 or DDSortMenuCursorPosition == 10 then
 		SortMenuNeedsUpdating = true
-	end	
+	end
 	
 	-- Favorites filter/toggle
 	--[[if DDSortMenuCursorPosition == 10 then
@@ -99,15 +99,15 @@ local SortMenuCursorLogic = function()
 	end	--]]
 	-- 
 	-- Reset the sorts/prefrences
-	if DDSortMenuCursorPosition == 10 then
+	if DDSortMenuCursorPosition == 11 then
 		MESSAGEMAN:Broadcast("DDResetSortsFilters")
 	end
 	-- Switch between Song/Course Select
-	if DDSortMenuCursorPosition == 11 then
+	if DDSortMenuCursorPosition == 12 then
 		MESSAGEMAN:Broadcast("SwitchSongCourseSelect")
 	end
 	-- Everything from here on is dynamic so it's not always the same for each position.
-	if DDSortMenuCursorPosition == 12 then
+	if DDSortMenuCursorPosition == 13 then
 		if GAMESTATE:GetCurrentStyle():GetStyleType() ~= 'StyleType_TwoPlayersTwoSides' then
 			MESSAGEMAN:Broadcast("DDSwitchStyles")
 		elseif IsServiceAllowed(SL.GrooveStats.Leaderboard) then
@@ -130,7 +130,7 @@ local SortMenuCursorLogic = function()
 			MESSAGEMAN:Broadcast("ToggleSortMenu")
 		end
 	end
-	if DDSortMenuCursorPosition == 13 then
+	if DDSortMenuCursorPosition == 14 then
 		if GAMESTATE:GetCurrentStyle():GetStyleType() ~= 'StyleType_TwoPlayersTwoSides' and IsServiceAllowed(SL.GrooveStats.Leaderboard) then
 				local curSong=GAMESTATE:GetCurrentSong()
 				if not curSong then
@@ -172,7 +172,7 @@ local SortMenuCursorLogic = function()
 		end
 		
 	end
-	if DDSortMenuCursorPosition == 14 then
+	if DDSortMenuCursorPosition == 15 then
 		isSortMenuVisible = false
 		InputMenuHasFocus = true
 		MESSAGEMAN:Broadcast("ShowTestInput")
@@ -564,7 +564,7 @@ t.Handler = function(event)
 						
 						-- The bottom half of the sort menu
 						if not IsSortMenuInputToggled then
-							for i=1, GetMaxCursorPosition() - 9 do
+							for i=1, GetMaxCursorPosition() - 10 do
 								if IsMouseGucci(_screen.cx + 85, (_screen.cy + 5) + (i*25), 170, 20, "right") then
 									MESSAGEMAN:Broadcast("MoveCursorMouseClick", {TargetPosition = i+9})
 									SOUND:PlayOnce( THEME:GetPathS("common", "start.ogg") )

@@ -70,6 +70,32 @@ local function GetGroovestatsFilter()
 	return value
 end
 
+----- Groovestats filter settings ----- 
+local function GetAutogenFilter()
+	local value
+	if GAMESTATE:IsPlayerEnabled(PLAYER_1) then
+		value = DDStats.GetStat(PLAYER_1, 'AutogenFilter')
+	else
+		value = DDStats.GetStat(PLAYER_2, 'AutogenFilter')
+	end
+
+	if value == nil then
+		value = 'No'
+		NoButtonColor = SelectedButtonColor
+		YesButtonColor = DimmedButtonColor
+	end
+	
+	if value == "No" then
+		NoButtonColor = SelectedButtonColor
+		YesButtonColor = DimmedButtonColor
+	elseif value == "Yes" then
+		NoButtonColor = DimmedButtonColor
+		YesButtonColor = SelectedButtonColor
+	end
+
+	return value
+end
+
 local t = Def.ActorFrame{
 	Name="SortMenu",
 	InitCommand=function(self)
@@ -84,6 +110,12 @@ local t = Def.ActorFrame{
 			MESSAGEMAN:Broadcast('GroovestatsFilterYes')
 		else
 			MESSAGEMAN:Broadcast('GroovestatsFilterNo')
+		end
+		
+		if GetAutogenFilter() == 'Yes' then
+			MESSAGEMAN:Broadcast('AutogenFilterYes')
+		else
+			MESSAGEMAN:Broadcast('AutogenFilterNo')
 		end
 	end,
 
@@ -110,6 +142,15 @@ local t = Def.ActorFrame{
 			else
 				SetGroovestatsFilter('No')
 				MESSAGEMAN:Broadcast('GroovestatsFilterNo')
+			end
+		end
+		if DDSortMenuCursorPosition == 10 then
+			if GetAutogenFilter() == 'No' then
+				SetAutogenFilter('Yes')
+				MESSAGEMAN:Broadcast('AutogenFilterYes')
+			else
+				SetAutogenFilter('No')
+				MESSAGEMAN:Broadcast('AutogenFilterNo')
 			end
 		end
 		
@@ -154,8 +195,8 @@ local t = Def.ActorFrame{
 				end
 				self:xy(SCREEN_CENTER_X,SCREEN_CENTER_Y)
 				-- initial zoom before additional options are added
-				local InitialZoomY = 255
-				local InitialAddY = -25
+				local InitialZoomY = 280
+				local InitialAddY = -12.5
 				
 				if IsServiceAllowed(SL.GrooveStats.Leaderboard) and SongIsSelected then
 					InitialZoomY = InitialZoomY + 25
@@ -197,8 +238,8 @@ local t = Def.ActorFrame{
 				
 				self:xy(SCREEN_CENTER_X,SCREEN_CENTER_Y)
 				-- initial zoom before additional options are added
-				local InitialZoomY = 250
-				local InitialAddY = -25
+				local InitialZoomY = 275
+				local InitialAddY = -12.5
 				
 				if IsServiceAllowed(SL.GrooveStats.Leaderboard) and SongIsSelected then
 					InitialZoomY = InitialZoomY + 25
@@ -218,7 +259,7 @@ local t = Def.ActorFrame{
 	Def.Quad{
 			Name="MenuBorder",
 			InitCommand=function(self)
-					self:xy(SCREEN_CENTER_X,SCREEN_CENTER_Y + 9)
+					self:xy(SCREEN_CENTER_X,SCREEN_CENTER_Y + 34)
 					self:draworder(0)
 					self:diffuse(color("#FFFFFF"))
 					self:zoomx(300)
@@ -537,6 +578,86 @@ local t = Def.ActorFrame{
 			self:diffuse(color(UnselectedTextColor))
 		end,
 		},
+		
+			----- AUTOGEN FILTER BOX 1 -----
+		Def.Quad{
+			Name="MenuBackground",
+			InitCommand=function(self)
+					self:xy(SCREEN_CENTER_X + 85,SCREEN_CENTER_Y + 15)
+					self:draworder(0)
+					self:diffuse(color(NoButtonColor))
+					self:zoomx(28)
+					self:zoomy(20)
+					self:visible(true)
+					self:horizalign(right)
+			end,
+			AutogenFilterYesMessageCommand=function(self)
+				self:diffuse(color(DimmedButtonColor))
+			end,
+			AutogenFilterNoMessageCommand=function(self)
+				self:diffuse(color(SelectedButtonColor))
+			end,
+		},
+		
+		----- AUTOGEN FILTER BOX 2 -----
+		Def.Quad{
+			Name="MenuBackground",
+			InitCommand=function(self)
+					self:xy(SCREEN_CENTER_X + 122,SCREEN_CENTER_Y + 15)
+					self:draworder(0)
+					self:diffuse(color(YesButtonColor))
+					self:zoomx(36)
+					self:zoomy(20)
+					self:visible(true)
+					self:horizalign(right)
+			end,
+			AutogenFilterYesMessageCommand=function(self)
+				self:diffuse(color(SelectedButtonColor))
+			end,
+			AutogenFilterNoMessageCommand=function(self)
+				self:diffuse(color(DimmedButtonColor))
+			end,
+		},
+		
+		----- AUTOGEN FILTER NO TEXT -----
+		Def.BitmapText{
+		Font="Miso/_miso",
+		InitCommand=function(self)
+			--RED
+			--self:diffuse(color("#ff3729"))
+			self:diffuse(color(UnselectedTextColor))
+			self:horizalign(center)
+			self:xy(SCREEN_CENTER_X + 70,SCREEN_CENTER_Y + 15)
+			self:zoom(1.25)
+			self:settext("NO")
+		end,
+		AutogenFilterYesMessageCommand=function(self)
+			self:diffuse(color(UnselectedTextColor))
+		end,
+		AutogenFilterNoMessageCommand=function(self)
+			self:diffuse(color(NoTextColor))
+		end,
+		},
+		
+		----- AUTOGEN FILTER YES TEXT -----
+		Def.BitmapText{
+		Font="Miso/_miso",
+		InitCommand=function(self)
+			-- GREEN
+			---self:diffuse(color("#19e326"))
+			self:diffuse(color(UnselectedTextColor))
+			self:horizalign(center)
+			self:xy(SCREEN_CENTER_X + 105,SCREEN_CENTER_Y + 15)
+			self:zoom(1.25)
+			self:settext("YES")
+		end,
+		AutogenFilterYesMessageCommand=function(self)
+			self:diffuse(color(YesTextColor))
+		end,
+		AutogenFilterNoMessageCommand=function(self)
+			self:diffuse(color(UnselectedTextColor))
+		end,
+		},
 }
 
 --- When changing between single/double show the correct mode to switch to.
@@ -569,6 +690,7 @@ FilterLabel = {
 	"FILTER LENGTH:",
 	--"FILTER FAVORITES?",
 	"FILTER GROOVESTATS?",
+	"FILTER AUTOGEN?",
 }
 
 for i,SortText in ipairs(SortLabel) do
@@ -634,7 +756,7 @@ for i,OtherText in ipairs(OtherLabel) do
 			if not is_leaderboard_enabled and i >= leaderboards_label_index then
 				active_index = i - 1
 			end
-			self:y(SCREEN_CENTER_Y + 5 + 25*active_index)
+			self:y(SCREEN_CENTER_Y + 30 + 25*active_index)
 			if i == leaderboards_label_index then
 				self:visible(is_leaderboard_enabled)
 			end

@@ -240,6 +240,28 @@ function SetGroovestatsFilter(value)
 	end
 end
 
+---- Autogen profile preference
+function GetAutogenFilter()
+	local value
+	if GAMESTATE:IsPlayerEnabled(PLAYER_1) then
+		value = DDStats.GetStat(PLAYER_1, 'AutogenFilter')
+	else
+		value = DDStats.GetStat(PLAYER_2, 'AutogenFilter')
+	end
+
+	if value == nil then
+		value = 'No'
+	end
+
+	return value
+end
+
+function SetAutogenFilter(value)
+	for i,playerNum in ipairs(GAMESTATE:GetHumanPlayers()) do
+		DDStats.SetStat(playerNum, 'AutogenFilter', value)
+		DDStats.Save(playerNum)
+	end
+end
 
 function IsUsingFilters()
 	if GetLowerDifficultyFilter() ~= nil and GetLowerDifficultyFilter() ~= 0 then return true
