@@ -187,6 +187,11 @@ local SortMenuCursorLogic = function()
 		end
 	end
 	if DDSortMenuCursorPosition == GetMaxCursorPosition() and GAMESTATE:GetCurrentStyle():GetStyleType() == 'StyleType_OnePlayerTwoSides' then
+		if GAMESTATE:IsPlayerEnabled(1) then
+			local CurrentSong = GAMESTATE:GetCurrentSong()
+			local CurrentChart = GAMESTATE:GetCurrentSteps(1)
+			GAMESTATE:SetStepsForEditMode(CurrentSong, CurrentChart)
+		end
 		SCREENMAN:GetTopScreen():SetNextScreenName("ScreenPractice")
 		SCREENMAN:GetTopScreen():StartTransitioningScreen("SM_GoToNextScreen")
 	end
