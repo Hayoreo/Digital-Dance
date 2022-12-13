@@ -127,6 +127,10 @@ GetMaxCursorPosition = function()
 		MaxCursorPosition = MaxCursorPosition + 1
 	end
 	
+	if GAMESTATE:GetCurrentStyle():GetStyleType() == 'StyleType_OnePlayerTwoSides' then
+		MaxCursorPosition = MaxCursorPosition + 1
+	end
+	
 	if IsServiceAllowed(SL.GrooveStats.Leaderboard) and SongIsSelected then
 		MaxCursorPosition = MaxCursorPosition + 1
 	end

@@ -208,6 +208,11 @@ local t = Def.ActorFrame{
 					InitialAddY = InitialAddY + 12.5
 				end
 				
+				if GAMESTATE:GetCurrentStyle():GetStyleType() == 'StyleType_OnePlayerTwoSides' then
+					InitialZoomY = InitialZoomY + 25
+					InitialAddY = InitialAddY + 12.5
+				end
+				
 				self:zoomy(InitialZoomY)
 				self:addy(InitialAddY)
 			end,
@@ -246,6 +251,11 @@ local t = Def.ActorFrame{
 					InitialAddY = InitialAddY + 12.5
 				end
 				if GAMESTATE:GetCurrentStyle():GetStyleType() ~= 'StyleType_TwoPlayersTwoSides' then
+					InitialZoomY = InitialZoomY + 25
+					InitialAddY = InitialAddY + 12.5
+				end
+				
+				if GAMESTATE:GetCurrentStyle():GetStyleType() == 'StyleType_OnePlayerTwoSides' then
 					InitialZoomY = InitialZoomY + 25
 					InitialAddY = InitialAddY + 12.5
 				end
@@ -732,6 +742,9 @@ end
 OtherLabel[#OtherLabel+1] = "LEADERBOARDS"
 local leaderboards_label_index = #OtherLabel
 OtherLabel[#OtherLabel+1] = "TEST INPUT"
+if GAMESTATE:GetCurrentStyle():GetStyleType() == 'StyleType_OnePlayerTwoSides' then
+	OtherLabel[#OtherLabel+1] = "PRACTICE SONG"
+end
 
 
 for i,OtherText in ipairs(OtherLabel) do

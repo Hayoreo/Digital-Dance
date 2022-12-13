@@ -173,10 +173,22 @@ local SortMenuCursorLogic = function()
 		
 	end
 	if DDSortMenuCursorPosition == 15 then
-		isSortMenuVisible = false
-		InputMenuHasFocus = true
-		MESSAGEMAN:Broadcast("ShowTestInput")
-		MESSAGEMAN:Broadcast("ToggleSortMenu")
+		if not GAMESTATE:GetCurrentStyle():GetStyleType() == 'StyleType_OnePlayerTwoSides' then
+			isSortMenuVisible = false
+			InputMenuHasFocus = true
+			MESSAGEMAN:Broadcast("ShowTestInput")
+			MESSAGEMAN:Broadcast("ToggleSortMenu")
+		end
+		if IsServiceAllowed(SL.GrooveStats.Leaderboard) then
+			isSortMenuVisible = false
+			InputMenuHasFocus = true
+			MESSAGEMAN:Broadcast("ShowTestInput")
+			MESSAGEMAN:Broadcast("ToggleSortMenu")
+		end
+	end
+	if DDSortMenuCursorPosition == GetMaxCursorPosition() and GAMESTATE:GetCurrentStyle():GetStyleType() == 'StyleType_OnePlayerTwoSides' then
+		SCREENMAN:GetTopScreen():SetNextScreenName("ScreenPractice")
+		SCREENMAN:GetTopScreen():StartTransitioningScreen("SM_GoToNextScreen")
 	end
 end
 
