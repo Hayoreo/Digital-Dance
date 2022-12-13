@@ -127,7 +127,7 @@ GetMaxCursorPosition = function()
 		MaxCursorPosition = MaxCursorPosition + 1
 	end
 	
-	if GAMESTATE:GetCurrentStyle():GetStyleType() == 'StyleType_OnePlayerTwoSides' then
+	if GAMESTATE:GetCurrentStyle():GetStyleType() == 'StyleType_OnePlayerTwoSides' and GAMESTATE:IsPlayerEnabled(0) then
 		MaxCursorPosition = MaxCursorPosition + 1
 	end
 	

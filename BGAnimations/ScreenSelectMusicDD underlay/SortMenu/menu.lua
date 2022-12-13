@@ -208,7 +208,7 @@ local t = Def.ActorFrame{
 					InitialAddY = InitialAddY + 12.5
 				end
 				
-				if GAMESTATE:GetCurrentStyle():GetStyleType() == 'StyleType_OnePlayerTwoSides' then
+				if GAMESTATE:GetCurrentStyle():GetStyleType() == 'StyleType_OnePlayerTwoSides' and GAMESTATE:IsPlayerEnabled(0) then
 					InitialZoomY = InitialZoomY + 25
 					InitialAddY = InitialAddY + 12.5
 				end
@@ -255,7 +255,7 @@ local t = Def.ActorFrame{
 					InitialAddY = InitialAddY + 12.5
 				end
 				
-				if GAMESTATE:GetCurrentStyle():GetStyleType() == 'StyleType_OnePlayerTwoSides' then
+				if GAMESTATE:GetCurrentStyle():GetStyleType() == 'StyleType_OnePlayerTwoSides' and GAMESTATE:IsPlayerEnabled(0) then
 					InitialZoomY = InitialZoomY + 25
 					InitialAddY = InitialAddY + 12.5
 				end
@@ -742,7 +742,7 @@ end
 OtherLabel[#OtherLabel+1] = "LEADERBOARDS"
 local leaderboards_label_index = #OtherLabel
 OtherLabel[#OtherLabel+1] = "TEST INPUT"
-if GAMESTATE:GetCurrentStyle():GetStyleType() == 'StyleType_OnePlayerTwoSides' then
+if GAMESTATE:GetCurrentStyle():GetStyleType() == 'StyleType_OnePlayerTwoSides' and GAMESTATE:IsPlayerEnabled(0) then
 	OtherLabel[#OtherLabel+1] = "PRACTICE SONG"
 end
 
