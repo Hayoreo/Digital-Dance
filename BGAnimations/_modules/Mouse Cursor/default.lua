@@ -3,7 +3,8 @@ if not ThemePrefs.Get("MouseInput") then return end
 
 local MouseX
 local MouseY
-local RefreshRate = PREFSMAN:GetPreference("RefreshRate")
+-- Apparently setting the refresh rate to "default" in SM sets it to 0 in the preferences.ini GOOD GAME VERY COOL.
+local RefreshRate = PREFSMAN:GetPreference("RefreshRate") ~= 0 and PREFSMAN:GetPreference("RefreshRate") or 120
 local Refresh = 1/RefreshRate
 local MaxMouseCounter = RefreshRate * 3
 local HideMouseCounter = MaxMouseCounter
