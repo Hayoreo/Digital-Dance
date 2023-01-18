@@ -73,7 +73,7 @@ return Def.ActorFrame{
 		InitCommand=function(self)
 			local textHeight = 17
 			local textZoom = 0.7
-			local width = 165
+			local width = 158
 			local StreamMeasures = GenerateBreakdownText(penisnumber, 4)
 			local minimization_level = 1
 			self:horizalign(player==PLAYER_1 and left or right)
