@@ -148,24 +148,19 @@ af2[#af2+1] = LoadFont("Miso/_miso")..{
 	Name="NPS",
 	Text="Peak NPS: ",
 	InitCommand=function(self)
-		self:horizalign(left):zoom(0.8):addy(-41)
+		self:horizalign(player == PLAYER_1 and left or right):zoom(0.8):addy(-56)
 		if player == PLAYER_1 then
-			self:addx(IsUsingWideScreen() and WideScale(1,54) or 74)
-		elseif not IsUsingWideScreen() then
-			if player == PLAYER_2 and nsj == 2 then
-				self:addx(WideScale(-70,-131))
-			elseif nsj == 1 then
-				self:addx(74)
-			end
+			self:addx(-125)
 		elseif player == PLAYER_2 then
-			self:addx(WideScale(-70,-131))
+			self:addx(130)
 		end
 		-- We want white text.
 		self:diffuse({1, 1, 1, 1})
 	end,
 	RedrawCommand=function(self)
+		local npsBPM = round((SL[pn].Streams.PeakNPS * SL.Global.ActiveModifiers.MusicRate) * 15, 2)
 		if SL[pn].Streams.PeakNPS ~= 0 then
-			self:settext(("Peak NPS: %.1f"):format(SL[pn].Streams.PeakNPS * SL.Global.ActiveModifiers.MusicRate))
+			self:settext(("Peak NPS: %.1f"):format(SL[pn].Streams.PeakNPS * SL.Global.ActiveModifiers.MusicRate).. " ("..npsBPM..")")
 		end
 	end
 }

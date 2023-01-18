@@ -97,7 +97,8 @@ local text = LoadFont("Common Normal")..{
 		end
 	end,
 	PeakNPSUpdatedMessageCommand=function(self)
-		local my_peak = GAMESTATE:Env()[pn.."PeakNPS"]
+		local my_peak = GAMESTATE:Env()[pn.."PeakNPS"] * SL.Global.ActiveModifiers.MusicRate
+		local my_bpm = round(my_peak * 15, 2)
 
 		if my_peak == nil then
 			self:settext("")
@@ -114,7 +115,7 @@ local text = LoadFont("Common Normal")..{
 				self:x(52)
 			end
 		else
-			self:x(SL_WideScale(6,55))
+			self:x(SL_WideScale(6,8))
 			if NoteFieldIsCentered then
 				self:x(26)
 			end
@@ -124,7 +125,7 @@ local text = LoadFont("Common Normal")..{
 		end
 
 		self:y( -self:GetHeight()/2 )
-		self:settext( ("%s: %g"):format(THEME:GetString("ScreenGameplay", "PeakNPS"), round(my_peak * SL.Global.ActiveModifiers.MusicRate,2)) )
+		self:settext( ("%s: %g"):format(THEME:GetString("ScreenGameplay", "PeakNPS"), round(my_peak,2)).." ("..my_bpm.."bpm)" )
 	end,
 }
 
