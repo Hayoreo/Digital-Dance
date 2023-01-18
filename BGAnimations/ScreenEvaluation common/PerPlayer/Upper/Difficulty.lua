@@ -1,5 +1,6 @@
 local player = ...
 local pn = PlayerNumber:Reverse()[player]
+local penisnumber = ToEnumShortString(player)
 
 return Def.ActorFrame{
 
@@ -64,5 +65,29 @@ return Def.ActorFrame{
 				end
 			end
 		end
-	}
+	},
+	
+	LoadFont("Miso/_miso")..{
+		Text="",
+		Name="Total Measures Text",
+		InitCommand=function(self)
+			local textHeight = 17
+			local textZoom = 0.7
+			local width = 165
+			local StreamMeasures = GenerateBreakdownText(penisnumber, 4)
+			local minimization_level = 1
+			self:horizalign(player==PLAYER_1 and left or right)
+			self:y( _screen.cy-96)
+			self:x(148 * (player==PLAYER_1 and -1 or 1))
+			self:maxwidth(width/textZoom):zoom(textZoom)
+			self:settext(GenerateBreakdownText(penisnumber, 0))
+			while self:GetWidth() > (width/textZoom) and minimization_level < 4 do
+				self:settext(StreamMeasures == 0 and "" or GenerateBreakdownText(penisnumber, minimization_level))
+				minimization_level = minimization_level + 1
+			end
+			if minimization_level == 4 then
+				self:settext(StreamMeasures == 0 and "" or "Total Measures: "..StreamMeasures)
+			end
+		end,
+	},
 }
