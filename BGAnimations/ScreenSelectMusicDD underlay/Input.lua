@@ -239,6 +239,9 @@ t.Handler = function(event)
 	if event.type == "InputEventType_Release" then
 		if event.DeviceInput.button == "DeviceButton_left ctrl" or event.DeviceInput.button == "DeviceButton_right ctrl" then
 			CtrlHeld = CtrlHeld - 1
+			if CtrlHeld < 0 then
+				CtrlHeld = 0
+			end
 		end
 		if CtrlHeld == 0 then
 			holdingCtrl = false
