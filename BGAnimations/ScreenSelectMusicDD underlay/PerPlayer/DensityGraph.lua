@@ -224,7 +224,7 @@ af2[#af2+1] = Def.ActorFrame{
 		end,
 		RedrawCommand=function(self)
 			local textZoom = 0.8
-			local streamMeasures, breakMeasures = GetTotalStreamAndBreakMeasures(pn)
+			local seq, streamMeasures, breakMeasures = GetStreamSequences(SL[pn].Streams.NotesPerMeasure, 16)	
 			local totalMeasures = streamMeasures + breakMeasures
 			local SongDensity = " (".. round( (streamMeasures/totalMeasures)*100 ,2) .."%)"
 			if player == PLAYER_1 then
