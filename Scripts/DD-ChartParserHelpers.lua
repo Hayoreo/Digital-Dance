@@ -14,6 +14,7 @@
 -- Get the start/end of each stream and break sequence in our table of measures
 -- TODO(teejusb): Make this smarter as we can probably automatically figure
 -- out a good value for notesThreshold from the chart information.
+
 GetStreamSequences = function(notesPerMeasure, notesThreshold)
 	local streamMeasures = {}
 	for i,n in ipairs(notesPerMeasure) do
@@ -32,6 +33,9 @@ GetStreamSequences = function(notesPerMeasure, notesThreshold)
 
 	local counter = 1
 	local streamEnd = nil
+
+	-- Initialize total stream, break vars
+	local totalStream, totalBreak = 0, 0
 
 	-- First add an initial break if it's larger than breakSequenceThreshold
 	if #streamMeasures > 0 then
@@ -62,6 +66,9 @@ GetStreamSequences = function(notesPerMeasure, notesThreshold)
 				-- Add the current stream.
 				table.insert(streamSequences,
 					{streamStart=streamStart, streamEnd=streamEnd, isBreak=false})
+				-- Add to totalStream
+				local streamSize = streamEnd - streamStart
+				totalStream = totalStream + streamSize
 			end
 
 			-- Add any trailing breaks if they're larger than breakSequenceThreshold
@@ -70,13 +77,16 @@ GetStreamSequences = function(notesPerMeasure, notesThreshold)
 			if (breakEnd - breakStart >= breakSequenceThreshold) then
 				table.insert(streamSequences,
 					{streamStart=breakStart, streamEnd=breakEnd, isBreak=true})
+				-- Add to totalBreak
+				local breakSize = breakEnd - breakStart
+				totalBreak = totalBreak + breakSize
 			end
 			counter = 1
 			streamEnd = nil
 		end
 	end
 
-	return streamSequences
+	return streamSequences, totalStream, totalBreak
 end
 
 -- Generate Breakdown text using commonly known stream notation.
@@ -209,21 +219,4 @@ GenerateBreakdownText = function(pn, minimization_level)
 	else
 		return table.concat(text_segments, '')
 	end
-end
-
-GetTotalStreamAndBreakMeasures = function(pn)
-	local totalStream, totalBreak = 0, 0
-
-	-- Assume 16ths for the breakdown text
-	local segments = GetStreamSequences(SL[pn].Streams.NotesPerMeasure, 16)
-	for i, segment in ipairs(segments) do
-		local segment_size = segment.streamEnd - segment.streamStart
-		if segment.isBreak then
-			totalBreak = totalBreak + segment_size
-		else
-			totalStream = totalStream + segment_size
-		end
-	end
-
-	return totalStream, totalBreak
 end
