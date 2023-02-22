@@ -224,15 +224,15 @@ af2[#af2+1] = Def.ActorFrame{
 		end,
 		RedrawCommand=function(self)
 			local textZoom = 0.8
-			local SongMeasures = round( tonumber(GAMESTATE:GetCurrentSong(pn):GetLastBeat())/4, 0)
-			local StreamMeasures = GenerateBreakdownText(pn, 4)
-			local SongDensity = " (".. round( (StreamMeasures/SongMeasures)*100 ,2) .."%)"
+			local streamMeasures, breakMeasures = GetTotalStreamAndBreakMeasures(pn)
+			local totalMeasures = streamMeasures + breakMeasures
+			local SongDensity = " (".. round( (streamMeasures/totalMeasures)*100 ,2) .."%)"
 			if player == PLAYER_1 then
 				self:horizalign(left)
 			elseif player == PLAYER_2 then
 				self:horizalign(right)
 			end
-			self:settext(StreamMeasures == 0 and "" or "Total Measures: "..StreamMeasures..SongDensity)
+			self:settext(streamMeasures == 0 and "" or "Total Measures: "..streamMeasures..SongDensity)
 		end,
 	}
 }
