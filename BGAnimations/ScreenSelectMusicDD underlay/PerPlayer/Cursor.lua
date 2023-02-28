@@ -60,6 +60,7 @@ return Def.Sprite{
 	CurrentTrailP1ChangedMessageCommand=function(self) 	self:stoptweening():sleep(0.2):queuecommand("Set") end,
 	CurrentStepsP2ChangedMessageCommand=function(self) 	self:stoptweening():sleep(0.2):queuecommand("Set") end,
 	CurrentTrailP2ChangedMessageCommand=function(self) 	self:stoptweening():sleep(0.2):queuecommand("Set") end,
+	SongIsReloadingMessageCommand=function(self)		self:stoptweening():sleep(0.2):queuecommand("Set") end,
 	
 	CloseThisFolderHasFocusMessageCommand=function(self) self:stoptweening():sleep(0.2):queuecommand("Dissappear") end,
 	

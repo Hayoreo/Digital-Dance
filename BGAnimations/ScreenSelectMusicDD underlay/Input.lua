@@ -209,7 +209,7 @@ local lastMenuUpPressTime = 0
 local lastMenuDownPressTime = 0
 
 t.Handler = function(event)
-	-- Input to open the song search menu. Keep track of both left and right Ctrl being held.
+	-- Input to open the song search menu or reload a single song on the wheel. Keep track of both left and right Ctrl being held.
 	if event.type == "InputEventType_FirstPress" and event.type ~= "InputEventType_Release" then
 		if not IsSearchMenuVisible then
 			if event.DeviceInput.button == "DeviceButton_left ctrl" or event.DeviceInput.button == "DeviceButton_right ctrl" then
@@ -226,6 +226,10 @@ t.Handler = function(event)
 					stop_music()
 					MESSAGEMAN:Broadcast("InitializeSearchMenu")
 					MESSAGEMAN:Broadcast("ToggleSearchMenu")
+				elseif event.DeviceInput.button == "DeviceButton_r" and GAMESTATE:GetCurrentSong() ~= nil then
+					local song = GAMESTATE:GetCurrentSong()
+					song:ReloadFromSongDir()
+					MESSAGEMAN:Broadcast("SongIsReloading")
 				end
 			end
 		end

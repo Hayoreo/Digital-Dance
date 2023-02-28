@@ -45,6 +45,7 @@ local af = Def.ActorFrame{
 	CurrentTrailP1ChangedMessageCommand=function(self) self:stoptweening():sleep(0.2):queuecommand("Set") end,
 	CurrentStepsP2ChangedMessageCommand=function(self) self:stoptweening():sleep(0.2):queuecommand("Set") end,
 	CurrentTrailP2ChangedMessageCommand=function(self) self:stoptweening():sleep(0.2):queuecommand("Set") end,
+	SongIsReloadingMessageCommand=function(self)	   self:stoptweening():sleep(0.2):queuecommand("Set") end,
 }
 
 -- background Quad for Artist, BPM, and Song Length
@@ -63,9 +64,10 @@ af[#af+1] = Def.ActorFrame{
 	--- CDTitle
 	Def.Sprite{
 		Name="CDTitle",
-		CurrentSongChangedMessageCommand=function(self) self:stoptweening():sleep(0.2):queuecommand("SetCD") end,
-		CloseThisFolderHasFocusMessageCommand=function(self) self:stoptweening():sleep(0.2):queuecommand("SetCD") end,
-		GroupsHaveChangedMessageCommand=function(self) self:stoptweening():sleep(0.2):queuecommand("SetCD") end,
+		CurrentSongChangedMessageCommand=function(self) 		self:stoptweening():sleep(0.2):queuecommand("SetCD") end,
+		CloseThisFolderHasFocusMessageCommand=function(self)	self:stoptweening():sleep(0.2):queuecommand("SetCD") end,
+		GroupsHaveChangedMessageCommand=function(self) 			self:stoptweening():sleep(0.2):queuecommand("SetCD") end,
+		SongIsReloadingMessageCommand=function(self)	    	self:stoptweening():sleep(0.2):queuecommand("SetCD") end,
 		InitCommand=function(self) 
 			local Height = self:GetHeight()
 			local Width = self:GetWidth()
