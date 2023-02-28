@@ -37,6 +37,7 @@ local t = Def.ActorFrame{
 	CurrentSongChangedMessageCommand=function(self)    self:stoptweening():sleep(0.2):queuecommand("RedrawStepsDisplay") end,
 	CurrentStepsP1ChangedMessageCommand=function(self) self:stoptweening():sleep(0.2):queuecommand("RedrawStepsDisplay") end,
 	CurrentStepsP2ChangedMessageCommand=function(self) self:stoptweening():sleep(0.2):queuecommand("RedrawStepsDisplay") end,
+	SongIsReloadingMessageCommand=function(self)	   self:stoptweening():sleep(0.2):queuecommand("RedrawStepsDisplay") end,
 
 
 	

@@ -16,6 +16,7 @@ return Def.ActorFrame{
 	["CurrentSteps"..pn.."ChangedMessageCommand"]=function(self)self:stoptweening():sleep(0.2):queuecommand("Reset") end,
 	CurrentSongChangedMessageCommand=function(self) self:stoptweening():sleep(0.2):queuecommand("Reset") end,
 	CurrentCourseChangedMessageCommand=function(self) self:stoptweening():sleep(0.2):queuecommand("Reset") end,
+	SongIsReloadingMessageCommand=function(self) self:stoptweening():sleep(0.2):queuecommand("Reset") end,
 
 	PlayerJoinedMessageCommand=function(self, params)
 		if params.Player == player then

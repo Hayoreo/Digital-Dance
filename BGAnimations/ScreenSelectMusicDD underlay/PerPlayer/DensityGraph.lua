@@ -78,6 +78,9 @@ af[#af+1] = Def.ActorFrame{
 		self:stoptweening()
 		self:stoptweening():sleep(0.2):queuecommand('Hide')
 	end,
+	SongIsReloadingMessageCommand=function(self)
+		self:stoptweening():sleep(0.2):queuecommand('ShowDensityGraph')
+	end,
 	ShowDensityGraphCommand=function(self)
 		-- I don't like how it looks when the bg quad dissappears while scrolling so gonna not do that for now.
 		--self:GetChild("DensityQuad"):visible(false)
