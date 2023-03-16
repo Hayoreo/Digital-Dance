@@ -1,6 +1,7 @@
 if SL.Global.GameMode == "Casual" then return end
 
 local player = ...
+local pn = ToEnumShortString(player)
 local NumPlayers = #GAMESTATE:GetHumanPlayers()
 
 local GraphWidth  = THEME:GetMetric("GraphDisplay", "BodyWidth")
@@ -50,10 +51,9 @@ af[#af+1] = Def.GraphDisplay{
 	Name="GraphDisplay",
 	InitCommand=function(self)
 		self:vertalign(top)
-
 		local ColorIndex = ((SL.Global.ActiveColorIndex + (player==PLAYER_1 and -1 or 1)) % #SL.Colors) + 1
 		self:Load("GraphDisplay" .. ColorIndex )
-		
+
 		if not GAMESTATE:IsCourseMode() then
 			local steps = GAMESTATE:GetCurrentSteps(player)
 			local timingData = steps:GetTimingData()
@@ -74,8 +74,8 @@ af[#af+1] = Def.GraphDisplay{
 
 		local playerStageStats = STATSMAN:GetCurStageStats():GetPlayerStageStats(player)
 		local stageStats = STATSMAN:GetCurStageStats()
-		self:Set(stageStats, playerStageStats)
 
+		self:Set(stageStats, playerStageStats)
 		if GAMESTATE:IsCourseMode() then
 			-- hide the GraphDisplay's stroke ("Line")
 			self:GetChild("Line"):visible(false)
@@ -86,5 +86,74 @@ af[#af+1] = Def.GraphDisplay{
 		end
 	end
 }
+
+local pss = STATSMAN:GetCurStageStats():GetPlayerStageStats(player)
+local storage = SL[pn].Stages.Stats[SL.Global.Stages.PlayedThisGame + 1]
+
+-- Display a box that shows what measure of current stream
+-- that the player failed on
+if storage.DeathSecond ~= nil and not GAMESTATE:IsCourseMode() then
+
+	local deathMeasures = storage.DeathMeasures
+	local graphPercentage = storage.GraphPercentage
+	local fillColor = getFailMeasureColor(storage.failPoint)
+
+	-- If the player failed, check how much time was remaining
+	af[#af+1] = Def.ActorFrame {
+		InitCommand=function(self)
+			-- Start at the start of the graph
+			self:addx(-GraphWidth / 2):addy(GraphHeight - 10)
+			-- Move to where the player failed
+			self:addx(GraphWidth * graphPercentage)
+		end,
+		Def.ActorFrame {
+			Name="BGQuad",
+			SetSizeCommand=function(self,params)
+				if params.lines == 2 then self:addy(-10) end
+			end,
+			Def.Quad {
+				InitCommand=function(self)
+					self:diffuse(fillColor)
+				end,
+				SetSizeCommand=function(self,params)
+					self:zoomto(params.width + 1, 10 * params.lines + 1)
+					self:addx(params.addx)
+				end
+			},
+			Def.Quad {
+				InitCommand=function(self)
+					self:diffuse(Color.Black)
+				end,
+				SetSizeCommand=function(self,params)
+					self:zoomto(params.width, 10 * params.lines)
+					self:addx(params.addx)
+				end
+			},
+		},
+		LoadFont("Common Normal")..{
+			InitCommand=function(self)
+				self:zoom(0.5)
+				self:diffuse(fillColor)
+				local text
+				if deathMeasures then
+					text = deathMeasures
+					self:addy(-10)
+				end
+				self:settext(text)
+				
+				local width = self:GetWidth() * 0.65
+				local addx = width * 0.8
+				addx = (addx > 10) and addx or 10
+				local quad = self:GetParent():GetChild("BGQuad")
+				quad:playcommand("SetSize",{
+					width = width,
+					addx = addx,
+					lines = (deathMeasures ~= nil and 2 or 1)
+				})
+				self:addx(addx)
+			end
+		}	
+	}
+end
 
 return af
