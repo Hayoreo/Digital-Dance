@@ -55,6 +55,10 @@ local PlayerDefaults = {
 			self.Stages = {
 				Stats = {}
 			}
+			self.ITLData = {
+				["pathMap"] = {},
+				["hashMap"] = {},
+			}
 			self.PlayerOptionsString = nil
 
 			-- default panes to intialize ScreenEvaluation to
