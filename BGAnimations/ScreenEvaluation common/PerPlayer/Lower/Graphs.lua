@@ -92,7 +92,7 @@ local storage = SL[pn].Stages.Stats[SL.Global.Stages.PlayedThisGame + 1]
 
 -- Display a box that shows what measure of current stream
 -- that the player failed on
-if storage.DeathSecond ~= nil and not GAMESTATE:IsCourseMode() then
+if storage.DeathSecond ~= nil and not GAMESTATE:IsCourseMode() and storage.failPoint then
 
 	local deathMeasures = storage.DeathMeasures
 	local graphPercentage = storage.GraphPercentage
@@ -138,8 +138,8 @@ if storage.DeathSecond ~= nil and not GAMESTATE:IsCourseMode() then
 				if deathMeasures then
 					text = deathMeasures
 					self:addy(-10)
+					self:settext(text)
 				end
-				self:settext(text)
 				
 				local width = self:GetWidth() * 0.65
 				local addx = width * 0.8

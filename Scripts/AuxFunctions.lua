@@ -80,14 +80,17 @@ end
 -- Return a color based on how many measures were done
 -- Used in Graphs.lua
 getFailMeasureColor=function(measureCount)
-	local fontColor
-	if (measureCount < 32) then
-		fontColor = Color.Red
-	elseif (measureCount >= 32 and measureCount < 100) then
-		fontColor = Color.Green
-	elseif (measureCount >= 100) then
-		fontColor = Color.Yellow
+	if measureCount then
+		local fontColor
+		if (measureCount < 32) then
+			fontColor = Color.Red
+		elseif (measureCount >= 32 and measureCount < 100) then
+			fontColor = Color.Green
+		elseif (measureCount >= 100) then
+			fontColor = Color.Yellow
+		end
+		return fontColor
+	else
+		return Color.Red
 	end
-
-	return fontColor
 end
