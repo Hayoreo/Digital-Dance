@@ -51,6 +51,7 @@ local profile_whitelist = {
 	ErrorBar             = "string",
 	ErrorBarUp           = "boolean",
 	ErrorBarMultiTick    = "boolean",
+	ErrorBarTrim         = "boolean",
 
 	PlayerOptionsString = "string",
 }

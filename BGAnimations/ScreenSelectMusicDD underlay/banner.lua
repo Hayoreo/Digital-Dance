@@ -29,12 +29,12 @@ local t = Def.ActorFrame{
 	Def.Sprite{
 		Name="LoadFromSong",
 		InitCommand=function(self) self:playcommand("UpdateSongBanner") end,
-		CurrentSongChangedMessageCommand=function(self) 		self:stoptweening():sleep(0.2):queuecommand("UpdateSongBanner") end,
-		CurrentCourseChangedMessageCommand=function(self) 		self:stoptweening():sleep(0.2):queuecommand("UpdateSongBanner") end,
-		SwitchFocusToSongsMessageCommand=function(self) 		self:stoptweening():sleep(0.2):queuecommand("UpdateSongBanner") end,
-		SongIsReloadingMessageCommand=function(self)			self:stoptweening():sleep(0.2):queuecommand("UpdateSongBanner") end,
-		SwitchFocusToGroupsMessageCommand=function(self) 		self:visible(false) end,
-		CloseThisFolderHasFocusMessageCommand=function(self) 	self:stoptweening():sleep(0.25):queuecommand("UpdateVisibility") end,
+		CurrentSongChangedMessageCommand=function(self) 	self:stoptweening():sleep(0.2):queuecommand("UpdateSongBanner") end,
+		CurrentCourseChangedMessageCommand=function(self) 	self:stoptweening():sleep(0.2):queuecommand("UpdateSongBanner") end,
+		SwitchFocusToSongsMessageCommand=function(self) 	self:stoptweening():sleep(0.2):queuecommand("UpdateSongBanner") end,
+		SongIsReloadingMessageCommand=function(self)		self:stoptweening():sleep(0.2):queuecommand("UpdateSongBanner") end,
+		SwitchFocusToGroupsMessageCommand=function(self) self:visible(false) end,
+		CloseThisFolderHasFocusMessageCommand=function(self) self:stoptweening():sleep(0.25):queuecommand("UpdateVisibility") end,
 		UpdateVisibilityCommand=function(self)
 			self:visible(false)
 		end,

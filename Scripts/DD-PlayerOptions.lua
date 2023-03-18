@@ -520,7 +520,7 @@ local Overrides = {
 	-------------------------------------------------------------------------
 	ErrorBarOptions = {
 		SelectType = "SelectMultiple",
-		Values = { "ErrorBarUp", "ErrorBarMultiTick" },
+		Values = { "ErrorBarUp", "ErrorBarMultiTick", "ErrorBarTrim" },
 	},
 	-------------------------------------------------------------------------
 	MeasureCounter = {
