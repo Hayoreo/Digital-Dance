@@ -105,7 +105,6 @@ if storage.DeathSecond ~= nil then
 	local deathMeasures = storage.DeathMeasures
 	local graphPercentage = storage.GraphPercentage
 	local graphLabel = storage.GraphLabel
-	local secondsLeft = seconds - deathSecond
 
 	-- If the player failed, check how much time was remaining
 	af[#af+1] = Def.ActorFrame {
@@ -142,16 +141,16 @@ if storage.DeathSecond ~= nil then
 		},
 		LoadFont("Common Normal")..{
 			InitCommand=function(self)
-				self:zoom(0.5)
+				self:zoom(0.46)
 				self:diffuse(Color.Red)
 				local text
 				-- fail time formatting
-				if secondsLeft > 3600 then
+				if deathSecond > 3600 then
 					-- format to display as H:MM:SS
-					text = math.floor(secondsLeft / 3600) .. ":" .. SecondsToMMSS(secondsLeft % 3600)
+					text = math.floor(deathSecond / 3600) .. ":" .. SecondsToMMSS(deathSecond % 3600)
 				else
 					-- format to display as M:SS
-					text = SecondsToMSS(secondsLeft)
+					text = SecondsToMSS(deathSecond)
 				end	
 				if deathMeasures then text = text .. "\n" .. deathMeasures self:addy(-10) end
 				self:settext(text)

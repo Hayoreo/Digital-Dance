@@ -85,8 +85,6 @@ local af = Def.Actor{
 		if param.PlayerNumber == player and param.HealthState == "HealthState_Dead" then			
 			local playerState = GAMESTATE:GetPlayerState(player)			
 
-			-- These functions already account for rate mod
-			local currentSecond = CurrentTimeSongOrCourse(player)
 			-- The course mode graph only shows lifebar history for the entire course up until the end
             -- of the current song. So for positioning in course mode, we need to find the total time
             -- of all the songs up until the end of the current song. This is *maybe* correct.
