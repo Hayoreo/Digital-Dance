@@ -151,7 +151,7 @@ af2[#af2+1] = LoadFont("Miso/_miso")..{
 	Name="NPS",
 	Text="Peak NPS: ",
 	InitCommand=function(self)
-		self:horizalign(player == PLAYER_1 and left or right):zoom(0.8):addy(-56)
+		self:horizalign(player == PLAYER_1 and left or right):zoom(0.8):addy(-40)
 		if player == PLAYER_1 then
 			self:addx(-125)
 		elseif player == PLAYER_2 then
@@ -208,7 +208,7 @@ af2[#af2+1] = Def.ActorFrame{
 	Name="Total Measures",
 	InitCommand=function(self)
 		self:x(-125)
-		self:addy(-40)
+		self:addy(-56)
 		if player == PLAYER_1 then
 			self:horizalign(left)
 		elseif player == PLAYER_2 then
