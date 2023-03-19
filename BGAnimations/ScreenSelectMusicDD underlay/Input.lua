@@ -855,12 +855,12 @@ t.Handler = function(event)
 		elseif didSelectSong then
 			return false
 		-- navigate the wheel left and right
-		elseif event.GameButton == "MenuRight" then
+		elseif event.GameButton == "MenuRight" and not holdingCtrl then
 			t.WheelWithFocus:scroll_by_amount(1)
 			SOUND:PlayOnce( THEME:GetPathS("MusicWheel", "change.ogg") )
 			stop_music()
 			ChartUpdater.UpdateCharts()
-		elseif event.GameButton == "MenuLeft" then
+		elseif event.GameButton == "MenuLeft" and not holdingCtrl then
 			t.WheelWithFocus:scroll_by_amount(-1)
 			SOUND:PlayOnce( THEME:GetPathS("MusicWheel", "change.ogg") )
 			stop_music()
