@@ -92,7 +92,7 @@ ReadItlFile = function(player)
 			f:Close()
 		end
 		f:destroy()
-		itlData = JsonDecode(existing)
+		itlData = json.decode(existing)
 	end
 	SL[pn].ITLData = itlData
 end
