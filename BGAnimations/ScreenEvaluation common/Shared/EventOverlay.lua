@@ -475,9 +475,9 @@ local GetItlPaneFunctions = function(eventAf, itlData, player)
 			if i ~= nil then
 				offset = j + 1
 				local clearTypeMap = {
-					["FC"] = SL.JudgmentColors["ITG"][3],
-					["FEC"] = SL.JudgmentColors["ITG"][2],
-					["Quad"] = SL.JudgmentColors["ITG"][1],
+					["FC"] = SL.JudgmentColors["DD"][3],
+					["FEC"] = SL.JudgmentColors["DD"][2],
+					["Quad"] = SL.JudgmentColors["DD"][1],
 					["Quint"] = ItlPink,
 				}
 
@@ -614,7 +614,7 @@ for player in ivalues(PlayerNumber) do
 		-- Main Black cement background
 		Def.Sprite {
 			Name="BackgroundImage",
-			Texture=THEME:GetPathG("", "_VisualStyles/SRPG6/Overlay-BG.png"),
+			Texture=THEME:GetPathG("", "SRPG/Overlay-BG.png"),
 			InitCommand=function(self)
 				self:CropTo(paneWidth, paneHeight)
 			end

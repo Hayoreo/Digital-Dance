@@ -60,7 +60,7 @@ WriteItlFile = function(player)
 	local f = RageFileUtil:CreateRageFile()
 
 	if f:Open(path, 2) then
-		f:Write(JsonEncode(SL[pn].ITLData))
+		f:Write(json.encode(SL[pn].ITLData))
 		f:Close()
 	end
 	f:destroy()
