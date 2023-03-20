@@ -12,8 +12,6 @@ local screen = SCREENMAN:GetTopScreen()
 -- we'll update this later via latejoin if needed
 local Players = GAMESTATE:GetHumanPlayers()
 
-local ActiveOptionRow
-
 local didSelectSong = false
 local PressStartForOptions = false
 isSortMenuVisible = false
