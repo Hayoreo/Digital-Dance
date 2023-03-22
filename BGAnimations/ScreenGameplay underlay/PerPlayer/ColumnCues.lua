@@ -6,7 +6,7 @@ local BreakTime
 
 --- A list of potential mods the player will have active.
 local mods = SL[ToEnumShortString(player)].ActiveModifiers
-local po = GAMESTATE:GetPlayerState(player):GetPlayerOptions('ModsLevel_Current')
+local po = GAMESTATE:GetPlayerState(player):GetPlayerOptions('ModsLevel_Preferred')
 
 local Left = po:Left()
 local Right = po:Right()
@@ -15,6 +15,8 @@ local shuffle = po:Shuffle() or po:SuperShuffle() or po:SoftShuffle()
 local flip = po:Flip() > 0
 local invert = po:Invert() > 0
 local insert = po:Wide() or po:Big() or po:Quick() or po:BMRize() or po:Skippy() or po:Echo() or po:Stomp()
+local mini = po:Mini()
+
 -- this isn't even a selectable mod on this theme, but sure.
 local backwards = po:Backwards()
 local NoMines = po:NoMines()
@@ -171,6 +173,47 @@ local af = Def.ActorFrame{
 	end,
 }
 
+local IsReversedColumn = function(player, columnIndex)
+	local columns = {}
+	for i=1, NumColumns do
+		columns[#columns + 1] = false
+	end
+
+	if po:Reverse() == 1 then
+		for column,val in ipairs(columns) do
+			columns[column] = not val
+		end
+	end
+
+	if po:Alternate() == 1 and po:Centered() == 0 then
+		for column,val in ipairs(columns) do
+			if column % 2 == 0 then
+				columns[column] = not val
+			end
+		end
+	end
+
+	if po:Split() == 1 and po:Centered() == 0 then
+		for column,val in ipairs(columns) do
+			if column > NumColumns / 2 then
+				columns[column] = not val
+			end
+		end
+	end
+
+	if po:Cross() == 1 and po:Centered() == 0 then
+		local firstChunk = NumColumns / 4
+		local lastChunk = NumColumns - firstChunk
+		for column,val in ipairs(columns) do
+			if column > firstChunk and column <= lastChunk then
+				columns[column] = not val
+			end
+		end
+	end
+
+	return columns[columnIndex]
+end
+
 for ColumnIndex=1,NumColumns do
 	local timeIndex = 1
 	local quad = nil
@@ -240,7 +283,14 @@ for ColumnIndex=1,NumColumns do
 					:diffuse(0,0,0,0)
 					:horizalign(center)
 					:x((ColumnIndex - (NumColumns/2 + 0.5)) * (width/NumColumns))
-					:y(80)
+				if IsReversedColumn(player, noteMapping[ColumnIndex]) then
+					self:y(260 + (mini * 15))
+				else
+					self:y(80 - (mini * 15))
+				end
+				if po:Centered() > 0 then
+					self:addy(po:Reverse() == 0 and (135 - (mini * 4)) or (-135 + (mini * 4)))
+				end
 				text = self
 			end,
 			UpdateBreakCommand=function(self)
