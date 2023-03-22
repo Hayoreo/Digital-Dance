@@ -147,6 +147,9 @@ SaveProfileCustom = function(profile, dir)
 			output.PlayerOptionsString = SL[pn].PlayerOptionsString
 
 			IniFile.WriteFile( path, {[theme_name]=output} )
+			-- Write to the ITL file if we need to.
+			-- This is relevant for memory cards.
+			WriteItlFile(player)
 			break
 		end
 	end
