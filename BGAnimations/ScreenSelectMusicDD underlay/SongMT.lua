@@ -100,6 +100,10 @@ local song_mt = {
 				CurrentStepsChangedMessageCommand=function(subself, params)
 					update_grade(self)
 				end,
+				
+				SongIsReloadingMessageCommand=function(subself)
+					self:set(self.song)
+				end,
 
 				-- wrap the function that plays the preview music in its own Actor so that we can
 				-- call sleep() and queuecommand() and stoptweening() on it and not mess up other Actors
@@ -267,7 +271,7 @@ local song_mt = {
 
 			self.img_path = ""
 			self.img_type = ""
-
+			
 			-- this SongMT was passed the string "CloseThisFolder" or "Random-Portal"
 			-- so this is a special case for song metatable items
 			if type(song) == "string" then
@@ -302,7 +306,7 @@ local song_mt = {
 			update_grade(self)
 			update_edit(self)
 			
-		end
+		end,
 	}
 }
 
