@@ -5,6 +5,7 @@ local SongWheel = args.SongWheel
 local nsj = GAMESTATE:GetNumSidesJoined()
 local holdingCtrl
 local CtrlHeld = 0
+local WheelWidth = SCREEN_WIDTH/3
 
 local ChartUpdater = LoadActor("./UpdateChart.lua")
 local screen = SCREENMAN:GetTopScreen()
@@ -316,8 +317,8 @@ t.Handler = function(event)
 				
 				-- Jump the songwheel to a song/group clicked on by the left mouse button.
 				if event.DeviceInput.button == "DeviceButton_left mouse button" and not PressStartForOptions then
-					for i=1, 4 do
-						if IsMouseGucci(_screen.cx, (_screen.cy + 45) - (i*25), 320, 24) then
+					for i=1, 5 do
+						if IsMouseGucci(_screen.cx, (_screen.cy + 45) - (i*25), WheelWidth, 24) then
 							t.WheelWithFocus:scroll_by_amount(-i)
 							SOUND:PlayOnce( THEME:GetPathS("MusicWheel", "change.ogg") )
 							stop_music()
@@ -326,7 +327,7 @@ t.Handler = function(event)
 					end
 					
 					for i=1, 6 do
-						if IsMouseGucci(_screen.cx, (_screen.cy + 45) + (i*25), 320, 24) then
+						if IsMouseGucci(_screen.cx, (_screen.cy + 45) + (i*25), WheelWidth, 24) then
 							t.WheelWithFocus:scroll_by_amount(i)
 							SOUND:PlayOnce( THEME:GetPathS("MusicWheel", "change.ogg") )
 							stop_music()
@@ -334,7 +335,7 @@ t.Handler = function(event)
 						end
 					end
 					
-					if IsMouseGucci(_screen.cx, (_screen.cy + 45), 320, 24) then
+					if IsMouseGucci(_screen.cx, (_screen.cy + 45), WheelWidth, 24) then
 						if t.WheelWithFocus == SongWheel then
 							if t.WheelWithFocus:get_info_at_focus_pos() ~= "CloseThisFolder" then
 								didSelectSong = true
