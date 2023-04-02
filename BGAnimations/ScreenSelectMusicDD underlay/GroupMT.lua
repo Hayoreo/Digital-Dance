@@ -9,6 +9,7 @@ local Input = args[7]
 local PruneSongsFromGroup = args[8]
 local starting_group = args[9]
 local group_info = args[10]
+local WheelWidth = SCREEN_WIDTH/3
 
 local max_chars = 64
 
@@ -118,19 +119,16 @@ local item_mt = {
 						self.QuadColor = subself
 						subself:y(_screen.cy - 240)
 						subself:x(0)
-						--subself:diffuse(color("#363d42"))
-						subself:zoomx(320)
+						subself:zoomx(WheelWidth)
 						subself:zoomy(24)
 					end,
-					OnCommand=function(subself)
-					end
 				},
 				-- unique songs
 				Def.BitmapText{
 					Font="Common Normal",
 					InitCommand=function(subself)
 						self.Numberbmt = subself
-						subself:zoom(0.8):diffuse(Color.White):xy(IsUsingWideScreen() and 150 or 310,IsUsingWideScreen() and 0 or -113):maxwidth(300):horizalign(right)
+						subself:zoom(0.75):diffuse(Color.White):xy(IsUsingWideScreen() and 135 or 310,IsUsingWideScreen() and 0 or -113):maxwidth(300):horizalign(right)
 					end,
 				},
 				-- group title bmt
@@ -138,23 +136,23 @@ local item_mt = {
 					Font="Common Normal",
 					InitCommand=function(subself)
 						self.bmt = subself
-						subself:maxwidth(300):vertspacing(-4):shadowlength(1.1)
+						subself:maxwidth(290):vertspacing(-4):shadowlength(1.1):zoom(0.75)
 					end,
 					OnCommand=function(subself)
 						if self.index == GroupWheel:get_actor_item_at_focus_pos().index then
-							subself:horizalign(left):zoom(0.8):maxwidth(480):shadowlength(1.1):playcommand("Untruncate")
+							subself:horizalign(left):playcommand("Untruncate")
 						end
 					end,
 					UntruncateCommand=function(subself) subself:settext(self.groupName) end,
 					TruncateCommand=function(subself) subself:settext(self.groupName):Truncate(max_chars) end,
 
-					GainFocusCommand=function(subself) BannerOfGroup = self.groupName  subself:horizalign(center):linear(0.15):zoom(0.8) MESSAGEMAN:Broadcast("GroupsHaveChanged") end,
-					LoseFocusCommand=function(subself) subself:horizalign(center):linear(0.15):zoom(0.8):shadowlength(1.1) end,
+					GainFocusCommand=function(subself) BannerOfGroup = self.groupName  subself:horizalign(center):linear(0.15) MESSAGEMAN:Broadcast("GroupsHaveChanged") end,
+					LoseFocusCommand=function(subself) subself:horizalign(center):linear(0.15) end,
 					
 					
 					SlideToTopCommand=function(subself) subself:queuecommand("SlideToTop2") end,
-					SlideToTop2Command=function(subself) subself:horizalign(left):linear(0.2):zoom(0.8):maxwidth(480):shadowlength(0):playcommand("Untruncate") end,
-					SlideBackIntoGridCommand=function(subself) subself:horizalign(center):linear(0.2):zoom(0.8):maxwidth(300):shadowlength(1.1):playcommand("Truncate") end,
+					SlideToTop2Command=function(subself) subself:horizalign(left):linear(0.2):playcommand("Untruncate") end,
+					SlideBackIntoGridCommand=function(subself) subself:horizalign(center):linear(0.2):playcommand("Truncate") end,
 				},
 				
 			}

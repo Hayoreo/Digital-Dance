@@ -3,6 +3,7 @@ local SongWheel = args[1]
 local TransitionTime = args[2]
 local row = args[3]
 local col = args[4]
+local WheelWidth = SCREEN_WIDTH/3
 
 local Subtitle
 local CurrentStyle = GAMESTATE:GetCurrentStyle():GetStepsType()
@@ -91,7 +92,6 @@ local song_mt = {
 						subself:playcommand("SlideBackIntoGrid")
 						MESSAGEMAN:Broadcast("SwitchFocusToSongs")
 					end
-
 					subself:visible(true):sleep(0.3):linear(0.2):diffusealpha(1)
 				end,
 				SlideToTopCommand=function(subself) subself:linear(0.2)end,
@@ -116,17 +116,13 @@ local song_mt = {
 						Name="SongWheelBackground",
 						InitCommand=function(subself) 
 						self.QuadColor = subself
-						subself:zoomto(320,24):diffuse(color("#0a141b")):cropbottom(1):playcommand("Set")
+						subself:zoomto(WheelWidth,24):diffuse(color("#0a141b")):cropbottom(1):playcommand("Set")
 						end,
-						SwitchFocusToGroupsMessageCommand=function(subself) subself:smooth(0.3):cropright(1):diffuse(color("#0a141b")):playcommand("Set") end,
-						SwitchFocusToSongsMessageCommand=function(subself) subself:smooth(0.3):cropright(0):playcommand("Set") end,
-						SwitchFocusToSingleSongMessageCommand=function(subself) subself:smooth(0.3):cropright(1):playcommand("Set") end,
 						SetCommand=function(subself)
 							subself:x(0)
 							subself:y(_screen.cy-215)
 							subself:finishtweening()
 							subself:accelerate(0.2):cropbottom(0)
-								
 						end,
 					},
 				-- title
@@ -134,20 +130,7 @@ local song_mt = {
 					Font="Common Normal",
 					InitCommand=function(subself)
 						self.title_bmt = subself
-						subself:zoom(0.8):diffuse(Color.White):shadowlength(0.75):y(25)
-					end,
-					GainFocusCommand=function(subself)
-						if not self.song == "CloseThisFolder" and not self.song == "Random-Portal" then
-							subself:visible(true):maxwidth(315):y(25)
-						end
-					end,
-					LoseFocusCommand=function(subself)
-						if self.song == "CloseThisFolder" or self.song == "Random-Portal" then
-							subself:zoom(0.8):y(25)
-						else
-							subself:zoom(0.8):y(25)
-						end
-						subself:visible(true)
+						subself:zoom(0.75):diffuse(Color.White):shadowlength(0.75):y(25)
 					end,
 				},
 				-- subtitle
@@ -158,32 +141,12 @@ local song_mt = {
 						subself:zoom(0.5):diffuse(Color.White):shadowlength(0.75)
 						subself:y(32)
 					end,
-					GainFocusCommand=function(subself)
-						if self.song == "CloseThisFolder" or self.song == "Random-Portal" then
-							subself:zoom(0.5)
-						else
-							subself:visible(true)
-						end
-					end,
-					LoseFocusCommand=function(subself)
-						if self.song == "CloseThisFolder" or self.song == "Random-Portal" then
-							subself:zoom(0.5)
-						else
-						end
-						subself:y(32):visible(true)
-					end,
 				},
 				-- Load an edit icon if the song has an edit chart(s).
 				Def.Sprite{
 				Texture=THEME:GetPathG("", "usbicon.png"),
 				InitCommand=function(subself) 
-					subself:visible(false):zoom(0.1):xy(IsUsingWideScreen() and SCREEN_WIDTH/6 or SCREEN_WIDTH/4.8, 25):animate(0) self.edit = subself 
-				end,
-				SlideToTopCommand=function(subself)
-					subself:linear(.12):diffusealpha(0):xy(IsUsingWideScreen() and SCREEN_WIDTH/6 or SCREEN_WIDTH/4.8,75):zoom(0.1):linear(.12):diffusealpha(1)
-				end,
-				SlideBackIntoGridCommand=function(subself)
-					subself:linear(.12):diffusealpha(0):zoom(0.1):xy(IsUsingWideScreen() and SCREEN_WIDTH/6 or SCREEN_WIDTH/4.8,25):linear(.12):diffusealpha(1)
+					subself:visible(false):zoom(0.1):xy(IsUsingWideScreen() and SCREEN_WIDTH/6.8 or SCREEN_WIDTH/4.8, 25):animate(0) self.edit = subself 
 				end,
 				},
 
@@ -196,9 +159,9 @@ local song_mt = {
 				else side = 1 end
 				local grade_position
 				if pn == 'P1' then
-					grade_position = -145
+					grade_position = -130
 				else
-					grade_position = -120
+					grade_position = -112
 				end
 				af[#af+1] = Def.ActorFrame {
 					InitCommand=function(subself) 
@@ -207,9 +170,12 @@ local song_mt = {
 					-- The grade shown to the left of the song name
 					Def.Sprite{
 						Texture=THEME:GetPathG("","_grades/assets/grades 1x18.png"),
-						InitCommand=function(subself) subself:visible(false):zoom(WideScale(.25,.22)):xy(side*grade_position, 25):animate(0) self[pn..'grade_sprite'] = subself end,
-						SlideBackIntoGridCommand=function(subself)
-							subself:linear(.12):diffusealpha(0):zoom( WideScale(.25, 0.22)):xy(side*grade_position,25):linear(.12):diffusealpha(1)
+						InitCommand=function(subself) 
+							subself:visible(false)
+							:zoom(WideScale(.25,.18))
+							:xy(side*grade_position, 25)
+							:animate(0) 
+							self[pn..'grade_sprite'] = subself 
 						end,
 					}
 				}
@@ -293,8 +259,8 @@ local song_mt = {
 					LastSeenSong = GAMESTATE:GetCurrentSong():GetSongDir()
 				end
 				Subtitle = self.song:GetDisplaySubTitle()
-				self.title_bmt:settext( self.song:GetDisplayMainTitle() ):maxwidth(300):diffuse(Color.White):horizalign(left):x(-100)
-				self.subtitle_bmt:settext( self.song:GetDisplaySubTitle() ):maxwidth(300):horizalign(left):x(-100)
+				self.title_bmt:settext( self.song:GetDisplayMainTitle() ):maxwidth(280):diffuse(Color.White):horizalign(left):x(-100)
+				self.subtitle_bmt:settext( self.song:GetDisplaySubTitle() ):maxwidth(280):horizalign(left):x(-100)
 				self.QuadColor:diffuse(color("#0a141b"))
 				if Subtitle ~= "" then
 					self.title_bmt:valign(row.h/170)

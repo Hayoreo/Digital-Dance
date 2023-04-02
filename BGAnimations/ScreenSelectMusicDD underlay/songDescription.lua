@@ -32,11 +32,13 @@ local CDTitlePath
 local MusicWheel, SelectedType
 
 -- width of background quad
-local _w = IsUsingWideScreen() and 320 or 310
+local QuadWidth = SCREEN_WIDTH/3
+local Ratio = 418/164
+local Height = QuadWidth/Ratio
 
 local af = Def.ActorFrame{
 	InitCommand=function(self)
-		self:xy(_screen.cx - (IsUsingWideScreen() and 0 or 165), _screen.cy - 92)
+		self:xy(_screen.cx - (IsUsingWideScreen() and 0 or 165), Height)
 	end,
 
 	CurrentSongChangedMessageCommand=function(self)    self:stoptweening():sleep(0.2):queuecommand("Set") end,
@@ -51,14 +53,14 @@ local af = Def.ActorFrame{
 -- background Quad for Artist, BPM, and Song Length
 af[#af+1] = Def.Quad{
 	InitCommand=function(self)
-		self:zoomto( IsUsingWideScreen() and 320 or 311, 48 )
+		self:zoomto( IsUsingWideScreen() and QuadWidth or 311, 36 ):vertalign(top)
 		self:diffuse(color("#1e282f"))
 	end
 }
 
 -- ActorFrame for Artist, BPM, Song length, and CDTitles because I'M GAY LOL
 af[#af+1] = Def.ActorFrame{
-	InitCommand=function(self) self:xy(-110,-6) end,
+	InitCommand=function(self) self:xy(0 - (QuadWidth/2) + 4,0) end,
 	
 	
 	--- CDTitle
@@ -74,9 +76,9 @@ af[#af+1] = Def.ActorFrame{
 			local dim1, dim2=math.max(Width, Height), math.min(Width, Height)
 			local ratio=math.max(dim1/dim2, 2)
 			local toScale = Width > Height and Width or Height
-			self:zoom(22/toScale * ratio)
-			self:horizalign(right)
-			self:xy(265,6)
+			self:zoom(17/toScale * ratio)
+			self:horizalign(right):vertalign(middle)
+			self:xy(QuadWidth - 10,36/2)
 			self:diffusealpha(0)
 		end,
 		OnCommand=function(self) 
@@ -96,8 +98,7 @@ af[#af+1] = Def.ActorFrame{
 			local dim1, dim2=math.max(Width, Height), math.min(Width, Height)
 			local ratio=math.max(dim1/dim2, 2)
 			local toScale = Width > Height and Width or Height
-			
-			self:zoom(22/toScale * ratio)
+			self:zoom(17/toScale * ratio)
 			self:visible(GAMESTATE:GetCurrentSong() ~= nil and true or false)
 		end
 	},
@@ -105,20 +106,19 @@ af[#af+1] = Def.ActorFrame{
 	-- ----------------------------------------
 	-- Artist Label
 	LoadFont("Common Normal")..{
-		Text=THEME:GetString("SongDescription", GAMESTATE:IsCourseMode() and "NumSongs" or "Artist"),
+		Text=THEME:GetString("SongDescription", GAMESTATE:IsCourseMode() and "NumSongs" or "Artist")..":",
 		InitCommand=function(self) 
 			self
-				:zoom(0.8)
+				:zoom(0.65)
 				:horizalign(right)
-				:y(-10)
-				:x(IsUsingWideScreen() and -9 or -4)
-				:maxwidth(44)
+				:y(6)
+				:x(35)
 				:diffuse(0.5,0.5,0.5,1) end,
 	},
 
 	-- Song Artist (or number of Songs in this Course, if CourseMode)
 	LoadFont("Common Normal")..{
-		InitCommand=function(self) self:zoom(0.8):horizalign(left):xy(IsUsingWideScreen() and -4 or 1,-10):maxwidth(WideScale(225,260)) end,
+		InitCommand=function(self) self:zoom(0.65):horizalign(left):xy(IsUsingWideScreen() and 38 or 1,6):maxwidth(WideScale(225,260)) end,
 		SetCommand=function(self)
 			if GAMESTATE:IsCourseMode() then
 				local course = GAMESTATE:GetCurrentCourse()
@@ -133,18 +133,14 @@ af[#af+1] = Def.ActorFrame{
 	-- ----------------------------------------
 	-- BPM Label
 	LoadFont("Common Normal")..{
-		Text=THEME:GetString("SongDescription", "BPM"),
+		Text=THEME:GetString("SongDescription", "BPM")..":",
 		InitCommand=function(self)
 			self
-				:zoom(0.8)
-				:align(IsUsingWideScreen() and 1 or 1.75,0)
-				:y(-1)
-				:x(-10)
+				:zoom(0.65)
+				:y(18)
+				:x(35)
+				:horizalign(right)
 				:diffuse(0.5,0.5,0.5,1)
-				if IsUsingWideScreen() then
-					else
-					self:x(10)
-				end
 		end
 	},
 
@@ -152,8 +148,7 @@ af[#af+1] = Def.ActorFrame{
 	LoadFont("Common Normal")..{
 		InitCommand=function(self)
 			-- vertical align has to be middle for BPM value in case of split BPMs having a line break
-			self:align(IsUsingWideScreen() and 0 or -0.3, 0.5)
-			self:xy(-5,5):diffuse(1,1,1,1):vertspacing(-8)
+			self:xy(38,18):diffuse(1,1,1,1):vertspacing(-8):vertalign(middle):horizalign(left)
 		end,
 		SetCommand=function(self)
 			if GAMESTATE:GetCurrentSong() == nil then
@@ -165,7 +160,7 @@ af[#af+1] = Def.ActorFrame{
 			-- if only one player is joined, stringify the DisplayBPMs and return early
 			if #GAMESTATE:GetHumanPlayers() == 1 then
 				-- StringifyDisplayBPMs() is defined in ./Scipts/SL-BPMDisplayHelpers.lua
-				self:settext(StringifyDisplayBPMs() or ""):zoom(0.8)
+				self:settext(StringifyDisplayBPMs() or ""):zoom(0.65)
 				return
 			end
 
@@ -176,12 +171,12 @@ af[#af+1] = Def.ActorFrame{
 			-- it's likely that BPM range is the same for both charts
 			-- no need to show BPM ranges for both players if so
 			if p1bpm == p2bpm then
-				self:settext(p1bpm):zoom(0.8)
+				self:settext(p1bpm):zoom(0.65)
 
 			-- different BPM ranges for the two players
 			else
 				-- show the range for both P1 and P2 split by a newline characters, shrunk slightly to fit the space
-				self:settext( "P1 ".. p1bpm .. "\n" .. "P2 " .. p2bpm ):zoom(0.6)
+				self:settext( "P1 ".. p1bpm .. "\n" .. "P2 " .. p2bpm ):zoom(0.5)
 				-- the "P1 " and "P2 " segments of the string should be grey
 				self:AddAttribute(0,             {Length=3, Diffuse={0.60,0.60,0.60,1}})
 				self:AddAttribute(3+p1bpm:len(), {Length=3, Diffuse={0.60,0.60,0.60,1}})
@@ -207,30 +202,20 @@ af[#af+1] = Def.ActorFrame{
 	-- ----------------------------------------
 	-- Song Duration Label
 	LoadFont("Common Normal")..{
-		Text=THEME:GetString("SongDescription", "Length"),
+		Text=THEME:GetString("SongDescription", "Length")..":",
 		InitCommand=function(self)
-			self:align(IsUsingWideScreen() and 1 or 0.6,0):diffuse(0.5,0.5,0.5,1):zoom(0.8)
-			self:x(_w-330):y(14)
+			self:diffuse(0.5,0.5,0.5,1):zoom(0.65):horizalign(right)
+			self:x(35):y(30)
 		end
 	},
 
 	-- Song Duration Value
 	LoadFont("Common Normal")..{
-		InitCommand=function(self) 
-			self
-			:align(IsUsingWideScreen() and 0 or -0.7,0)
-			:xy(_w-330 + 5, 14) 
-			:zoom(0.8)
-			end,
+		InitCommand=function(self) self:xy(38, 30):zoom(0.65):horizalign(left) end,
 		SetCommand=function(self)
-			
-
 			local seconds
 
 			if SelectedType == "WheelItemDataType_Song" or "SwitchFocusToSingleSong" then
-				-- GAMESTATE:GetCurrentSong() can return nil here if we're in pay mode on round 2 (or later)
-				-- and we're returning to SSM to find that the song we'd just played is no longer available
-				-- because it exceeds the 2-round or 3-round time limit cutoff.
 				local song = GAMESTATE:GetCurrentSong()
 				if song then
 					seconds = song:MusicLengthSeconds()

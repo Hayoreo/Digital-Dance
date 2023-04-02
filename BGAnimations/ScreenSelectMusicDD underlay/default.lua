@@ -132,8 +132,8 @@ local t = Def.ActorFrame {
 	end,
 	
 	-- #Wheels. Define how many items exist in the wheel here and how many songs it's offset by/the X/Y positioning btw.
-	SongWheel:create_actors( "SongWheel", IsUsingWideScreen() and 14 or 19, song_mt, IsUsingWideScreen() and 0 or 160, songwheel_y_offset, IsUsingWideScreen() and 6 or 10),
-	GroupWheel:create_actors( "GroupWheel", IsUsingWideScreen() and row.how_many * col.how_many or 19, group_mt, IsUsingWideScreen() and 0 or 160, IsUsingWideScreen() and 0 or -98),
+	SongWheel:create_actors( "SongWheel", IsUsingWideScreen() and 18 or 19, song_mt, IsUsingWideScreen() and 0 or 160, songwheel_y_offset, IsUsingWideScreen() and 8 or 10),
+	GroupWheel:create_actors( "GroupWheel", IsUsingWideScreen() and 18 or 19, group_mt, IsUsingWideScreen() and 0 or 160, IsUsingWideScreen() and 0 or -98),
 	
 	-- The highlight for the current song/group
 	LoadActor("./WheelHighlight.lua"),

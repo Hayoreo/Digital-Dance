@@ -55,14 +55,11 @@ return Def.Sprite{
 			self:stoptweening():sleep(0.2):queuecommand("Set") 
 		end
 	end,
-	CurrentCourseChangedMessageCommand=function(self) 	self:stoptweening():sleep(0.2):queuecommand("Set") end,
-	CurrentStepsP1ChangedMessageCommand=function(self) 	self:stoptweening():sleep(0.2):queuecommand("Set") end,
-	CurrentTrailP1ChangedMessageCommand=function(self) 	self:stoptweening():sleep(0.2):queuecommand("Set") end,
-	CurrentStepsP2ChangedMessageCommand=function(self) 	self:stoptweening():sleep(0.2):queuecommand("Set") end,
-	CurrentTrailP2ChangedMessageCommand=function(self) 	self:stoptweening():sleep(0.2):queuecommand("Set") end,
-	SongIsReloadingMessageCommand=function(self)		self:stoptweening():sleep(0.2):queuecommand("Set") end,
-	
-	CloseThisFolderHasFocusMessageCommand=function(self) self:stoptweening():sleep(0.2):queuecommand("Dissappear") end,
+	CurrentCourseChangedMessageCommand=function(self) 				self:stoptweening():sleep(0.2):queuecommand("Set") end,
+	["CurrentSteps"..pn.."ChangedMessageCommand"]=function(self) 	self:stoptweening():sleep(0.2):queuecommand("Set") end,
+	["CurrentTrail"..pn.."ChangedMessageCommand"]=function(self) 	self:stoptweening():sleep(0.2):queuecommand("Set") end,
+	SongIsReloadingMessageCommand=function(self)					self:stoptweening():sleep(0.2):queuecommand("Set") end,
+	CloseThisFolderHasFocusMessageCommand=function(self) 			self:stoptweening():sleep(0.2):queuecommand("Dissappear") end,
 	
 	SetCommand=function(self)
 		local song = (GAMESTATE:IsCourseMode() and GAMESTATE:GetCurrentCourse()) or GAMESTATE:GetCurrentSong()

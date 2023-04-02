@@ -1,15 +1,17 @@
 local SongOrCourse
 local CurrentGroup
+local BannerWidth = SCREEN_WIDTH/3
+local BannerRatio = 418/164
+local BannerHeight = BannerWidth/BannerRatio
 
 local t = Def.ActorFrame{
 	OnCommand=function(self)
 		if IsUsingWideScreen() then
-			self:zoom(0.7655)
 			if GAMESTATE:IsCourseMode() then
 				self:zoom(0.7655)
 				self:xy(164 - 5, WideScale(62,62.75))
 			else
-				self:xy(_screen.cx, WideScale(62,62.75))
+				self:xy(_screen.cx, 0)
 			end
 		else
 			self:zoom(0.75)
@@ -21,7 +23,7 @@ local t = Def.ActorFrame{
 	Def.ActorFrame{
 		LoadActor("default banner")..{
 			Name="FallbackBanner",
-			OnCommand=cmd(setsize,418,164)
+			OnCommand=cmd(setsize,BannerWidth,BannerHeight;vertalign,top)
 		},
 	},
 	
@@ -43,7 +45,7 @@ local t = Def.ActorFrame{
 			CurrentGroup = NameOfGroup
 			if SongOrCourse and SongOrCourse:HasBanner() then
 				self:LoadFromSongBanner(SongOrCourse)
-				self:zoomto(418,164)
+				self:zoomto(BannerWidth,BannerHeight):vertalign(top)
 				self:visible(true)
 			else
 				self:visible(false)
@@ -59,7 +61,7 @@ local t = Def.ActorFrame{
 				self:visible(false)
 			else
 				self:LoadFromSongGroup(CurrentGroup)
-				self:zoomto(418,164)
+				self:zoomto(BannerWidth,BannerHeight):vertalign(top)
 				self:visible(false)
 			end
 		end,
@@ -76,7 +78,7 @@ local t = Def.ActorFrame{
 				self:visible(false)
 			else
 				self:LoadFromSongGroup(CurrentGroup)
-				self:zoomto(418,164)
+				self:zoomto(BannerWidth,BannerHeight)
 				self:visible(true)
 			end
 		end,
@@ -90,7 +92,7 @@ local t = Def.ActorFrame{
 
 		--quad behind the music rate text
 		Def.Quad{
-			InitCommand=function(self) self:diffuse( color("#1E282FCC") ):zoomto(418,14) end
+			InitCommand=function(self) self:diffuse( color("#1E282FCC") ):zoomto(BannerWidth,14) end
 		},
 
 		--the music rate text
@@ -116,7 +118,7 @@ local t = Def.ActorFrame{
 		Def.Quad{
 			InitCommand=function(self) 
 				self:diffuse( color("#000000") )
-				self:zoomto(418,80)
+				self:zoomto(BannerWidth,80)
 				self:diffusealpha(0.5)
 			end,
 		},
