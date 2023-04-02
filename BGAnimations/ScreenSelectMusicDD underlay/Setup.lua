@@ -2,6 +2,7 @@ local max_length_group = '1:00:00+'
 local max_difficulty_group = '40+'
 local max_bpm_group = '400+'
 local NoSongs = false
+local AllSongs = SONGMAN:GetAllSongs()
 IsUntiedWR = false
 
 local song_lengths = {}
@@ -178,7 +179,7 @@ end
 local GroupSongsBy = function(func)
 	grouped_songs = {}
 
-	for song in ivalues(SONGMAN:GetAllSongs()) do
+	for song in ivalues(AllSongs) do
 		local song_group = func(song)
 
 		if grouped_songs[song_group] == nil then
@@ -261,7 +262,7 @@ local UpdatePrunedSongs = function()
 	local songs_by_group
 	if SongSearchSSMDD then
 		songs_by_group = {}
-		songs_by_group['Search Results'] = SONGMAN:GetAllSongs()
+		songs_by_group['Search Results'] = AllSongs
 	elseif sort_pref == 1 then
 		songs_by_group = GroupSongsBy(function(song) return song:GetGroupName() end)
 	elseif sort_pref == 2 then
@@ -274,7 +275,7 @@ local UpdatePrunedSongs = function()
 		songs_by_group = GroupSongsBy(GetSongBpmGroup)
 	elseif sort_pref == 6 then
 		songs_by_group = {}
-		for song in ivalues(SONGMAN:GetAllSongs()) do
+		for song in ivalues(AllSongs) do
 			local meters_set = {}
 			for steps in ivalues(song:GetStepsByStepsType(steps_type)) do
 				if GetGroovestatsFilter() == 'No' or (
@@ -470,7 +471,7 @@ end
 
 local function GetGroupsBy(func)
 	local groups_set = {}
-	for song in ivalues(SONGMAN:GetAllSongs()) do
+	for song in ivalues(AllSongs) do
 		local group = func(song)
 		groups_set[group] = true
 	end
@@ -525,7 +526,7 @@ local GetGroups = function()
 		return groups
 	elseif sort_pref == 6 then
 		local groups_set = {}
-		for song in ivalues(SONGMAN:GetAllSongs()) do
+		for song in ivalues(AllSongs) do
 			for steps in ivalues(song:GetStepsByStepsType(steps_type)) do
 				groups_set[GetStepsDifficultyGroup(steps)] = true
 			end

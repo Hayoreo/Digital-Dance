@@ -1,6 +1,7 @@
 local max_length_group = '1:00:00+'
 local max_difficulty_group = '40+'
 local max_bpm_group = '400+'
+local AllCourses = SONGMAN:GetAllCourses(PREFSMAN:GetPreference("AutogenGroupCourses"))
 IsUntiedWR = false
 
 local course_lengths = {}
@@ -186,7 +187,7 @@ end
 local GroupCoursesBy = function(func)
 	grouped_courses = {}
 
-	for course in ivalues(SONGMAN:GetAllCourses(PREFSMAN:GetPreference("AutogenGroupCourses"))) do
+	for course in ivalues(AllCourses) do
 		local course_group = func(course)
 
 		if grouped_courses[course_group] == nil then
@@ -248,7 +249,7 @@ local UpdatePrunedCourses = function()
 		courses_by_group = GroupCoursesBy(GetCourseBpmGroup)
 	elseif sort_pref == 5 then
 		courses_by_group = {}
-		for course in ivalues(SONGMAN:GetAllCourses(PREFSMAN:GetPreference("AutogenGroupCourses"))) do
+		for course in ivalues(AllCourses) do
 			local meters_set = {}
 			for trail in ivalues(GetPlayableTrails(course)) do
 				local meter = GetStepsDifficultyGroup(trail)
@@ -406,7 +407,7 @@ end
 
 local function GetGroupsBy(func)
 	local groups_set = {}
-	for course in ivalues(SONGMAN:GetAllCourses(PREFSMAN:GetPreference("AutogenGroupCourses"))) do
+	for course in ivalues(AllCourses) do
 		local group = func(course)
 		groups_set[group] = true
 	end
@@ -454,7 +455,7 @@ local GetGroups = function()
 		return groups
 	elseif sort_pref == 5 then
 		local groups_set = {}
-		for course in ivalues(SONGMAN:GetAllCourses(PREFSMAN:GetPreference("AutogenGroupCourses"))) do
+		for course in ivalues(AllCourses) do
 			for steps in ivalues(GetPlayableTrails(course)) do
 				groups_set[GetStepsDifficultyGroup(steps)] = true
 			end
