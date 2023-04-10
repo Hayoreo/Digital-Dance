@@ -112,7 +112,7 @@ return Def.ActorFrame{
 			else
 				self
 				:x(IsUsingWideScreen() and 42 or 68)
-				:maxwidth(IsUsingWideScreen() and WideScale(140,250) or 295)
+				:maxwidth(IsUsingWideScreen() and (SCREEN_WIDTH/3) - 15 or 295)
 				:zoom(0.9)
 			end
 		end,
