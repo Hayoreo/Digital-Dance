@@ -33,7 +33,9 @@ local af = Def.ActorFrame{
 			-- Check if the mouse has moved on this update, if it hasn't increase the counter.
 			if PastMouseX == MouseX and PastMouseY == MouseY and HideMouseCounter < MaxMouseCounter then
 				HideMouseCounter = HideMouseCounter + 1
-			elseif HideMouseCounter == MaxMouseCounter and PastMouseX ~= MouseX and PastMouseY ~= MouseY then
+			elseif HideMouseCounter == MaxMouseCounter and PastMouseX == MouseX and PastMouseY == MouseY then
+				-- don't increment if we're already maxed i don't want to deal with potential overflow lol
+			else
 				HideMouseCounter = 0
 			end
 			
