@@ -1,12 +1,12 @@
 -- get the machine_profile now at file init; no need to keep fetching with each SetCommand
 local machine_profile = PROFILEMAN:GetMachineProfile()
 local nsj = GAMESTATE:GetNumSidesJoined()
--- the height of the footer is defined in ./Graphics/_footer.lua, but we'll
+-- the height of the footer is defined in ./_footer.lua, but we'll
 -- use it here when calculating where to position the PaneDisplay
 local footer_height = 32
 
 -- height of the PaneDisplay in pixels
-local pane_height = 48
+local pane_height = 120
 
 local text_zoom = IsUsingWideScreen() and WideScale(0.8, 0.9) or 0.9
 
@@ -230,10 +230,10 @@ end
 -- define the x positions of four columns, and the y positions of three rows of PaneItems
 local pos = {
 	col = { 
-	IsUsingWideScreen() and WideScale(-120,-155) or -90, 
-	IsUsingWideScreen() and WideScale(-36,-16) or 50, 
-	WideScale(54,76), 
-	WideScale(150, 190) },
+	IsUsingWideScreen() and WideScale(-120,-80) or -90, 
+	IsUsingWideScreen() and WideScale(-36,59) or 50, 
+	WideScale(54,151), 
+	WideScale(150, 265) },
 	
 	row = { 
 	IsUsingWideScreen() and -55 or -55, 
@@ -275,30 +275,18 @@ for player in ivalues(PlayerNumber) do
 	af2.InitCommand=function(self)
 		self:visible(GAMESTATE:IsHumanPlayer(player))
 		if player == PLAYER_1 then
-			self:x(IsUsingWideScreen() and _screen.w * 0.25 - 5 or 160)
-			self:y(IsUsingWideScreen() and 0 or 199)
-			self:align(0,IsUsingWideScreen() and 0 or 0)
-			if IsUsingWideScreen() then
-				if nsj == 1 then
-					self:align(0,0)
-				end
-			end
-			
+			self:x(IsUsingWideScreen() and _screen.cx/3 or 160)		
 		elseif player == PLAYER_2 then
-			self:x(IsUsingWideScreen() and _screen.w * 0.75 + 156 or SCREEN_RIGHT - 160)
-			self:align(0, IsUsingWideScreen() and 0 or 0)
+			self:x(IsUsingWideScreen() and _screen.w - (_screen.w/6) or SCREEN_RIGHT - 160)
 			if not IsUsingWideScreen()then
 				if nsj == 1 then
 					self:x(160)
-					self:align(0,0)
 				elseif nsj == 2 then
 					self:x(SCREEN_RIGHT - 160)
-					self:align(0,0)
 				end
 			end
 		end
-
-		self:y(_screen.h - footer_height - pane_height)
+		self:y(_screen.h - footer_height - 50)
 	end
 
 	af2.PlayerJoinedMessageCommand=function(self, params)
@@ -332,10 +320,10 @@ for player in ivalues(PlayerNumber) do
 	af2[#af2+1] = Def.Quad{
 		Name="BackgroundQuad",
 		InitCommand=function(self)
-			self:zoomtowidth(IsUsingWideScreen() and _screen.w/2-160 or 310)
-			self:zoomtoheight(_screen.h/8+56)
+			self:zoomtowidth(IsUsingWideScreen() and _screen.w/3 or 310)
+			self:zoomtoheight(pane_height)
 			self:y(-10)
-			self:x(IsUsingWideScreen() and -76.5 or -6)
+			self:x(IsUsingWideScreen() and 0 or -6)
 			if player == PLAYER_2 and not IsUsingWideScreen() and nsj == 2 then
 				self:zoomtowidth(320)
 				self:addx(5)

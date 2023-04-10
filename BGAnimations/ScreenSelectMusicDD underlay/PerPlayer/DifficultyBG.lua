@@ -3,9 +3,13 @@
 local P1 = GAMESTATE:IsHumanPlayer(PLAYER_1)
 local P2 = GAMESTATE:IsHumanPlayer(PLAYER_2)
 
-local Player1X = IsUsingWideScreen() and WideScale(SCREEN_LEFT + 77.5,SCREEN_LEFT + 132.5) or SCREEN_LEFT + 160
-local Player1Y = IsUsingWideScreen() and _screen.cy + 44 or _screen.cy - 68
-local QuadHeight = 55
+local FooterHeight = 32
+local PaneHeight = 120
+local QuadY = _screen.h - FooterHeight - PaneHeight
+
+local Player1X = IsUsingWideScreen() and 0 or SCREEN_LEFT + 160
+local QuadHeight = 50
+local QuadWidth = SCREEN_WIDTH/3
 
 local function getInputHandler(actor, player)
 	return (function(event)
@@ -17,19 +21,15 @@ end
 
 local af = Def.ActorFrame{
 	Name="DifficultyBGs",
-	InitCommand=function(self) self:horizalign(left):vertalign(top):xy(SCREEN_LEFT, 20 ) end,
+	InitCommand=function(self) self:y(QuadY) end,
 	
 	--- The background quad for the grid to make the whole thing more legible.
 	Def.Quad{
 		Name="DiffBackground",
 		InitCommand=function(self)
-				self:x(Player1X)
-				self:y(Player1Y)
-				self:draworder(0)
-				self:diffuse(color("#1e282f"))
+				self:draworder(0):diffuse(color("#1e282f")):horizalign(left):vertalign(bottom)
 				if IsUsingWideScreen() then
-					self:zoomx(WideScale(160,267))
-					self:zoomy(QuadHeight)
+					self:zoomto(QuadWidth,QuadHeight)
 					self:visible(P1)
 				else
 					self:zoomto(270,40)
@@ -46,12 +46,11 @@ local af = Def.ActorFrame{
 		Name="DiffBackground2",
 		InitCommand=function(self)
 			if IsUsingWideScreen() then
-				self:visible(P2)
-				self:xy((SCREEN_RIGHT - Player1X)-1.5,Player1Y)
+				self:x(SCREEN_RIGHT):horizalign(right):vertalign(bottom)
 				self:draworder(0)
 				self:diffuse(color("#1e282f"))
-				self:zoomx(WideScale(160,267))
-				self:zoomy(QuadHeight)
+				self:zoomto(QuadWidth,QuadHeight)
+				self:visible(P2)
 			else
 				self:visible(false)
 			end

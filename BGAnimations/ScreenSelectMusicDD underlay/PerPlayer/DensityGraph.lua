@@ -8,9 +8,16 @@ if GAMESTATE:IsCourseMode() then return end
 local player = ...
 local pn = ToEnumShortString(player)
 
+-- Get the Y position for this section
+local FooterHeight = 32
+local PaneHeight = 120
+local DifficultyHeight = 50
+local StepsHeight = 20
+local YPosition = _screen.h - (FooterHeight + PaneHeight + DifficultyHeight + StepsHeight)
+
 -- Height and width of the density graph.
 local height = 64
-local width = IsUsingWideScreen() and WideScale(161,267) or 309
+local width = IsUsingWideScreen() and SCREEN_WIDTH/3 or 309
 
 local function getInputHandler(actor, player)
 	return (function(event)
@@ -27,20 +34,10 @@ local af = Def.ActorFrame{
 		else
 			self:visible( GAMESTATE:IsHumanPlayer(player) )
 		end
-		self:horizalign(left)
-		self:x(SCREEN_LEFT + width/2)
-		self:y(IsUsingWideScreen() and _screen.cy-30 or _screen.cy+60)
+		self:y(IsUsingWideScreen() and YPosition or _screen.cy+60)
 
 		if player == PLAYER_2 then
-			self:x(SCREEN_RIGHT - width/2)
-			if IsUsingWideScreen() then
-				self:addx(0.5)
-			elseif nsj == 1 then
-				self:x(SCREEN_LEFT + width/2)
-			end
-		end
-		if IsUsingWideScreen() then
-			self:addx(-1)
+			self:x(SCREEN_RIGHT - width)
 		end
 		if not IsUsingWideScreen() and nsj == 2 then
 			self:visible(false)
@@ -131,7 +128,8 @@ local af2 = af[#af]
 af2[#af2+1] = Def.Quad{
 	Name="DensityQuad",
 	InitCommand=function(self)
-		self:diffuse(color("#1e282f")):zoomto(width, height)
+		self:diffuse(color("#1e282f")):zoomto(width, height):vertalign(bottom):horizalign(left)
+		self:y(-17)
 	end,
 }
 
@@ -139,7 +137,7 @@ af2[#af2+1] = Def.Quad{
 af2[#af2+1] = NPS_Histogram(player, width, height)..{
 	Name="DensityGraph",
 	OnCommand=function(self)
-		self:addx(-width/2):addy(height/2)
+		self:horizalign(left):y(-17)
 	end,
 }
 -- Don't let the density graph parse the chart.
@@ -151,11 +149,11 @@ af2[#af2+1] = LoadFont("Miso/_miso")..{
 	Name="NPS",
 	Text="Peak NPS: ",
 	InitCommand=function(self)
-		self:horizalign(player == PLAYER_1 and left or right):zoom(0.8):addy(-40)
+		self:y(-20 - height):horizalign(player == PLAYER_1 and left or right):vertalign(bottom):zoom(0.8)
 		if player == PLAYER_1 then
-			self:addx(-125)
+			self:x(5)
 		elseif player == PLAYER_2 then
-			self:addx(130)
+			self:x(SCREEN_WIDTH/3 - 5)
 		end
 		-- We want white text.
 		self:diffuse({1, 1, 1, 1})
@@ -173,13 +171,12 @@ af2[#af2+1] = Def.ActorFrame{
 	Name="Breakdown",
 	InitCommand=function(self)
 		local actorHeight = 17
-		self:addy(height/2 + actorHeight/2)
 	end,
 
 	Def.Quad{
 		InitCommand=function(self)
 			local bgHeight = 17
-			self:diffuse(color("#000000")):zoomto(width, bgHeight):diffusealpha(0.85)
+			self:diffuse(color("#000000")):zoomto(width, bgHeight):vertalign(bottom):horizalign(left):diffusealpha(0.85)
 		end
 	},
 	
@@ -189,7 +186,9 @@ af2[#af2+1] = Def.ActorFrame{
 		InitCommand=function(self)
 			local textHeight = 17
 			local textZoom = 0.8
-			self:maxwidth(width/textZoom):zoom(textZoom)
+			self:maxwidth(width/textZoom):zoom(textZoom):vertalign(bottom):horizalign(center)
+			self:y(-2)
+			self:x(width/2)
 		end,
 		RedrawCommand=function(self)
 			local textZoom = 0.8
@@ -207,13 +206,11 @@ af2[#af2+1] = Def.ActorFrame{
 af2[#af2+1] = Def.ActorFrame{
 	Name="Total Measures",
 	InitCommand=function(self)
-		self:x(-125)
-		self:addy(-56)
+		self:y(-42 - height):vertalign(bottom)
 		if player == PLAYER_1 then
-			self:horizalign(left)
+			self:x(5):horizalign(left)
 		elseif player == PLAYER_2 then
-			self:horizalign(right)
-			self:addx(255)
+			self:x(SCREEN_WIDTH/3 - 5):horizalign(right)
 		end
 	end,
 	

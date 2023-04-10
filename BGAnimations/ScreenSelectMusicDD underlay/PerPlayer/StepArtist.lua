@@ -2,8 +2,15 @@ local player = ...
 local pn = ToEnumShortString(player)
 local p = PlayerNumber:Reverse()[player]
 
+-- Get the Y position for this section
+local FooterHeight = 32
+local PaneHeight = 120
+local DifficultyHeight = 50
+local QuadY = _screen.h - (PaneHeight + FooterHeight + DifficultyHeight)
+
 local text_table, marquee_index
 local nsj = GAMESTATE:GetNumSidesJoined()
+local QuadWidth = SCREEN_WIDTH/3
 
 if GAMESTATE:IsCourseMode() then
 return end
@@ -28,38 +35,19 @@ return Def.ActorFrame{
 	-- animation is left here as a reminder to a future me to maybe look into it.
 	PlayerUnjoinedMessageCommand=function(self, params)
 		if params.Player == player then
-			self:ease(0.5, 275):addy(scale(p,0,1,1,-1) * 30):diffusealpha(0)
+			self:ease(0.5, 275):addy(scale(0,0,1,1,-1) * 30):diffusealpha(0)
 		end
 	end,
 
 	-- depending on the value of pn, this will either become
 	-- an AppearP1Command or an AppearP2Command when the screen initializes
-	["Appear"..pn.."Command"]=function(self) self:visible(true):addy(scale(p,0,1,-1,1) * 30) end,
+	["Appear"..pn.."Command"]=function(self) self:visible(true) end,
 
 	InitCommand=function(self)
-		self:visible( false ):halign( p )
-
-		if player == PLAYER_1 then
-
-			self:y(IsUsingWideScreen() and _screen.cy + 58 or _screen.cy + 14)
-			self:x( _screen.cx - (IsUsingWideScreen() and 453 or 347))
-			if not IsUsingWideScreen() then
-				if nsj == 2 then
-					self:y(353)
-				end
-			end
-		elseif player == PLAYER_2 then
-			self:y(_screen.cy - 2)
-			self:x( _screen.cx - (IsUsingWideScreen() and WideScale(-29,-136) or 346))
-			if not IsUsingWideScreen() then
-				self:y(_screen.cy - 27)
-				if nsj == 2 then
-					self:y(293)
-					self:x(_screen.cx - 25)
-				elseif nsj == 1 then
-					self:y(192)
-				end
-			end
+		self:visible(false)
+		self:y(IsUsingWideScreen() and QuadY or _screen.cy + 14)
+		if player == PLAYER_2 then
+			self:x( _screen.w - QuadWidth)
 		end
 
 		if GAMESTATE:IsHumanPlayer(player) then
@@ -71,14 +59,8 @@ return Def.ActorFrame{
 	Def.Quad{
 		Name="BackgroundQuad",
 		InitCommand=function(self) 
-			self:zoomto(IsUsingWideScreen() and WideScale(160,267) or 310, _screen.h/28)
-			self:x(IsUsingWideScreen() and WideScale(212,158) or 181)
-			if not IsUsingWideScreen() then
-				if nsj == 2 and player == PLAYER_2 then
-					self:zoomx(320)
-					self:addx(4)
-				end
-			end
+			self:zoomto(QuadWidth, 20):horizalign(left):vertalign(bottom)
+			self:x(IsUsingWideScreen() and 0 or 181)
 			self:playcommand("Reset")
 		end,
 		ResetCommand=function(self)
@@ -99,8 +81,9 @@ return Def.ActorFrame{
 		InitCommand=function(self)
 			self
 			:diffuse(0,0,0,1)
-			:horizalign(left)
-			:x(IsUsingWideScreen() and WideScale(130,28) or 30)
+			:horizalign(left):vertalign(bottom)
+			:x(IsUsingWideScreen() and 5 or 30)
+			:y(-3)
 			:maxwidth(40)
 			:zoom(0.9)
 			if not GAMESTATE:IsCourseMode() then
@@ -122,13 +105,13 @@ return Def.ActorFrame{
 	--stepartist text
 	LoadFont("Common Normal")..{
 		InitCommand=function(self)
-			self:diffuse(color("#1e282f")):horizalign(left)
+			self:diffuse(color("#1e282f")):horizalign(left):vertalign(bottom):y(-3)
 
 			if GAMESTATE:IsCourseMode() then
 				self:x(60):maxwidth(138)
 			else
 				self
-				:x(IsUsingWideScreen() and WideScale(168,65) or 68)
+				:x(IsUsingWideScreen() and 45 or 68)
 				:maxwidth(IsUsingWideScreen() and WideScale(140,250) or 295)
 				:zoom(0.9)
 			end
