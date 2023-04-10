@@ -264,7 +264,7 @@ t.Handler = function(event)
 				
 				-- Scroll the song wheel up/down with the mouse wheel.
 				if event.DeviceInput.button == "DeviceButton_mousewheel up" and not PressStartForOptions then
-					if IsMouseGucci(0, (_screen.cy + 63.5), WideScale(160,267), 56, "left", "middle") then
+					if IsMouseGucci(0, _screen.h - 152, SCREEN_WIDTH/3, 50, "left", "bottom") then
 						if GAMESTATE:IsHumanPlayer("PlayerNumber_P1") then
 							ChartUpdater.DecreaseDifficulty("PlayerNumber_P1")
 						else
@@ -273,7 +273,7 @@ t.Handler = function(event)
 							stop_music()
 							ChartUpdater.UpdateCharts()
 						end
-					elseif IsMouseGucci(SCREEN_RIGHT, (_screen.cy + 63.5), WideScale(160,267), 56, "right", "middle") then
+					elseif IsMouseGucci(SCREEN_RIGHT, _screen.h - 152, SCREEN_WIDTH/3, 50, "right", "bottom") then
 						if GAMESTATE:IsHumanPlayer("PlayerNumber_P2") then
 							ChartUpdater.DecreaseDifficulty("PlayerNumber_P2")
 						else
@@ -289,7 +289,7 @@ t.Handler = function(event)
 						ChartUpdater.UpdateCharts()
 					end
 				elseif event.DeviceInput.button == "DeviceButton_mousewheel down" and not PressStartForOptions then
-					if IsMouseGucci(0, (_screen.cy + 63.5), WideScale(160,267), 56, "left", "middle") then
+					if IsMouseGucci(0, _screen.h - 152, SCREEN_WIDTH/3, 50, "left", "bottom") then
 						if GAMESTATE:IsHumanPlayer("PlayerNumber_P1") then
 							ChartUpdater.IncreaseDifficulty("PlayerNumber_P1")
 						else
@@ -298,7 +298,7 @@ t.Handler = function(event)
 							stop_music()
 							ChartUpdater.UpdateCharts()
 						end
-					elseif IsMouseGucci(SCREEN_RIGHT, (_screen.cy + 63.5), WideScale(160,267), 56, "right", "middle") then
+					elseif IsMouseGucci(SCREEN_RIGHT, _screen.h - 152, SCREEN_WIDTH/3, 50, "right", "bottom") then
 						if GAMESTATE:IsHumanPlayer("PlayerNumber_P2") then
 							ChartUpdater.IncreaseDifficulty("PlayerNumber_P2")
 						else
@@ -372,37 +372,37 @@ t.Handler = function(event)
 					-- Change the difficulty of the song when a player left clicks a chart.
 					if GAMESTATE:IsSideJoined('PlayerNumber_P1') then
 						-- Novice position
-						if IsMouseGucci(9, WideScale(358,288), 65, 46, "left", "top", 0.75) then
+						if IsMouseGucci(3.5, _screen.h-157, 54, 42, "left", "bottom", 1) then
 							ChartUpdater.ClickDifficulty("PlayerNumber_P1", "Difficulty_Beginner")
 						-- Easy Position
-						elseif IsMouseGucci(59, WideScale(358,288), 65, 46, "left", "top", 0.75) then
+						elseif IsMouseGucci(59.5, _screen.h-157, 54,42, "left", "bottom", 1) then
 							ChartUpdater.ClickDifficulty('PlayerNumber_P1', "Difficulty_Easy")
 						-- Medium Position
-						elseif IsMouseGucci(110, WideScale(358,288), 64, 46, "left", "top", 0.75)  then
+						elseif IsMouseGucci(115.5, _screen.h-157, 54,42, "left", "bottom", 1)  then
 							ChartUpdater.ClickDifficulty('PlayerNumber_P1', "Difficulty_Medium")
 						-- Hard Position
-						elseif IsMouseGucci(160, WideScale(358,288), 65, 46, "left", "top", 0.75) then
+						elseif IsMouseGucci(171.5, _screen.h-157, 54,42, "left", "bottom", 1) then
 							ChartUpdater.ClickDifficulty('PlayerNumber_P1', "Difficulty_Hard")
 						-- Expert/Edit Position
-						elseif IsMouseGucci(210, WideScale(358,288), 65, 46, "left", "top", 0.75) then
+						elseif IsMouseGucci(227.5, _screen.h-157, 54,42, "left", "bottom", 1) then
 							ChartUpdater.ClickDifficulty('PlayerNumber_P1', "Difficulty_Challenge")
 						end
 					end
 					if GAMESTATE:IsSideJoined('PlayerNumber_P2') then
 						-- Novice position
-						if IsMouseGucci(SCREEN_WIDTH - 258, WideScale(358,288), 65, 46, "left", "top", 0.75) then
+						if IsMouseGucci((_screen.w/3*2 - 52.5) + 1*56, _screen.h-157, 54,42, "left", "bottom", 1) then
 							ChartUpdater.ClickDifficulty("PlayerNumber_P2", "Difficulty_Beginner")	
 						-- Easy Position
-						elseif IsMouseGucci(SCREEN_WIDTH - 208, WideScale(358,288), 64, 46, "left", "top", 0.75) then
+						elseif IsMouseGucci((_screen.w/3*2 - 52.5) + 2*56,_screen.h-157, 54,42, "left", "bottom", 1) then
 							ChartUpdater.ClickDifficulty('PlayerNumber_P2', "Difficulty_Easy")
 						-- Medium Position
-						elseif IsMouseGucci(SCREEN_WIDTH - 158.5, WideScale(358,288), 65, 46, "left", "top", 0.75)  then
+						elseif IsMouseGucci((_screen.w/3*2 - 52.5) + 3*56, _screen.h-157, 54,42, "left", "bottom", 1)  then
 							ChartUpdater.ClickDifficulty('PlayerNumber_P2', "Difficulty_Medium")
 						-- Hard Position
-						elseif IsMouseGucci(SCREEN_WIDTH - 109, WideScale(358,288), 66, 46, "left", "top", 0.75) then
+						elseif IsMouseGucci((_screen.w/3*2 - 52.5) + 4*56, _screen.h-157, 54,42, "left", "bottom", 1) then
 							ChartUpdater.ClickDifficulty('PlayerNumber_P2', "Difficulty_Hard")
 						-- Expert/Edit Position
-						elseif IsMouseGucci(SCREEN_WIDTH - 58, WideScale(358,288), 64, 46, "left", "top", 0.75) then
+						elseif IsMouseGucci((_screen.w/3*2 - 52.5) + 5*56, _screen.h-157, 54,42, "left", "bottom", 1) then
 							ChartUpdater.ClickDifficulty('PlayerNumber_P2', "Difficulty_Challenge")
 						end
 					end

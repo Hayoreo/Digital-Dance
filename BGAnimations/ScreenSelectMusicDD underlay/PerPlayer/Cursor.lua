@@ -1,6 +1,5 @@
 local player = ...
 local pn = ToEnumShortString(player)
-local p = PlayerNumber:Reverse()[player]
 local P1 = GAMESTATE:IsHumanPlayer(PLAYER_1)
 local P2 = GAMESTATE:IsHumanPlayer(PLAYER_2)	
 
@@ -19,8 +18,8 @@ return Def.Sprite{
 	Texture=THEME:GetPathB("ScreenSelectMusicDD","underlay/PerPlayer/highlight.png"),
 	Name="Cursor"..pn,
 	InitCommand=function(self)
-		self:visible(GAMESTATE:IsHumanPlayer(player)):halign( p )
-		self:zoom(IsUsingWideScreen() and WideScale(0.8,1) or 1)
+		self:visible(GAMESTATE:IsHumanPlayer(player))
+		self:y( IsUsingWideScreen() and 302.5 or 194)
 		-- diffuse with white to make it less #OwMyEyes
 		local color = PlayerColor(player)
 		color[4] = 1
@@ -28,25 +27,7 @@ return Def.Sprite{
 		color[2] = 0.8 * color[2] + 0.2
 		color[3] = 0.8 * color[3] + 0.2
 		self:diffuse(color)
-		
-		if player == PLAYER_1 then
-			self:x( IsUsingWideScreen() and _screen.cx-330 or 0)
-			self:y( IsUsingWideScreen() and WideScale(303,305.75) or 194)
-			self:effectmagnitude(-6,0,6)
-				if IsUsingWideScreen() then
-				else
-					self:align(-0.44,0.5)
-				end
-
-		elseif player == PLAYER_2 then
-			self:y(IsUsingWideScreen()and WideScale(303,305.75) or 193)
-			self:effectmagnitude(-6,0,6)
-				if IsUsingWideScreen() then
-					self:align(WideScale(-12.7,-12.21),0.49)
-				else
-					self:align(-0.44,0.48)
-				end
-		end
+		self:effectmagnitude(-6,0,6)
 	end,
 	CurrentSongChangedMessageCommand=function(self)
 		if not Initialize then 
@@ -132,12 +113,7 @@ return Def.Sprite{
 			-- update cursor x position
 			local sdl = self:GetParent():GetParent():GetChild("StepsDisplayList")
 			if sdl then
-				local grid = sdl:GetChild("Grid")
-				if IsUsingWideScreen() then
-					self:x(WideScale(grid:GetChild("Blocks_"..RowIndex):GetY()/0.5 - 50,grid:GetChild("Blocks_"..RowIndex):GetY()/0.351 - 40))
-				else
-					self:x(grid:GetChild("Blocks_"..RowIndex):GetY()/0.351 - 40)
-				end
+				self:x(pn == "P1" and (RowIndex * 56) - 25.5 or (_screen.w/3 * 2) - 25.5 + (RowIndex * 56))
 			end
 		end
 	end
