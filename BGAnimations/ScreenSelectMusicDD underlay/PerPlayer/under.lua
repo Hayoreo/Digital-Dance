@@ -9,6 +9,9 @@ for player in ivalues( PlayerNumber ) do
 
 	-- Density Graph
 	t[#t+1] = LoadActor("./DensityGraph.lua", player)
+	
+	-- Custom Scorebox for secondary chart pane
+	t[#t+1] = LoadActor("./Scorebox.lua", player)
 end
 
 	t[#t+1] = LoadActor("./DifficultyBG.lua")

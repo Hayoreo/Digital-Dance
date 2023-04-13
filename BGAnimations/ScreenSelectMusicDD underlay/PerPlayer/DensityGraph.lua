@@ -237,4 +237,74 @@ af2[#af2+1] = Def.ActorFrame{
 	}
 }
 
+-- Tech data
+af2[#af2+1] = Def.ActorFrame{
+	Name="PatternInfo",
+	InitCommand=function(self)
+		if player == PLAYER_1 then
+			self:addy(125)
+			self:addx(285)
+		else
+			self:addy(125)
+			self:addx(285)
+		end
+	end,
+}
+
+local af3 = af2[#af2]
+
+local layout = {
+	{"Crossovers"},
+	{"Footswitches"},
+	{"Sideswitches"},
+	{"Jacks"},
+	{"Brackets"},
+}
+
+local colSpacing = 150
+local rowSpacing = 18
+
+for i, row in ipairs(layout) do
+	for j, col in pairs(row) do
+		af3[#af3+1] = LoadFont("Common normal")..{
+			Text="0",
+			Name=col .. "Value",
+			InitCommand=function(self)
+				local textHeight = 17
+				local textZoom = 0.9
+				self:zoom(textZoom):horizalign(right)
+				self:diffuse(Color.White)
+				self:xy(-width/2 + 40, -height/2 + 10)
+				self:addx((j-1)*colSpacing)
+				self:addy((i-1)*rowSpacing)
+			end,
+			HideCommand=function(self)
+				if GAMESTATE:GetCurrentSong() == nil then
+					self:settext("?")
+				else
+					self:settext("0")
+				end
+			end,
+			RedrawCommand=function(self)
+				self:settext(SL[pn].Streams[col])
+			end
+		}
+
+		af3[#af3+1] = LoadFont("Common normal")..{
+			Text=col,
+			Name=col,
+			InitCommand=function(self)
+				local textHeight = 17
+				local textZoom = 0.9
+				self:diffuse(Color.White)
+				self:maxwidth(width/textZoom):zoom(textZoom):horizalign(left)
+				self:xy(-width/2 + 50, -height/2 + 10)
+				self:addx((j-1)*colSpacing)
+				self:addy((i-1)*rowSpacing)
+			end,
+		}
+
+	end
+end
+
 return af

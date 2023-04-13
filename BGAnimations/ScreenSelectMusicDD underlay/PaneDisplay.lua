@@ -341,6 +341,22 @@ for player in ivalues(PlayerNumber) do
 			end
 		end
 	}
+	
+	--- inner quad
+	af2[#af2+1] = Def.Quad{
+		Name="BackgroundQuad2",
+		InitCommand=function(self)
+			self:zoomtowidth(IsUsingWideScreen() and _screen.w/3 - 5 or 310)
+			self:zoomtoheight(pane_height - 5)
+			self:diffuse(Color.Black)
+			self:y(-10)
+			self:x(IsUsingWideScreen() and 0 or -6)
+			if player == PLAYER_2 and not IsUsingWideScreen() and nsj == 2 then
+				self:zoomtowidth(320)
+				self:addx(5)
+			end
+		end,
+	}
 
 	-- -----------------------------------------------------------------------
 	-- loop through the six sub-tables in the PaneItems table
@@ -358,7 +374,7 @@ for player in ivalues(PlayerNumber) do
 			-- numerical value
 			LoadFont("Common Normal")..{
 				InitCommand=function(self)
-					self:zoom(text_zoom):diffuse(Color.Black):horizalign(right)
+					self:zoom(text_zoom):diffuse(Color.White):horizalign(right)
 					self:x(pos.col[col])
 					self:y(pos.row[row])
 				end,
@@ -380,7 +396,7 @@ for player in ivalues(PlayerNumber) do
 			LoadFont("Common Normal")..{
 				Text=item.name,
 				InitCommand=function(self)
-					self:zoom(text_zoom):diffuse(Color.Black):horizalign(left)
+					self:zoom(text_zoom):diffuse(Color.White):horizalign(left)
 					self:x(pos.col[col]+3)
 					self:y(pos.row[row])
 				end
@@ -389,7 +405,7 @@ for player in ivalues(PlayerNumber) do
 	end
 
 	-- Machine/World Record Text Label
-	af2[#af2+1] = LoadFont("Common Normal")..{
+	--[[af2[#af2+1] = LoadFont("Common Normal")..{
 		Name="MachineTextLabel",
 		Text="Local Best:",
 		InitCommand=function(self)
@@ -586,10 +602,10 @@ for player in ivalues(PlayerNumber) do
 			end,
 		}
 		
-	end
+	end-]]
 end
 
-af[#af+1] = RequestResponseActor("GetScores", 10, CirclePositionX, CirclePositionY, nsj == 2 and 1 or 0.75)..{
+--[[af[#af+1] = RequestResponseActor("GetScores", 10, CirclePositionX, CirclePositionY, nsj == 2 and 1 or 0.75)..{
 	OnCommand=function(self)
 		-- Create variables for both players, even if they're not currently active.
 		self.IsParsing = {false, false}
@@ -641,6 +657,7 @@ af[#af+1] = RequestResponseActor("GetScores", 10, CirclePositionX, CirclePositio
 			})
 		end
 	end
-}
+}--]]
+		
 
 return af

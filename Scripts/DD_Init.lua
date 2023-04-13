@@ -47,6 +47,11 @@ local PlayerDefaults = {
 				StepsType = nil,
 				Difficulty = nil,
 				Measures = nil,
+				Crossovers = 0,
+				Footswitches = 0,
+				Sideswitches = 0,
+				Jacks = 0,
+				Brackets = 0,
 			}
 			self.HighScores = {
 				EnteringName = false,
@@ -305,7 +310,15 @@ SL = {
 		-- *  and when GrooveStats backend is also      *
 		-- *   updated to properly consume this value.  *
 		-- **********************************************
-		ChartHashVersion = 3
+		ChartHashVersion = 3,
+		
+		-- We want to cache the some of the requests/responses to prevent making the
+		-- same request multiple times in a small timeframe.
+		-- Each entry is keyed with some string hash which maps to a table with the
+		-- following keys:
+		--   Response: string, the JSON-ified response to cache
+		--   Timestamp: number, when the request was made
+		RequestCache = {},
 	}
 }
 

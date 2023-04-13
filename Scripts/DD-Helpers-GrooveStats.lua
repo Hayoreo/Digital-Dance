@@ -523,3 +523,16 @@ ParseGroovestatsDate = function(date)
 
 	return monthMap[month].." "..tonumber(day)..", "..year
 end
+
+-- -----------------------------------------------------------------------
+-- Iterates over the RequestCache and removes those entries that are older
+-- than a certain amount of time.
+RemoveStaleCachedRequests = function()
+	local timeout = 1 * 60  -- One minute
+	for requestCacheKey, data in pairs(SL.GrooveStats.RequestCache) do
+		if GetTimeSinceStart() - data.Timestamp >= timeout then
+			SL.GrooveStats.RequestCache[requestCacheKey] = nil
+		end
+	end
+end
+

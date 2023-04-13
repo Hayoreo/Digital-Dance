@@ -406,6 +406,39 @@ t.Handler = function(event)
 							ChartUpdater.ClickDifficulty('PlayerNumber_P2', "Difficulty_Challenge")
 						end
 					end
+					-- update steps display pane if a tab is clicked.
+					if GAMESTATE:IsSideJoined('PlayerNumber_P1') then
+						-- the first and last tabs are slightly bigger than the middle tabs
+						if IsMouseGucci(120,_screen.h-149.5,33, 14,"left","top",1) then
+							MESSAGEMAN:Broadcast("TabClickedPlayerNumber_P1", {"1"})
+						end
+						for i=1,3 do
+							if IsMouseGucci(120 + (i*32),_screen.h-149.5, 32, 14, "left", "top", 1) then
+								local TabCount = i + 1
+								MESSAGEMAN:Broadcast("TabClickedPlayerNumber_P1", {TabCount})
+							end
+						end
+						-- the first and last tabs are slightly bigger than the middle tabs
+						if IsMouseGucci(249,_screen.h-149.5,33, 14,"left","top",1) then
+							MESSAGEMAN:Broadcast("TabClickedPlayerNumber_P1", {"5"})
+						end
+					end
+					if GAMESTATE:IsSideJoined('PlayerNumber_P2') then
+						-- the first and last tabs are slightly bigger than the middle tabs
+						if IsMouseGucci(_screen.w - 165,_screen.h-149.5,33, 14,"left","top",1) then
+							MESSAGEMAN:Broadcast("TabClickedPlayerNumber_P2", {"1"})
+						end
+						for i=1,3 do
+							if IsMouseGucci(_screen.w - 164 + (i*32),_screen.h-149.5, 32, 14, "left", "top", 1) then
+								local TabCount = i + 1
+								MESSAGEMAN:Broadcast("TabClickedPlayerNumber_P2", {TabCount})
+							end
+						end
+						-- the first and last tabs are slightly bigger than the middle tabs
+						if IsMouseGucci(_screen.w - 163.5 + (4*32),_screen.h-149.5,33, 14,"left","top",1) then
+							MESSAGEMAN:Broadcast("TabClickedPlayerNumber_P2", {"5"})
+						end
+					end
 				elseif event.DeviceInput.button == "DeviceButton_left mouse button" and PressStartForOptions then
 					SOUND:PlayOnce( THEME:GetPathS("Common", "start.ogg") )
 					SCREENMAN:SetNewScreen("ScreenPlayerOptions")
