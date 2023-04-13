@@ -87,17 +87,17 @@ local t = Def.ActorFrame{
 	-- the MusicRate Quad and text
 	Def.ActorFrame{
 		InitCommand=function(self)
-			self:visible( SL.Global.ActiveModifiers.MusicRate ~= 1 ):y(75)
+			self:visible( SL.Global.ActiveModifiers.MusicRate ~= 1 ):y(BannerHeight)
 		end,
 
 		--quad behind the music rate text
 		Def.Quad{
-			InitCommand=function(self) self:diffuse( color("#1E282FCC") ):zoomto(BannerWidth,14) end
+			InitCommand=function(self) self:diffuse( color("#1E282FCC") ):zoomto(BannerWidth,14):vertalign(bottom) end
 		},
 
 		--the music rate text
 		LoadFont("Miso/_miso")..{
-			InitCommand=function(self) self:shadowlength(1):zoom(0.85) end,
+			InitCommand=function(self) self:shadowlength(1):zoom(0.7):vertalign(bottom):y(-1) end,
 			OnCommand=function(self)
 				self:settext(("%g"):format(SL.Global.ActiveModifiers.MusicRate) .. "x " .. THEME:GetString("OptionTitles", "MusicRate"))
 			end
@@ -120,22 +120,23 @@ local t = Def.ActorFrame{
 				self:diffuse( color("#000000") )
 				self:zoomto(BannerWidth,80)
 				self:diffusealpha(0.5)
+				self:y(BannerHeight/2)
 			end,
 		},
 		
 		--- group "name" text
 		LoadFont("Wendy/_wendy white")..{
 			OnCommand=function(self)
-				self:shadowlength(2):zoom(1)
+				self:shadowlength(2):zoom(1):y(BannerHeight/2):maxwidth(BannerWidth)
 				self:playcommand("Set")
 			end,
 			SetCommand=function(self)
 				self:stoptweening()
 				self:settext(NameOfGroup)
 				if GetMainSortPreference() == 4 then
-					self:zoom(0.6)
+					self:zoom(0.6):maxwidth(BannerWidth/0.6)
 				elseif GetMainSortPreference() == 5 then
-					self:zoom(0.9)
+					self:zoom(0.9):maxwidth(BannerWidth/0.9)
 				end
 				if NameOfGroup == "#" then
 					self:settext("NUMBER")
