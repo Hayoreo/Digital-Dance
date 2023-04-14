@@ -1,5 +1,6 @@
 local player = ...
 local pn = ToEnumShortString(player)
+local MaxTabs
 
 local t = Def.ActorFrame{
 	InitCommand=function(self)
@@ -9,12 +10,21 @@ local t = Def.ActorFrame{
 }
 
 local TabText = {
-	"Steps",
-	"GS",
-	"RPG",
-	"ITL",
-	"Local",
+	"Steps"
 }
+
+-- Only show the online tabs if they're available
+if IsServiceAllowed(SL.GrooveStats.GetScores) then
+
+TabText[#TabText+1] = "GS"
+TabText[#TabText+1] = "RPG"
+TabText[#TabText+1] = "ITL"
+
+end
+
+TabText[#TabText+1] = "Local"
+
+MaxTabs = #TabText
 	
 --- bg for tabs
 t[#t+1] = Def.Quad {
@@ -27,7 +37,7 @@ t[#t+1] = Def.Quad {
 
 
 -- thee tabs
-for i=1,5 do
+for i=1,MaxTabs do
 	t[#t+1] = Def.Quad {
 		Name="Tab"..i,
 		InitCommand=function(self)

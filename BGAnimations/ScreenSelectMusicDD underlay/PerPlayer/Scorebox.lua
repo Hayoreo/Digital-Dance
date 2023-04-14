@@ -1,6 +1,6 @@
 local player = ...
 local pn = ToEnumShortString(player)
-local machine_profile = PROFILEMAN:GetMachineProfile()
+local CurrentTab = 1
 
 if SL[pn].ApiKey == "" then
 	return
@@ -23,7 +23,6 @@ local MachinePurple = color("#4d0057")
 
 local isRanked = false
 local IsVisible = false
-local HasMachineScore = false
 
 local style_color = {
 	[0] = GrooveStatsBlue,
@@ -59,7 +58,6 @@ local ResetAllData = function()
 		end
 		all_data[#all_data + 1] = data
 	end
-	HasMachineScore = false
 end
 
 -- Initialize the all_data object.
@@ -113,11 +111,10 @@ local LeaderboardRequestProcessor = function(res, master)
 			all_data[1].has_data = false
 			cur_style = 1
 			if (not (data[playerStr]["rpg"] and data[playerStr]["rpg"]["rpgLeaderboard"]) and
-			not (data[playerStr]["itl"] and data[playerStr]["itl"]["itlLeaderboard"])) and 
-			HasMachineScore then
-				SetScoreData(1, 1, "", "Chart Not Ranked", "", false, false, false)
+			not (data[playerStr]["itl"] and data[playerStr]["itl"]["itlLeaderboard"])) then
 				all_data[2].has_data = false
 				all_data[3].has_data = false
+				SetScoreData(1, 1, "", "Chart Not Ranked", "", false, false, false)
 				isRanked = false
 			end
 		end
@@ -214,77 +211,9 @@ local LeaderboardRequestProcessor = function(res, master)
 			end
 		end
 		
-		if not HasMachineScore then
-			local entryCount = 0
-			SetScoreData(4, 1, "", "No Scores", "", false, false, false)
-			local NumHighScores = 7
-			local profile = PROFILEMAN:GetProfile(pn) or PROFILEMAN:GetMachineProfile()
-			local SongOrCourse = GAMESTATE:IsCourseMode() and GAMESTATE:GetCurrentCourse() or GAMESTATE:GetCurrentSong()
-			local StepsOrTrail = GAMESTATE:IsCourseMode() and GAMESTATE:GetCurrentTrail(player) or GAMESTATE:GetCurrentSteps(player)
-			if not (SongOrCourse and StepsOrTrail) then return end
-			
-			local HighScoreList = profile:GetHighScoreList(SongOrCourse,StepsOrTrail)
-			local HighScores = HighScoreList:GetHighScores()
-			if not HighScores then return end
-			
-			if HighScores then
-				local lower = 1
-				local upper = NumHighScores
-				local highscoreindex
-				local pss = STATSMAN:GetCurStageStats():GetPlayerStageStats(player)
-				highscoreindex = (profile==PROFILEMAN:GetMachineProfile() and pss:GetMachineHighScoreIndex() or pss:GetPersonalHighScoreIndex())
-				-- +1 because HighScoreIndex values are 0-indexed
-				highscoreindex = highscoreindex + 1
-				if highscoreindex <= 0 then
-					for i, highscore in ipairs(HighScores) do
-						local name
-						if  pss:GetHighScore():GetScore() == highscore:GetScore()
-						and pss:GetHighScore():GetDate()  == highscore:GetDate()
-						and
-						(
-							name == PROFILEMAN:GetProfile(player):GetLastUsedHighScoreName()
-							or
-							(
-								(#GAMESTATE:GetHumanPlayers()==1 and name=="EVNT")
-								or (highscore:GetScore() ~= STATSMAN:GetPlayedStageStats():GetPlayerStageStats(OtherPlayer[player]):GetHighScore():GetScore())
-							)
-						)
-						then
-							highscoreindex = i
-							break
-						end
-					end
-					
-					if highscoreindex > upper then
-						lower = lower + highscoreindex - upper
-						upper = highscoreindex
-					end
-					
-					for i=lower,upper do
-						entryCount = entryCount + 1
-						local row_index = i-lower
-						local rank, name, score
-						local numbers = {}
-						if HighScores[i] then
-							rank = i
-							name = HighScores[i]:GetName()
-							score = FormatPercentScore(HighScores[i]:GetPercentDP())
-						end
-						--[[SetScoreData(4, entryCount,
-									tostring(entry["rank"]),
-									entry["name"],
-									string.format("%.2f", entry["score"]/100),
-									entry["isSelf"],
-									entry["isRival"],
-									entry["isFail"]
-								)--]]
-					end
-				end
-				
-			end
-		end
  	end
 	master:queuecommand("CheckScorebox")
+	master:queuecommand("SetScorebox")
 end
 
 local af = Def.ActorFrame{
@@ -301,16 +230,21 @@ local af = Def.ActorFrame{
 		self:stoptweening():sleep(0.2):queuecommand("Reset")
 	end,
 	["TabClicked"..player.."MessageCommand"]=function(self, TabClicked)
-		if TabClicked[1] == "1" then
+		if TabClicked[1] == CurrentTab then
+		elseif TabClicked[1] == "1" then
+			CurrentTab = TabClicked[1]
 			self:visible(false)
 			IsVisible = false
 		else
+			CurrentTab = TabClicked[1]
 			self:visible(true)
 			IsVisible = true
+			cur_style = TabClicked[1] - 2
+			self:queuecommand("UpdateScorebox")
 		end
 	end,
 	LoopScoreboxCommand=function(self)
-		self:visible(isRanked and IsVisible)
+		self:visible(IsVisible)
 		local has_data = false
 		if #all_data == 0 then return end
 		for i=1,num_styles do
@@ -323,9 +257,9 @@ local af = Def.ActorFrame{
 		self:finishtweening()
 		
 		for i=1, num_scores do
+			self:GetChild("Rank"..i):visible(true)
 			self:GetChild("Name"..i):visible(true)
 			self:GetChild("Score"..i):visible(true)
-			self:GetChild("Rank"..i):visible(true)
 		end
 		self:GetChild("GrooveStatsLogo"):stopeffect()
 		self:GetChild("SRPG6Logo"):visible(true)
@@ -352,13 +286,7 @@ local af = Def.ActorFrame{
 				cur_style = (cur_style + 1) % num_styles
 			end
 		end
-
-		-- Loop only if there's something new to loop to.
-		if start ~= cur_style then
-			self:sleep(loop_seconds):queuecommand("LoopScorebox")
-		end
 	end,
-
 	RequestResponseActor("Leaderboard", loop_seconds, 0, 0)..{
 		OnCommand=function(self)
 			self:queuecommand("MakeRequest")
@@ -435,15 +363,8 @@ local af = Def.ActorFrame{
 		InitCommand=function(self)
 			self:diffuse(GrooveStatsBlue):setsize(width + border, height + border)
 		end,
-		LoopScoreboxCommand=function(self)
-			if cur_style == 0 then
-				self:linear(transition_seconds):diffuse(color("#007b85"))
-			elseif cur_style == 1 then
-				self:linear(transition_seconds):diffuse(color("#aa886b"))
-			elseif cur_style == 2 then
-				self:linear(transition_seconds):diffuse(color("1,0.2,0.406,1"))
-			end
-			self:linear(transition_seconds):diffuse(style_color[cur_style])
+		UpdateScoreboxCommand=function(self)
+			self:stoptweening():linear(transition_seconds/2):diffuse(style_color[cur_style])
 		end
 	},
 	-- Main body
@@ -460,9 +381,9 @@ local af = Def.ActorFrame{
 		InitCommand=function(self)
 			self:zoom(0.6):diffusealpha(0.5):x(80)
 		end,
-		LoopScoreboxCommand=function(self)
+		UpdateScoreboxCommand=function(self)
 			if cur_style == 0 then
-				self:sleep(transition_seconds/2):linear(transition_seconds/2):diffusealpha(0.5)
+				self:linear(transition_seconds/2):diffusealpha(0.5)
 			else
 				self:linear(transition_seconds/2):diffusealpha(0)
 			end
@@ -475,11 +396,11 @@ local af = Def.ActorFrame{
 		InitCommand=function(self)
 			self:diffusealpha(0.4):zoom(0.18):diffusealpha(0):x(80)
 		end,
-		LoopScoreboxCommand=function(self)
+		UpdateScoreboxCommand=function(self)
 			if cur_style == 1 then
 				self:linear(transition_seconds/2):diffusealpha(0.5)
 			else
-				self:sleep(transition_seconds/2):linear(transition_seconds/2):diffusealpha(0)
+				self:linear(transition_seconds/2):diffusealpha(0)
 			end
 		end
 	},
@@ -490,11 +411,11 @@ local af = Def.ActorFrame{
 		InitCommand=function(self)
 			self:diffusealpha(0.2):zoom(0.3):diffusealpha(0):x(80)
 		end,
-		LoopScoreboxCommand=function(self)
+		UpdateScoreboxCommand=function(self)
 			if cur_style == 2 then
 				self:linear(transition_seconds/2):diffusealpha(0.2)
 			else
-				self:sleep(transition_seconds/2):linear(transition_seconds/2):diffusealpha(0)
+				self:linear(transition_seconds/2):diffusealpha(0)
 			end
 		end
 	},
@@ -505,11 +426,11 @@ local af = Def.ActorFrame{
 		InitCommand=function(self)
 			self:diffusealpha(0.2):zoom(0.18):diffusealpha(0):x(80):y(7)
 		end,
-		LoopScoreboxCommand=function(self)
+		UpdateScoreboxCommand=function(self)
 			if cur_style == 3 then
 				self:linear(transition_seconds/2):diffusealpha(0.5)
 			else
-				self:sleep(transition_seconds/2):linear(transition_seconds/2):diffusealpha(0)
+				self:linear(transition_seconds/2):diffusealpha(0)
 			end
 		end
 	},
@@ -527,7 +448,7 @@ for i=1,num_scores do
 			InitCommand=function(self)
 				self:zoom(0.09):xy(-width/2 + 14, y):diffusealpha(0)
 			end,
-			LoopScoreboxCommand=function(self)
+			UpdateScoreboxCommand=function(self)
 				self:linear(transition_seconds/2):diffusealpha(0):queuecommand("SetScorebox")
 			end,
 			SetScoreboxCommand=function(self)
@@ -544,7 +465,7 @@ for i=1,num_scores do
 			InitCommand=function(self)
 				self:diffuse(Color.White):xy(-width/2 + 27, y):maxwidth(30):horizalign(right):zoom(zoom)
 				end,
-			LoopScoreboxCommand=function(self)
+			UpdateScoreboxCommand=function(self)
 				self:linear(transition_seconds/2):diffusealpha(0):queuecommand("SetScorebox")
 			end,
 			SetScoreboxCommand=function(self)
@@ -571,7 +492,7 @@ for i=1,num_scores do
 		InitCommand=function(self)
 			self:diffuse(Color.White):xy(-width/2 + 30, y):maxwidth(NoteFieldIsCentered and 60 or 100):horizalign(left):zoom(zoom)
 		end,
-		LoopScoreboxCommand=function(self)
+		UpdateScoreboxCommand=function(self)
 			self:linear(transition_seconds/2):diffusealpha(0):queuecommand("SetScorebox")
 		end,
 		SetScoreboxCommand=function(self)
@@ -593,7 +514,7 @@ for i=1,num_scores do
 		InitCommand=function(self)
 			self:diffuse(Color.White):xy(NoteFieldIsCentered and -width/2 + 130 or -width/2 + 160, y):horizalign(right):zoom(zoom)
 		end,
-		LoopScoreboxCommand=function(self)
+		UpdateScoreboxCommand=function(self)
 			self:linear(transition_seconds/2):diffusealpha(0):queuecommand("SetScorebox")
 		end,
 		SetScoreboxCommand=function(self)
