@@ -34,7 +34,6 @@ local style_color = {
 local self_color = color("#a1ff94")
 local rival_color = color("#c29cff")
 
-local loop_seconds = 5
 local transition_seconds = 1
 
 local all_data = {}
@@ -91,8 +90,15 @@ local LeaderboardRequestProcessor = function(res, master)
 				text = "Failed to Load 😞"
 			end
 		end
-		SetScoreData(1, 1, "", text, "", false, false)
-		master:queuecommand("CheckScorebox")
+		for i=1, num_scores do
+			SetScoreData(1, i, "", "", "", false, false, false)
+			SetScoreData(2, i, "", "", "", false, false, false)
+			SetScoreData(3, i, "", "", "", false, false, false)
+		end
+		SetScoreData(1, 1, "", text, "", false, false, false)
+		SetScoreData(2, 1, "", text, "", false, false, false)
+		SetScoreData(3, 1, "", text, "", false, false, false)
+		master:queuecommand("LoopScorebox")
 		return
 	end
 
@@ -104,17 +110,26 @@ local LeaderboardRequestProcessor = function(res, master)
 		-- These will get overwritten if we have any entries in the leaderboard below.
 		if data[playerStr]["isRanked"] then
 			isRanked = true
-			cur_style = 0
+			all_data[1].has_data = false
+			for i=1,num_scores do
+				SetScoreData(1, i, "", "", "", false, false, false)
+			end
 			SetScoreData(1, 1, "", "No Scores", "", false, false, false)
 		else
 			isRanked = true
 			all_data[1].has_data = false
-			cur_style = 1
 			if (not (data[playerStr]["rpg"] and data[playerStr]["rpg"]["rpgLeaderboard"]) and
 			not (data[playerStr]["itl"] and data[playerStr]["itl"]["itlLeaderboard"])) then
 				all_data[2].has_data = false
 				all_data[3].has_data = false
+				for i=1,num_scores do
+					SetScoreData(1, i, "", "", "", false, false, false)
+					SetScoreData(2, i, "", "", "", false, false, false)
+					SetScoreData(3, i, "", "", "", false, false, false)
+				end
 				SetScoreData(1, 1, "", "Chart Not Ranked", "", false, false, false)
+				SetScoreData(2, 1, "", "Chart Not Ranked", "", false, false, false)
+				SetScoreData(3, 1, "", "Chart Not Ranked", "", false, false, false)
 				isRanked = false
 			end
 		end
@@ -147,6 +162,10 @@ local LeaderboardRequestProcessor = function(res, master)
 
 		if data[playerStr]["rpg"] then
 			local entryCount = 0
+			all_data[2].has_data = false
+			for i=1,num_scores do
+				SetScoreData(2, i, "", "", "", false, false, false)
+			end
 			SetScoreData(2, 1, "", "No Scores", "", false, false, false)
 
 			if data[playerStr]["rpg"]["rpgLeaderboard"] then
@@ -172,10 +191,19 @@ local LeaderboardRequestProcessor = function(res, master)
 									false)
 				end
 			end
+		else
+			for i=1,num_scores do
+				SetScoreData(2, i, "", "", "", false, false, false)
+			end
+			SetScoreData(2, 1, "", "Chart Not Ranked", "", false, false, false)
 		end
 
 		if data[playerStr]["itl"] then
 			local numEntries = 0
+			all_data[3].has_data = false
+			for i=1,num_scores do
+				SetScoreData(3, i, "", "", "", false, false, false)
+			end
 			SetScoreData(3, 1, "", "No Scores", "", false, false, false)
 
 			if data[playerStr]["itl"]["itlLeaderboard"] then
@@ -209,25 +237,32 @@ local LeaderboardRequestProcessor = function(res, master)
 									false)
 				end
 			end
+		else
+			for i=1,num_scores do
+				SetScoreData(3, i, "", "", "", false, false, false)
+			end
+			SetScoreData(3, 1, "", "Chart Not Ranked", "", false, false, false)
 		end
 		
  	end
-	master:queuecommand("CheckScorebox")
-	master:queuecommand("SetScorebox")
+	master:queuecommand("LoopScorebox")
 end
 
 local af = Def.ActorFrame{
 	Name="ScoreBox"..pn,
 	InitCommand=function(self)
 		self:xy((player==PLAYER_1 and (SCREEN_WIDTH/3)/2 or _screen.w - (SCREEN_WIDTH/3)/2), _screen.h - 32 - 60):visible(false)
-		self.isFirst = true
-	end,
-	CheckScoreboxCommand=function(self)
-		self:queuecommand("LoopScorebox")
 	end,
 	CurrentSongChangedMessageCommand=function(self)
-		self.isFirst = true
-		self:stoptweening():sleep(0.2):queuecommand("Reset")
+		if GAMESTATE:GetCurrentSong() == nil then
+			for i=1, num_scores do
+				self:stoptweening()
+				SetScoreData(1, i, "", "", "", false, false, false)
+				SetScoreData(2, i, "", "", "", false, false, false)
+				SetScoreData(3, i, "", "", "", false, false, false)
+				self:sleep(0.1):queuecommand('UpdateScorebox')
+			end
+		end
 	end,
 	["TabClicked"..player.."MessageCommand"]=function(self, TabClicked)
 		if TabClicked[1] == CurrentTab then
@@ -236,24 +271,22 @@ local af = Def.ActorFrame{
 			self:visible(false)
 			IsVisible = false
 		else
-			CurrentTab = TabClicked[1]
-			self:visible(true)
-			IsVisible = true
-			cur_style = TabClicked[1] - 2
-			self:queuecommand("UpdateScorebox")
+			-- don't update the score pane if we're viewing the pane that's already pre-loaded
+			if TabClicked[1] - 2 == cur_style then
+				CurrentTab = TabClicked[1]
+				self:visible(true)
+				IsVisible = true
+				cur_style = TabClicked[1] - 2
+			else
+				CurrentTab = TabClicked[1]
+				self:visible(true)
+				IsVisible = true
+				cur_style = TabClicked[1] - 2
+				self:queuecommand("LoopScorebox")
+			end
 		end
 	end,
 	LoopScoreboxCommand=function(self)
-		self:visible(IsVisible)
-		local has_data = false
-		if #all_data == 0 then return end
-		for i=1,num_styles do
-			if all_data[i].has_data then
-				has_data = true
-			end
-		end
-		if not has_data then return end
-
 		self:finishtweening()
 		
 		for i=1, num_scores do
@@ -265,31 +298,10 @@ local af = Def.ActorFrame{
 		self:GetChild("SRPG6Logo"):visible(true)
 		self:GetChild("ITLLogo"):visible(true)
 		self:GetChild("MachineLogo"):visible(true)
-		
-		local start = cur_style
-
-		cur_style = (cur_style + 1) % num_styles
-		if cur_style ~= start or self.isFirst then
-			-- Make sure we have the next set of data.
-			while cur_style ~= start do
-				if HasData(cur_style) then
-					-- If this is the first time we're looping, update the start variable
-					-- since it may be different than the default
-					if self.isFirst then
-						start = cur_style
-						self.isFirst = false
-						-- Continue looping to figure out the next style.
-					else
-						break
-					end
-				end
-				cur_style = (cur_style + 1) % num_styles
-			end
-		end
+		self:queuecommand("UpdateScorebox")
 	end,
-	RequestResponseActor("Leaderboard", loop_seconds, 0, 0)..{
+	RequestResponseActor("Leaderboard", 10, 0, 0)..{
 		OnCommand=function(self)
-			self:queuecommand("MakeRequest")
 			-- Create variables for both players, even if they're not currently active.
 			self.IsParsing = {false, false}
 		end,
@@ -309,12 +321,12 @@ local af = Def.ActorFrame{
 			end
 		end,
 		ChartParsedCommand=function(self)
-			self:queuecommand("MakeRequest")
+			if not self.IsParsing[1] and not self.IsParsing[2] then
+				self:queuecommand("MakeRequest")
+			end
 		end,
 		ResetCommand=function(self)
-			if not self.isFirst then
-				ResetAllData()
-			end
+			ResetAllData()
 		end,
 		MakeRequestCommand=function(self)
 			local sendRequest = false
@@ -336,7 +348,6 @@ local af = Def.ActorFrame{
 			if sendRequest then
 				if self.IsParsing[1] or self.IsParsing[2] then return end
 				RemoveStaleCachedRequests()
-				ResetAllData()
 				
 				self:GetParent():visible(IsVisible)
 				for i=1, num_scores do
@@ -379,9 +390,10 @@ local af = Def.ActorFrame{
 		Texture=THEME:GetPathG("", "GrooveStats.png"),
 		Name="GrooveStatsLogo",
 		InitCommand=function(self)
-			self:zoom(0.6):diffusealpha(0.5):x(80)
+			self:zoom(0.6):diffusealpha(0.5):x(80):y(8)
 		end,
 		UpdateScoreboxCommand=function(self)
+			self:stoptweening()
 			if cur_style == 0 then
 				self:linear(transition_seconds/2):diffusealpha(0.5)
 			else
@@ -394,9 +406,10 @@ local af = Def.ActorFrame{
 		Texture=THEME:GetPathG("", "SRPG/SRPG6 Logo (doubleres).png"),
 		Name="SRPG6Logo",
 		InitCommand=function(self)
-			self:diffusealpha(0.4):zoom(0.18):diffusealpha(0):x(80)
+			self:diffusealpha(0.4):zoom(0.18):diffusealpha(0):x(80):y(8)
 		end,
 		UpdateScoreboxCommand=function(self)
+			self:stoptweening()
 			if cur_style == 1 then
 				self:linear(transition_seconds/2):diffusealpha(0.5)
 			else
@@ -409,9 +422,10 @@ local af = Def.ActorFrame{
 		Texture=THEME:GetPathG("", "ITL.png"),
 		Name="ITLLogo",
 		InitCommand=function(self)
-			self:diffusealpha(0.2):zoom(0.3):diffusealpha(0):x(80)
+			self:diffusealpha(0.2):zoom(0.3):diffusealpha(0):x(80):y(8)
 		end,
 		UpdateScoreboxCommand=function(self)
+			self:stoptweening()
 			if cur_style == 2 then
 				self:linear(transition_seconds/2):diffusealpha(0.2)
 			else
@@ -424,9 +438,10 @@ local af = Def.ActorFrame{
 		Texture=THEME:GetPathG("", "Machine.png"),
 		Name="MachineLogo",
 		InitCommand=function(self)
-			self:diffusealpha(0.2):zoom(0.18):diffusealpha(0):x(80):y(7)
+			self:diffusealpha(0.2):zoom(0.18):diffusealpha(0):x(80):y(8)
 		end,
 		UpdateScoreboxCommand=function(self)
+			self:stoptweening()
 			if cur_style == 3 then
 				self:linear(transition_seconds/2):diffusealpha(0.5)
 			else
@@ -449,7 +464,7 @@ for i=1,num_scores do
 				self:zoom(0.09):xy(-width/2 + 14, y):diffusealpha(0)
 			end,
 			UpdateScoreboxCommand=function(self)
-				self:linear(transition_seconds/2):diffusealpha(0):queuecommand("SetScorebox")
+				self:stoptweening():linear(transition_seconds/2):diffusealpha(0):queuecommand("SetScorebox")
 			end,
 			SetScoreboxCommand=function(self)
 				local score = all_data[cur_style+1]["scores"][i]
@@ -466,7 +481,7 @@ for i=1,num_scores do
 				self:diffuse(Color.White):xy(-width/2 + 27, y):maxwidth(30):horizalign(right):zoom(zoom)
 				end,
 			UpdateScoreboxCommand=function(self)
-				self:linear(transition_seconds/2):diffusealpha(0):queuecommand("SetScorebox")
+				self:stoptweening():linear(transition_seconds/2):diffusealpha(0):queuecommand("SetScorebox")
 			end,
 			SetScoreboxCommand=function(self)
 				local score = all_data[cur_style+1]["scores"][i]
@@ -493,7 +508,7 @@ for i=1,num_scores do
 			self:diffuse(Color.White):xy(-width/2 + 30, y):maxwidth(NoteFieldIsCentered and 60 or 100):horizalign(left):zoom(zoom)
 		end,
 		UpdateScoreboxCommand=function(self)
-			self:linear(transition_seconds/2):diffusealpha(0):queuecommand("SetScorebox")
+			self:stoptweening():linear(transition_seconds/2):diffusealpha(0):queuecommand("SetScorebox")
 		end,
 		SetScoreboxCommand=function(self)
 			local score = all_data[cur_style+1]["scores"][i]
@@ -515,7 +530,7 @@ for i=1,num_scores do
 			self:diffuse(Color.White):xy(NoteFieldIsCentered and -width/2 + 130 or -width/2 + 160, y):horizalign(right):zoom(zoom)
 		end,
 		UpdateScoreboxCommand=function(self)
-			self:linear(transition_seconds/2):diffusealpha(0):queuecommand("SetScorebox")
+			self:stoptweening():linear(transition_seconds/2):diffusealpha(0):queuecommand("SetScorebox")
 		end,
 		SetScoreboxCommand=function(self)
 			local score = all_data[cur_style+1]["scores"][i]
