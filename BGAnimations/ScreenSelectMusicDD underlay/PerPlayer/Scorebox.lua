@@ -37,6 +37,7 @@ local rival_color = color("#c29cff")
 local transition_seconds = 1
 
 local all_data = {}
+local MachineScores = false
 
 local ResetAllData = function()
 	for i=1,num_styles do
@@ -260,7 +261,7 @@ local af = Def.ActorFrame{
 				SetScoreData(1, i, "", "", "", false, false, false)
 				SetScoreData(2, i, "", "", "", false, false, false)
 				SetScoreData(3, i, "", "", "", false, false, false)
-				self:sleep(0.1):queuecommand('UpdateScorebox')
+				self:sleep(0.1):queuecommand('UpdateScorebox'):queuecommand('UpdateMachineScores')
 			end
 		end
 	end,
@@ -286,20 +287,66 @@ local af = Def.ActorFrame{
 			end
 		end
 	end,
+	
 	LoopScoreboxCommand=function(self)
-		self:finishtweening()
-		
+		self:stoptweening()
 		for i=1, num_scores do
 			self:GetChild("Rank"..i):visible(true)
 			self:GetChild("Name"..i):visible(true)
 			self:GetChild("Score"..i):visible(true)
+			self:GetChild("MachineRank"..i):visible(true)
+			self:GetChild("MachineName"..i):visible(true)
+			self:GetChild("MachineScore"..i):visible(true)
 		end
 		self:GetChild("GrooveStatsLogo"):stopeffect()
 		self:GetChild("SRPG6Logo"):visible(true)
 		self:GetChild("ITLLogo"):visible(true)
 		self:GetChild("MachineLogo"):visible(true)
 		self:queuecommand("UpdateScorebox")
+			:queuecommand("UpdateMachineScores")
 	end,
+	
+	GetMachineScoresCommand=function(self)
+		self:stoptweening()
+		MachineScores = false
+		local MachineProfile = PROFILEMAN:GetMachineProfile()
+		local PlayerProfile = PROFILEMAN:GetProfile(pn)
+		local SongOrCourse = GAMESTATE:IsCourseMode() and GAMESTATE:GetCurrentCourse() or GAMESTATE:GetCurrentSong()
+		local StepsOrTrail = GAMESTATE:IsCourseMode() and GAMESTATE:GetCurrentTrail(player) or GAMESTATE:GetCurrentSteps(player)
+		
+		if not (SongOrCourse and StepsOrTrail) then return end
+		
+		local HighScoreList = MachineProfile:GetHighScoreList(SongOrCourse,StepsOrTrail)
+		local HighScores = HighScoreList:GetHighScores()
+		if not HighScores then return end
+		
+		
+		for i=1,num_scores do
+			local y = -height/2 + 16 * i + 8
+			local zoom = 0.87
+			local rank,name,score
+			if HighScores[i] then
+				MachineScores = true
+				rank = i
+				score = FormatPercentScore(HighScores[i]:GetPercentDP())
+				name = HighScores[i]:GetName()
+				if i ~= 1 then
+					self:GetChild("MachineRank"..i):settext(rank)
+				end
+				self:GetChild("MachineName"..i):settext(name)
+				self:GetChild("MachineScore"..i):settext(score)
+			else
+				if i ~= 1 then
+					self:GetChild("MachineRank"..i):settext("")
+				end
+				self:GetChild("MachineName"..i):settext("")
+				self:GetChild("MachineScore"..i):settext("")
+			end
+		end
+		
+		self:sleep(0.2):queuecommand("UpdateMachineScores")
+	end,
+	
 	RequestResponseActor("Leaderboard", 10, 0, 0)..{
 		OnCommand=function(self)
 			-- Create variables for both players, even if they're not currently active.
@@ -323,6 +370,7 @@ local af = Def.ActorFrame{
 		ChartParsedCommand=function(self)
 			if not self.IsParsing[1] and not self.IsParsing[2] then
 				self:queuecommand("MakeRequest")
+				self:GetParent():queuecommand("GetMachineScores")
 			end
 		end,
 		ResetCommand=function(self)
@@ -354,6 +402,9 @@ local af = Def.ActorFrame{
 					self:GetParent():GetChild("Name"..i):settext(""):visible(false)
 					self:GetParent():GetChild("Score"..i):settext(""):visible(false)
 					self:GetParent():GetChild("Rank"..i):diffusealpha(0):visible(false)
+					self:GetParent():GetChild("MachineName"..i):settext(""):visible(false)
+					self:GetParent():GetChild("MachineScore"..i):settext(""):visible(false)
+					self:GetParent():GetChild("MachineRank"..i):diffusealpha(0):visible(false)
 				end
 				self:GetParent():GetChild("GrooveStatsLogo"):diffusealpha(0.5):glowshift({color("#C8FFFF"), color("#6BF0FF")})
 				self:GetParent():GetChild("SRPG6Logo"):diffusealpha(0):visible(false)
@@ -545,6 +596,75 @@ for i=1,num_scores do
 			self:settext(score.score)
 			self:linear(transition_seconds/2):diffusealpha(1):diffuse(clr)
 		end
+	}
+	
+	--- Machine scores
+	if i == 1 then
+		af[#af+1] = Def.Sprite{
+			Name="MachineRank"..i,
+			Texture=THEME:GetPathG("", "crown.png"),
+			InitCommand=function(self)
+				self:zoom(0.09):xy(-width/2 + 14, y):diffusealpha(0)
+			end,
+			UpdateMachineScoresCommand=function(self)
+				self:stoptweening():linear(transition_seconds/2):diffusealpha(0):queuecommand("SetMachineScores")
+			end,
+			SetMachineScoresCommand=function(self)
+				if cur_style == 3 and MachineScores then
+					self:linear(transition_seconds/2):diffusealpha(1)
+				end
+			end,
+		}
+	else
+		af[#af+1] = LoadFont("Common Normal")..{
+			Name="MachineRank"..i,
+			Text="",
+			InitCommand=function(self)
+				self:diffuse(Color.White):xy(-width/2 + 27, y):horizalign(right):zoom(zoom)
+			end,
+			UpdateMachineScoresCommand=function(self)
+				self:stoptweening():linear(transition_seconds/2):diffusealpha(0):queuecommand("SetMachineScores")
+			end,
+			SetMachineScoresCommand=function(self)
+				if cur_style == 3 then
+					self:linear(transition_seconds/2):diffusealpha(1)
+				end
+			end,
+		}
+	end
+	
+	af[#af+1] = LoadFont("Common Normal")..{
+		Name="MachineName"..i,
+		Text="",
+		InitCommand=function(self)
+			self:diffuse(Color.White):xy(-width/2 + 30, y):horizalign(left):zoom(zoom)
+		end,
+		UpdateMachineScoresCommand=function(self)
+			self:stoptweening():linear(transition_seconds/2):diffusealpha(0):queuecommand("SetMachineScores")
+		end,
+		SetMachineScoresCommand=function(self)
+			if cur_style == 3 and MachineScores then
+				self:linear(transition_seconds/2):diffusealpha(1)
+			elseif cur_style == 3 and not MachineScores and i == 1 and GAMESTATE:GetCurrentSong() then
+				self:settext("No Scores"):linear(transition_seconds/2):diffusealpha(1)
+			end
+		end,
+	}
+	
+	af[#af+1] = LoadFont("Common Normal")..{
+		Name="MachineScore"..i,
+		Text="",
+		InitCommand=function(self)
+			self:diffuse(Color.White):xy(-width/2 + 160, y):horizalign(right):zoom(zoom)
+		end,
+		UpdateMachineScoresCommand=function(self)
+			self:stoptweening():linear(transition_seconds/2):diffusealpha(0):queuecommand("SetMachineScores")
+		end,
+		SetMachineScoresCommand=function(self)
+			if cur_style == 3 then
+				self:linear(transition_seconds/2):diffusealpha(1)
+			end
+		end,
 	}
 end
 return af

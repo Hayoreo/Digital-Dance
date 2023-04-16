@@ -413,7 +413,7 @@ t.Handler = function(event)
 							MESSAGEMAN:Broadcast("TabClickedPlayerNumber_P1", {"1"})
 						end
 						for i=1,3 do
-							if IsMouseGucci(120 + (i*32),_screen.h-149.5, 32, 14, "left", "top", 1) then
+							if IsMouseGucci(121 + (i*32),_screen.h-149.5, 32, 14, "left", "top", 1) then
 								local TabCount = i + 1
 								MESSAGEMAN:Broadcast("TabClickedPlayerNumber_P1", {TabCount})
 							end
