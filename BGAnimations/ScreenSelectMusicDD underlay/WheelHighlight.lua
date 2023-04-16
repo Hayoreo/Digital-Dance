@@ -13,10 +13,15 @@ Def.Quad{
 				self:diffusealpha(0.2)
 				self:zoomx(WheelWidth)
 				self:zoomy(24)
+				self:sleep(0.5):queuecommand("FadeOut")
 				
 		end,
-		OnCommand=function(self)
-		end
+		FadeOutCommand=function(self)
+			self:linear(1):diffusealpha(0.1):queuecommand("FadeIn")
+		end,
+		FadeInCommand=function(self)
+			self:linear(1):diffusealpha(0.2):queuecommand("FadeOut")
+		end,
 	}
 }
 
