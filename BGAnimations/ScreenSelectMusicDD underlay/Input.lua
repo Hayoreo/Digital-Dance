@@ -410,33 +410,43 @@ t.Handler = function(event)
 					if GAMESTATE:IsSideJoined('PlayerNumber_P1') then
 						-- the first and last tabs are slightly bigger than the middle tabs
 						if IsMouseGucci(120,_screen.h-149.5,33, 14,"left","top",1) then
-							MESSAGEMAN:Broadcast("TabClickedPlayerNumber_P1", {"1"})
+							local TabCount = 5
+							if (MaxTabs - TabCount) == 0 then
+								MESSAGEMAN:Broadcast("TabClickedPlayerNumber_P1", {TabCount})
+							end
 						end
 						for i=1,3 do
 							if IsMouseGucci(121 + (i*32),_screen.h-149.5, 32, 14, "left", "top", 1) then
-								local TabCount = i + 1
-								MESSAGEMAN:Broadcast("TabClickedPlayerNumber_P1", {TabCount})
+								local TabCount = 5 - i
+								if TabCount <= MaxTabs then
+									MESSAGEMAN:Broadcast("TabClickedPlayerNumber_P1", {TabCount})
+								end
 							end
 						end
 						-- the first and last tabs are slightly bigger than the middle tabs
 						if IsMouseGucci(249,_screen.h-149.5,33, 14,"left","top",1) then
-							MESSAGEMAN:Broadcast("TabClickedPlayerNumber_P1", {"5"})
+							MESSAGEMAN:Broadcast("TabClickedPlayerNumber_P1", {1})
 						end
 					end
 					if GAMESTATE:IsSideJoined('PlayerNumber_P2') then
 						-- the first and last tabs are slightly bigger than the middle tabs
 						if IsMouseGucci(_screen.w - 165,_screen.h-149.5,33, 14,"left","top",1) then
-							MESSAGEMAN:Broadcast("TabClickedPlayerNumber_P2", {"1"})
+							local TabCount = 5
+							if (MaxTabs - TabCount) == 0 then
+								MESSAGEMAN:Broadcast("TabClickedPlayerNumber_P2", {TabCount})
+							end
 						end
 						for i=1,3 do
 							if IsMouseGucci(_screen.w - 164 + (i*32),_screen.h-149.5, 32, 14, "left", "top", 1) then
-								local TabCount = i + 1
-								MESSAGEMAN:Broadcast("TabClickedPlayerNumber_P2", {TabCount})
+								local TabCount = 5 - i
+								if TabCount <= MaxTabs then
+									MESSAGEMAN:Broadcast("TabClickedPlayerNumber_P2", {TabCount})
+								end
 							end
 						end
 						-- the first and last tabs are slightly bigger than the middle tabs
 						if IsMouseGucci(_screen.w - 163.5 + (4*32),_screen.h-149.5,33, 14,"left","top",1) then
-							MESSAGEMAN:Broadcast("TabClickedPlayerNumber_P2", {"5"})
+							MESSAGEMAN:Broadcast("TabClickedPlayerNumber_P2", {1})
 						end
 					end
 				elseif event.DeviceInput.button == "DeviceButton_left mouse button" and PressStartForOptions then

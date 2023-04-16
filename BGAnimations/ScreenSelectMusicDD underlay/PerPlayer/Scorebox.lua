@@ -1,6 +1,6 @@
 local player = ...
 local pn = ToEnumShortString(player)
-local CurrentTab = 1
+local CurrentTab = MaxTabs
 
 if SL[pn].ApiKey == "" then
 	return
@@ -58,6 +58,30 @@ local ResetAllData = function()
 		end
 		all_data[#all_data + 1] = data
 	end
+end
+
+local GetRealTab = function(TabClicked)
+	local RealTabClick
+	
+	if TabClicked == 1 then
+		RealTabClick = 5
+	elseif IsServiceAllowed(SL.GrooveStats.GetScores) then
+		if TabClicked == 2 then
+			RealTabClick = 4
+		elseif TabClicked == 3 then
+			RealTabClick = 3
+		elseif TabClicked == 4 then
+			RealTabClick = 2
+		elseif TabClicked == 5 then
+			RealTabClick = 1
+		end
+	else
+		if TabClicked == 2 then
+			RealTabClick = 1
+		end
+	end
+	
+	return tonumber(RealTabClick)
 end
 
 -- Initialize the all_data object.
@@ -261,28 +285,30 @@ local af = Def.ActorFrame{
 				SetScoreData(1, i, "", "", "", false, false, false)
 				SetScoreData(2, i, "", "", "", false, false, false)
 				SetScoreData(3, i, "", "", "", false, false, false)
-				self:sleep(0.1):queuecommand('UpdateScorebox'):queuecommand('UpdateMachineScores')
 			end
+			self:sleep(0.1):queuecommand('LoopScorebox')
 		end
 	end,
 	["TabClicked"..player.."MessageCommand"]=function(self, TabClicked)
-		if TabClicked[1] == CurrentTab then
-		elseif TabClicked[1] == "1" then
-			CurrentTab = TabClicked[1]
+		local RealTabClick = GetRealTab(TabClicked[1])
+		
+		if RealTabClick == CurrentTab then
+		elseif RealTabClick == 1 then
+			CurrentTab = RealTabClick
 			self:visible(false)
 			IsVisible = false
 		else
 			-- don't update the score pane if we're viewing the pane that's already pre-loaded
-			if TabClicked[1] - 2 == cur_style then
-				CurrentTab = TabClicked[1]
+			if RealTabClick - 2 == cur_style then
+				CurrentTab = RealTabClick
 				self:visible(true)
 				IsVisible = true
-				cur_style = TabClicked[1] - 2
+				cur_style = RealTabClick - 2
 			else
-				CurrentTab = TabClicked[1]
+				CurrentTab = RealTabClick
 				self:visible(true)
 				IsVisible = true
-				cur_style = TabClicked[1] - 2
+				cur_style = RealTabClick - 2
 				self:queuecommand("LoopScorebox")
 			end
 		end
@@ -298,7 +324,9 @@ local af = Def.ActorFrame{
 			self:GetChild("MachineName"..i):visible(true)
 			self:GetChild("MachineScore"..i):visible(true)
 		end
-		self:GetChild("GrooveStatsLogo"):stopeffect()
+		if IsServiceAllowed(SL.GrooveStats.GetScores) then
+			self:GetChild("GrooveStatsLogo"):stopeffect()
+		end
 		self:GetChild("SRPG6Logo"):visible(true)
 		self:GetChild("ITLLogo"):visible(true)
 		self:GetChild("MachineLogo"):visible(true)
@@ -343,8 +371,9 @@ local af = Def.ActorFrame{
 				self:GetChild("MachineScore"..i):settext("")
 			end
 		end
-		
-		self:sleep(0.2):queuecommand("UpdateMachineScores")
+		if not IsServiceAllowed(SL.GrooveStats.GetScores) then
+			self:queuecommand("LoopScorebox")
+		end
 	end,
 	
 	RequestResponseActor("Leaderboard", 10, 0, 0)..{
@@ -369,7 +398,10 @@ local af = Def.ActorFrame{
 		end,
 		ChartParsedCommand=function(self)
 			if not self.IsParsing[1] and not self.IsParsing[2] then
-				self:queuecommand("MakeRequest")
+				if IsServiceAllowed(SL.GrooveStats.GetScores) then
+					self:queuecommand("MakeRequest")
+				else
+				end
 				self:GetParent():queuecommand("GetMachineScores")
 			end
 		end,
@@ -406,7 +438,9 @@ local af = Def.ActorFrame{
 					self:GetParent():GetChild("MachineScore"..i):settext(""):visible(false)
 					self:GetParent():GetChild("MachineRank"..i):diffusealpha(0):visible(false)
 				end
-				self:GetParent():GetChild("GrooveStatsLogo"):diffusealpha(0.5):glowshift({color("#C8FFFF"), color("#6BF0FF")})
+				if IsServiceAllowed(SL.GrooveStats.GetScores) then
+					self:GetParent():GetChild("GrooveStatsLogo"):diffusealpha(0.5):glowshift({color("#C8FFFF"), color("#6BF0FF")})
+				end	
 				self:GetParent():GetChild("SRPG6Logo"):diffusealpha(0):visible(false)
 				self:GetParent():GetChild("ITLLogo"):diffusealpha(0):visible(false)
 				self:GetParent():GetChild("MachineLogo"):diffusealpha(0):visible(false)
