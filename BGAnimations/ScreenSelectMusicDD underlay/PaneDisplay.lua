@@ -190,6 +190,20 @@ for player in ivalues(PlayerNumber) do
 					self:zoom(text_zoom):diffuse(Color.White):horizalign(left)
 					self:x(pos.col[col]+3)
 					self:y(pos.row[row])
+				end,
+				LoadSongCommand=function(self)
+					self:settext(item.name)
+				end,
+				[pn.."ChartParsedMessageCommand"]=function(self)
+					if THEME:GetCurLanguage() == "en" then
+						local SongOrCourse, StepsOrTrail = GetSongAndSteps(player)
+						local val = StepsOrTrail:GetRadarValues(player):GetValue( item.rc )
+						if val == 1 then
+							self:settext(item.name:sub(1, #item.name - 1))
+						else
+							self:settext(item.name)
+						end
+					end
 				end
 			},
 		}
@@ -253,6 +267,22 @@ for player in ivalues(PlayerNumber) do
 					self:xy(-width/2 + 50, -height/2 + 10)
 					self:addx((j-1)*colSpacing)
 					self:addy((i-1)*rowSpacing)
+				end,
+				LoadSongCommand=function(self)
+					self:settext(col)
+				end,
+				[pn.."ChartParsedMessageCommand"]=function(self)
+					if THEME:GetCurLanguage() == "en" then
+						if SL[pn].Streams[col] == 1 then
+							if i == 1 or i >= 4 then
+								self:settext(col:sub(1, #col - 1))
+							else
+								self:settext(col:sub(1, #col - 2))
+							end
+						else
+							self:settext(col)
+						end
+					end
 				end,
 			}
 
