@@ -2,10 +2,6 @@ local player = ...
 local pn = ToEnumShortString(player)
 local CurrentTab = MaxTabs
 
-if SL[pn].ApiKey == "" then
-	return
-end
-
 local n = player==PLAYER_1 and "1" or "2"
 
 local border = 5
@@ -73,7 +69,6 @@ local GetRealTab = function(TabClicked)
 			RealTabClick = TabClicked
 		end
 	end
-	
 	return tonumber(RealTabClick)
 end
 
@@ -278,6 +273,11 @@ local af = Def.ActorFrame{
 				SetScoreData(1, i, "", "", "", false, false, false)
 				SetScoreData(2, i, "", "", "", false, false, false)
 				SetScoreData(3, i, "", "", "", false, false, false)
+				if i ~= 1 then
+					self:GetChild("MachineRank"..i):settext(""):visible(false)
+				end
+				self:GetChild("MachineName"..i):settext(""):visible(false)
+				self:GetChild("MachineScore"..i):settext(""):visible(false)
 			end
 			self:sleep(0.1):queuecommand('LoopScorebox')
 		end
@@ -352,10 +352,10 @@ local af = Def.ActorFrame{
 				score = FormatPercentScore(HighScores[i]:GetPercentDP())
 				name = HighScores[i]:GetName()
 				if i ~= 1 then
-					self:GetChild("MachineRank"..i):settext(rank)
+					self:GetChild("MachineRank"..i):visible(false):settext(rank)
 				end
-				self:GetChild("MachineName"..i):settext(name)
-				self:GetChild("MachineScore"..i):settext(score)
+				self:GetChild("MachineName"..i):visible(false):settext(name)
+				self:GetChild("MachineScore"..i):visible(false):settext(score)
 			else
 				if i ~= 1 then
 					self:GetChild("MachineRank"..i):settext("")
@@ -379,14 +379,14 @@ local af = Def.ActorFrame{
 		P2ChartParsingMessageCommand=function(self)	self.IsParsing[2] = true end,
 		P1ChartParsedMessageCommand=function(self)
 			self.IsParsing[1] = false
-			if pn == "P1" then
-				self:queuecommand("ChartParsed")
+			if pn == "P1" and self.IsParsing[2] == false then
+				self:stoptweening():queuecommand("ChartParsed")
 			end
 		end,
 		P2ChartParsedMessageCommand=function(self)
 			self.IsParsing[2] = false
-			if pn == "P2" then
-				self:queuecommand("ChartParsed")
+			if pn == "P2" and self.IsParsing[1] == false then
+				self:stoptweening():queuecommand("ChartParsed")
 			end
 		end,
 		ChartParsedCommand=function(self)
