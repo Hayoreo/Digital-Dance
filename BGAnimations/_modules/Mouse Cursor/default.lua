@@ -9,10 +9,21 @@ local Refresh = 1/RefreshRate
 local MaxMouseCounter = RefreshRate * 3
 local HideMouseCounter = MaxMouseCounter
 
+function SimpleInput(event)
+	if 	event.DeviceInput.button == "DeviceButton_left mouse button" or 
+		event.DeviceInput.button == "DeviceButton_right mouse button" or 
+		event.DeviceInput.button == "DeviceButton_mousewheel down" or 
+		event.DeviceInput.button == "DeviceButton_mousewheel up" then
+			HideMouseCounter = 0
+	end
+end
+
 local af = Def.ActorFrame{
 	Def.Sprite{
 		Texture="./MouseCursor.png",
 		Name="MouseCursor",
+		OnCommand=function(self) SCREENMAN:GetTopScreen():AddInputCallback( SimpleInput ) end,
+		OffCommand=function(self) SCREENMAN:GetTopScreen():RemoveInputCallback( SimpleInput ) end,
 		InitCommand=function(self)
 			MouseX = INPUTFILTER:GetMouseX()
 			MouseY = INPUTFILTER:GetMouseY()
@@ -47,6 +58,8 @@ local af = Def.ActorFrame{
 			else
 				self:visible(true)
 			end
+			
+			
 			
 			self:xy(MouseX,MouseY)
 			self:sleep(Refresh):queuecommand("UpdateMouse")
