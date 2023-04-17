@@ -63,21 +63,14 @@ end
 local GetRealTab = function(TabClicked)
 	local RealTabClick
 	
-	if TabClicked == 1 then
-		RealTabClick = 5
-	elseif IsServiceAllowed(SL.GrooveStats.GetScores) then
-		if TabClicked == 2 then
-			RealTabClick = 4
-		elseif TabClicked == 3 then
-			RealTabClick = 3
-		elseif TabClicked == 4 then
-			RealTabClick = 2
-		elseif TabClicked == 5 then
-			RealTabClick = 1
-		end
+	if IsServiceAllowed(SL.GrooveStats.GetScores) then
+		RealTabClick = TabClicked
 	else
+		-- we only show the steps information and local scores if not online
 		if TabClicked == 2 then
-			RealTabClick = 1
+			RealTabClick = 5
+		else
+			RealTabClick = TabClicked
 		end
 	end
 	
@@ -475,7 +468,7 @@ local af = Def.ActorFrame{
 		Texture=THEME:GetPathG("", "GrooveStats.png"),
 		Name="GrooveStatsLogo",
 		InitCommand=function(self)
-			self:zoom(0.6):diffusealpha(0.5):x(80):y(8)
+			self:zoom(0.6):diffusealpha(0.5):x(80)
 		end,
 		UpdateScoreboxCommand=function(self)
 			self:stoptweening()
@@ -491,7 +484,7 @@ local af = Def.ActorFrame{
 		Texture=THEME:GetPathG("", "SRPG/SRPG6 Logo (doubleres).png"),
 		Name="SRPG6Logo",
 		InitCommand=function(self)
-			self:diffusealpha(0.4):zoom(0.18):diffusealpha(0):x(80):y(8)
+			self:diffusealpha(0.4):zoom(0.18):diffusealpha(0):x(80)
 		end,
 		UpdateScoreboxCommand=function(self)
 			self:stoptweening()
@@ -507,7 +500,7 @@ local af = Def.ActorFrame{
 		Texture=THEME:GetPathG("", "ITL.png"),
 		Name="ITLLogo",
 		InitCommand=function(self)
-			self:diffusealpha(0.2):zoom(0.3):diffusealpha(0):x(80):y(8)
+			self:diffusealpha(0.2):zoom(0.3):diffusealpha(0):x(80)
 		end,
 		UpdateScoreboxCommand=function(self)
 			self:stoptweening()
@@ -523,7 +516,7 @@ local af = Def.ActorFrame{
 		Texture=THEME:GetPathG("", "Machine.png"),
 		Name="MachineLogo",
 		InitCommand=function(self)
-			self:diffusealpha(0.2):zoom(0.18):diffusealpha(0):x(80):y(8)
+			self:diffusealpha(0.2):zoom(0.18):diffusealpha(0):x(80)
 		end,
 		UpdateScoreboxCommand=function(self)
 			self:stoptweening()
@@ -644,7 +637,7 @@ for i=1,num_scores do
 				self:stoptweening():linear(transition_seconds/2):diffusealpha(0):queuecommand("SetMachineScores")
 			end,
 			SetMachineScoresCommand=function(self)
-				if cur_style == 3 and MachineScores then
+				if cur_style == 3 and MachineScores and GAMESTATE:GetCurrentSong() then
 					self:linear(transition_seconds/2):diffusealpha(1)
 				end
 			end,
@@ -660,7 +653,7 @@ for i=1,num_scores do
 				self:stoptweening():linear(transition_seconds/2):diffusealpha(0):queuecommand("SetMachineScores")
 			end,
 			SetMachineScoresCommand=function(self)
-				if cur_style == 3 then
+				if cur_style == 3 and MachineScores and GAMESTATE:GetCurrentSong() then
 					self:linear(transition_seconds/2):diffusealpha(1)
 				end
 			end,
@@ -677,7 +670,7 @@ for i=1,num_scores do
 			self:stoptweening():linear(transition_seconds/2):diffusealpha(0):queuecommand("SetMachineScores")
 		end,
 		SetMachineScoresCommand=function(self)
-			if cur_style == 3 and MachineScores then
+			if cur_style == 3 and MachineScores and GAMESTATE:GetCurrentSong() then
 				self:linear(transition_seconds/2):diffusealpha(1)
 			elseif cur_style == 3 and not MachineScores and i == 1 and GAMESTATE:GetCurrentSong() then
 				self:settext("No Scores"):linear(transition_seconds/2):diffusealpha(1)
@@ -695,7 +688,7 @@ for i=1,num_scores do
 			self:stoptweening():linear(transition_seconds/2):diffusealpha(0):queuecommand("SetMachineScores")
 		end,
 		SetMachineScoresCommand=function(self)
-			if cur_style == 3 then
+			if cur_style == 3 and MachineScores and GAMESTATE:GetCurrentSong() then
 				self:linear(transition_seconds/2):diffusealpha(1)
 			end
 		end,
