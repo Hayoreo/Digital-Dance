@@ -59,7 +59,7 @@ return Def.ActorFrame{
 	Def.Quad{
 		Name="BackgroundQuad",
 		InitCommand=function(self) 
-			self:zoomto(QuadWidth, 20):horizalign(left):vertalign(bottom)
+			self:zoomto(QuadWidth, 16):horizalign(left):vertalign(bottom)
 			self:x(IsUsingWideScreen() and 0 or 181)
 			self:playcommand("Reset")
 		end,
@@ -85,7 +85,7 @@ return Def.ActorFrame{
 			:x(IsUsingWideScreen() and 5 or 30)
 			:y(-3)
 			:maxwidth(40)
-			:zoom(0.9)
+			:zoom(0.75)
 			if not GAMESTATE:IsCourseMode() then
 				if GAMESTATE:GetCurrentStyle():GetStyleType() == 'StyleType_OnePlayerOneSide' or  GAMESTATE:GetCurrentStyle():GetStyleType() ==  'StyleType_TwoPlayersTwoSides' then
 					self:settext("Single:")
@@ -111,9 +111,9 @@ return Def.ActorFrame{
 				self:x(60):maxwidth(138)
 			else
 				self
-				:x(IsUsingWideScreen() and 42 or 68)
-				:maxwidth(IsUsingWideScreen() and (SCREEN_WIDTH/3) - 15 or 295)
-				:zoom(0.9)
+				:x(IsUsingWideScreen() and 35 or 68)
+				:maxwidth(IsUsingWideScreen() and (_screen.w/3 / 0.75) - 48 or 295)
+				:zoom(0.75)
 			end
 		end,
 		ResetCommand=function(self)

@@ -12,7 +12,7 @@ local pn = ToEnumShortString(player)
 local FooterHeight = 32
 local PaneHeight = 120
 local DifficultyHeight = 50
-local StepsHeight = 20
+local StepsHeight = 16
 local YPosition = _screen.h - (FooterHeight + PaneHeight + DifficultyHeight + StepsHeight)
 
 -- Height and width of the density graph.
