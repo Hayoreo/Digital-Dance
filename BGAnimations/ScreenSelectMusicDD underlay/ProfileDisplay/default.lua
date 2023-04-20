@@ -1,18 +1,16 @@
-if GAMESTATE:IsCourseMode() then
-return Def.ActorFrame { }
-end
+local args = ...
+local PruneSongsFromGroup = args[1]
 
-local t = Def.ActorFrame{
-	ChangeStepsMessageCommand=function(self, params)
-		self:playcommand("StepsHaveChanged", {Direction=params.Direction, Player=params.Player})
-	end,
+-- don't load in course mode
+if GAMESTATE:IsCourseMode() then return end
 
+local t = Def.ActorFrame{}
+
+for player in ivalues( PlayerNumber ) do
 	-- The background and static player info (like name, and profile picture)
-	LoadActor("./Profile.lua"),
-	-- All the text labels for the player's info
-	LoadActor("./ProfileTextLabels.lua"),
+	t[#t+1] = LoadActor("./ProfilePane.lua", player)
 	-- All the variable player profile info
-	LoadActor("./ProfileStats.lua"),
-}
+	t[#t+1] = LoadActor("./ProfileStats.lua", {player, PruneSongsFromGroup})
+end
 
 return t

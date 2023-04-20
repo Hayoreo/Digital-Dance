@@ -143,8 +143,8 @@ local t = Def.ActorFrame {
 	-- Song info like artist, bpm, and song length.
 	LoadActor("./songDescription.lua"),
 	LoadActor("./playerModifiers.lua"),
-	-- The profile pane that shows things like songs played set, average bpm/diff/etc
-	LoadActor("./ProfileDisplay/default.lua"),
+	-- The profile pane that shows things like songs played set
+	LoadActor("./ProfileDisplay/default.lua", {setup.PruneSongsFromGroup}),
 	-- number of steps, jumps, holds, etc., and high scores associated with the current stepchart
 	LoadActor("./PaneDisplay.lua"),
 	-- this includes the stepartist boxes and the PaneDisplays (number of steps, jumps, holds, etc.)

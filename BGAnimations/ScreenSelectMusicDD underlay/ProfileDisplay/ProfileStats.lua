@@ -1,62 +1,57 @@
-local player = ...
+local args = ...
+local player = args[1]
+local PruneSongsFromGroup = args[2]
+local SongSort = GetMainSortPreference()
+
+local pn = ToEnumShortString(player)
 local SongsInSet = SL.Global.Stages.PlayedThisGame
-local nsj = GAMESTATE:GetNumSidesJoined()
 
-local P1 = GAMESTATE:IsHumanPlayer(PLAYER_1)
-local P2 = GAMESTATE:IsHumanPlayer(PLAYER_2)
-local name1 = PROFILEMAN:GetPlayerName(0)
-local name2 = PROFILEMAN:GetPlayerName(1)
+-- pre load some profile info
+local player_name = PROFILEMAN:GetPlayerName(pn)
+local player_profile = PROFILEMAN:GetProfile(pn)
+local total_num_songs_played = player_profile:GetNumTotalSongsPlayed()
+local num_times_song
 
-local p1profile = PROFILEMAN:GetProfile(0)
-local p2profile = PROFILEMAN:GetProfile(1)
+-- figure out which players (if any are guests)
+local GuestP1 = false
+local GuestP2 = false
 
-local P1numSongsPlayed = p1profile:GetNumTotalSongsPlayed()
-local P1numRollsHit = p1profile:GetTotalRolls()
-local P1numStepsHit = p1profile:GetTotalTapsAndHolds()
-local P1numTotalSteps = ""
-
-local P2numSongsPlayed = p2profile:GetNumTotalSongsPlayed()
-local P2numRollsHit = p2profile:GetTotalRolls()
-local P2numStepsHit = p2profile:GetTotalTapsAndHolds()
-local P2numTotalSteps = ""
-
-local Guest1 = ""
-local Guest2 = ""
-
-if name1 == "" then
-	Guest1 = true
-	else
-	Guest1 = false
+if player_name == "" and pn == "P1" then
+	GuestP1 = true
+elseif player_name == "" and pn == "P2" then
+	GuestP2 = true
 end
 
-if name2 == "" then
-	Guest2 = true
-	else
-	Guest2 = false
+local function IsNotGuest()
+	if pn == "P1" and GuestP1 then
+		return false
+	elseif pn == "P2" and GuestP2 then
+		return false
+	end
+	
+	return true
 end
 
--------------------------------------------------------- CALCULATIONS -------------------------------------------------------
+-- Help position items based on the size of the profile frame
+local border = 5
+local padding = 20
+local width = (_screen.w/3) - border - padding
+local height = 122
 
--- We don't calculate average bpm or difficulty here because of reasons. Go to 'ScreenEvaluationStage underlay.lua' for those
-
--- this is for showing what song you're on
-
--- Stepmania doesn't have a way to count steps, holds, and rolls at once so we have to do it manually
-if P1numRollsHit == 0 then
-	P1numTotalSteps = P1numStepsHit
-else
-	P1numTotalSteps = P1numRollsHit + P1numStepsHit
+-- This is to prevent logic issues
+if SongsInSet == 0 then
+P1SongsInSet = 0
+P2SongsInSet = 0
+SongsInSet = 0
 end
 
-if P2numRollsHit == 0 then
-	P2numTotalSteps = P2numStepsHit
-else
-	P2numTotalSteps = P2numRollsHit + P2numStepsHit
+if P1SongsInSet == 0 or P1SongsInSet == nil then
+P1SongsInSet = 0
 end
 
--- this is for steps per set
-P1REALStepsPerSet = P1numTotalSteps - Player1StartingSteps
-P2REALStepsPerSet = P2numTotalSteps - Player2StartingSteps
+if P2SongsInSet == 0 or P2SongsInSet == nil then
+P2SongsInSet = 0
+end
 
 ------------------- This is to make our numbers behave properly -------------------------------
 
@@ -72,445 +67,298 @@ local function comma_value(amount)
   return formatted
 end
 
--- for decimals
-local function RoundTen(num, numDecimalPlaces)
-  local mult = 10^(2 or 0)
-  return math.floor(num * mult + 0.5) / mult
-end
 
--- This is to prevent logic issues
-if SongsInSet == 0 then
-P1SongsInSet = 0
-P2SongsInSet = 0
-SongsInSet = 0
-AverageBPMPlayer1 = 0
-AverageBPMPlayer2 = 0
-TotalBPMPlayer1 = 0
-TotalBPMPlayer2 = 0
-TotalDifficultyPlayer1 = 0 
-TotalDifficultyPlayer2 = 0
-ScoreP1 = 0
-ScoreP2 = 0
-TotalGuestStepsP1 = 0
-TotalGuestStepsP2 = 0
-end
-
-if P1SongsInSet == 0 or P1SongsInSet == nil then
-P1SongsInSet = 0
-AverageDifficultyPlayer1 = 0
-AverageBPMPlayer1 = 0
-P1REALStepsPerSet = 0
-Player1StartingSteps = P1numTotalSteps
-ScoreP1 = 0
-TotalGuestStepsP1 = 0
-end
-
-if P2SongsInSet == 0 or P2SongsInSet == nil then
-P2SongsInSet = 0
-AverageDifficultyPlayer2 = 0
-AverageBPMPlayer2 = 0
-P2REALStepsPerSet = 0
-Player2StartingSteps = P2numTotalSteps
-ScoreP2 = 0
-TotalGuestStepsP2 = 0
-end
-
-------------- it's time to d-d-d-d-d-d-d-reload our functions ----------------
-local function getInputHandler(actor, player)
-	return (function(event)
-		if event.GameButton == "Start" and event.PlayerNumber == player and GAMESTATE:IsHumanPlayer(event.PlayerNumber) then
-			actor:visible(true)
-		end
-	end)
-end
-
-local t = Def.ActorFrame{
-	Name="DifficultyJawn",
-	InitCommand=cmd(vertalign, top; draworder, 107),
-
-	------------------------------------------ Player 1 STATS---------------------------------------------
-	
-		-- # of songs played this set
- Def.BitmapText{
-		Font="Miso/_miso",
-		InitCommand=function(self)
-			if IsUsingWideScreen() then
-				self:diffuse(color("#FFFFFF"))
-				self:visible(P1)
-				self:horizalign(left)
-				self:maxwidth(90)
-				self:x(WideScale(160,202))
-				self:y(WideScale(25,28))
-				self:zoom(WideScale(0.6,0.7))
-				self:settext(P1SongsInSet)
-			elseif nsj == 1 then
-				self:diffuse(color("#FFFFFF"))
-				self:visible(P1)
-				self:horizalign(center)
-				self:maxwidth(140)
-				self:x(SCREEN_RIGHT - 119)
-				self:y(398)
-				self:zoom(0.75)
-				if not Guest1 or not Guest2 then
-					self:settext(P1SongsInSet .. " / " .. comma_value(P1numSongsPlayed))
-				else
-					self:settext(P1SongsInSet)
-				end
-			else
-				self:visible(false)
-			end
-			
-		end,
-		OnCommand=function(self)
-			SCREENMAN:GetTopScreen():AddInputCallback(getInputHandler(self, 'PlayerNumber_P1'))
-		end
-	},
-	-- # of songs played lifetime
- Def.BitmapText{
-		Font="Miso/_miso",
-		InitCommand=function(self)
-			if IsUsingWideScreen() then
-				if Guest1 then return end
-				self:diffuse(color("#FFFFFF"))
-				self:visible(P1)
-				self:horizalign(left)
-				self:maxwidth(112)
-				self:x(WideScale(146,186))
-				self:y(WideScale(40,43))
-				self:zoom(WideScale(0.6,0.7))
-				self:settext(comma_value(P1numSongsPlayed))
-			else
-				self:visible(false)
-			end
-			
-		end,
-		OnCommand=function(self)
-			SCREENMAN:GetTopScreen():AddInputCallback(getInputHandler(self, 'PlayerNumber_P1'))
-		end
-	},
-	
-	-- # of steps hit set
- Def.BitmapText{
-		Font="Miso/_miso",
-		InitCommand=function(self)
-			if IsUsingWideScreen() then
-				self:diffuse(color("#FFFFFF"))
-				self:visible(P1)
-				self:horizalign(left)
-				self:maxwidth(112)
-				self:x(WideScale(142,178))
-				self:y(WideScale(53,58))
-				self:zoom(WideScale(0.6,0.7))
-				if not Guest1 then
-					self:settext(comma_value(P1REALStepsPerSet))
-				else
-					self:settext(comma_value(TotalGuestStepsP1))
-				end
-				if Guest1 then 
-				self:y(WideScale(40,43))
-				end
-			elseif nsj == 1 then
-				self:diffuse(color("#FFFFFF"))
-				self:visible(P1)
-				self:horizalign(center)
-				self:maxwidth(300)
-				self:x(SCREEN_RIGHT - 119)
-				self:y(425)
-				self:zoom(0.7)
-				if not Guest1 or not Guest2 then
-					self:settext(comma_value(P1REALStepsPerSet) .. " / " .. comma_value(P1numTotalSteps))
-				else
-					self:settext(comma_value(TotalGuestStepsP1))
-				end
-			else
-				self:visible(false)
-			end
-		end,
-		OnCommand=function(self)
-			SCREENMAN:GetTopScreen():AddInputCallback(getInputHandler(self, 'PlayerNumber_P1'))
-		end
-	},
-	
-		-- # of steps hit lifetime
- Def.BitmapText{
-		Font="Miso/_miso",
-		InitCommand=function(self)
-			if IsUsingWideScreen() then
-				if Guest1 then return end
-				self:diffuse(color("#FFFFFF"))
-				self:visible(P1)
-				self:horizalign(left)
-				self:maxwidth(114)
-				self:x(WideScale(146,184))
-				self:y(WideScale(67,73))
-				self:zoom(WideScale(0.6,0.7))
-				self:settext(comma_value(P1numTotalSteps))
-			else
-				self:visible(false)
-			end
-			
-		end,
-		OnCommand=function(self)
-			SCREENMAN:GetTopScreen():AddInputCallback(getInputHandler(self, 'PlayerNumber_P1'))
-		end
-	},
-	-- Average difficulty
-	 Def.BitmapText{
-		Font="Miso/_miso",
-		InitCommand=function(self)
-			if IsUsingWideScreen() then
-				self:diffuse(color("#FFFFFF"))
-				self:visible(P1)
-				self:horizalign(left)
-				self:maxwidth(90)
-				self:x(WideScale(160,203))
-				self:y(WideScale(81,88))
-				self:zoom(WideScale(0.6,0.7))
-				self:settext(RoundTen(AverageDifficultyPlayer1))
-				if Guest1 then 
-				self:y(WideScale(53,58))
-				end
-			elseif nsj == 1 then
-				self:diffuse(color("#FFFFFF"))
-				self:visible(P1)
-				self:horizalign(right)
-				self:maxwidth(120)
-				self:x(_screen.cx + 202)
-				self:y(440)
-				self:zoom(0.75)
-				self:settext(RoundTen(AverageDifficultyPlayer1))
-			else
-				self:visible(false)
-			end
-			
-		end,
-		OnCommand=function(self)
-			SCREENMAN:GetTopScreen():AddInputCallback(getInputHandler(self, 'PlayerNumber_P1'))
-		end
-	},
-	-- Average BPM
-	 Def.BitmapText{
-		Font="Miso/_miso",
-		InitCommand=function(self)
-			if IsUsingWideScreen() then
-				self:diffuse(color("#FFFFFF"))
-				self:visible(P1)
-				self:horizalign(left)
-				self:maxwidth(90)
-				self:x(WideScale(133,169))
-				self:y(WideScale(95,103))
-				self:zoom(WideScale(0.6,0.7))
-				self:settext(RoundTen(AverageBPMPlayer1))
-				if Guest1 then 
-				self:y(WideScale(67,73))
-				end
-			elseif nsj == 1 then
-				self:diffuse(color("#FFFFFF"))
-				self:visible(P1)
-				self:horizalign(left)
-				self:maxwidth(100)
-				self:x(_screen.cx + 270)
-				self:y(440)
-				self:zoom(0.75)
-				self:settext(RoundTen(AverageBPMPlayer1))
-			else
-				self:visible(false)
-			end
-		end,
-		OnCommand=function(self)
-			SCREENMAN:GetTopScreen():AddInputCallback(getInputHandler(self, 'PlayerNumber_P1'))
-		end
-	},
-		------------------------------------------ Player 2 STATS---------------------------------------------
-		-- # of songs played this set
- Def.BitmapText{
-		Font="Miso/_miso",
-		InitCommand=function(self)
-			if IsUsingWideScreen() then
-				self:diffuse(color("#FFFFFF"))
-				self:visible(P2)
-				self:horizalign(left)
-				self:maxwidth(90)
-				self:x(WideScale(633,790))
-				self:y(WideScale(25,28))
-				self:zoom(WideScale(0.6,0.7))
-				self:settext(P2SongsInSet)
-			elseif nsj == 1 then
-				self:diffuse(color("#FFFFFF"))
-				self:visible(P2)
-				self:horizalign(center)
-				self:maxwidth(140)
-				self:x(SCREEN_RIGHT - 119)
-				self:y(398)
-				self:zoom(0.75)
-				if not Guest1 or not Guest2 then
-					self:settext(P2SongsInSet .. " / " .. comma_value(P2numSongsPlayed))
-				else
-					self:settext(P2SongsInSet)
-				end
-			else
-				self:visible(false)
-			end
-			
-		end,
-		OnCommand=function(self)
-			SCREENMAN:GetTopScreen():AddInputCallback(getInputHandler(self, 'PlayerNumber_P2'))
-		end
-	},
--- # of songs played lifetime
- Def.BitmapText{
-		Font="Miso/_miso",
-		InitCommand=function(self)
-			if IsUsingWideScreen() then
-				if Guest2 then return end
-				self:diffuse(color("#FFFFFF"))
-				self:horizalign(left)
-				self:maxwidth(112)
-				self:x(WideScale(620,773))
-				self:y(WideScale(40,43))
-				self:zoom(WideScale(0.6,0.7))
-				self:settext(comma_value(P2numSongsPlayed))
-			else
-				self:visible(false)
-			end
-		end,
-		OnCommand=function(self)
-			SCREENMAN:GetTopScreen():AddInputCallback(getInputHandler(self, 'PlayerNumber_P2'))
-		end
-	},
-	-- steps hit in set
-	Def.BitmapText{
-		Font="Miso/_miso",
-		InitCommand=function(self)
-			if IsUsingWideScreen() then
-				self:diffuse(color("#FFFFFF"))
-				self:visible(P2)
-				self:horizalign(left)
-				self:maxwidth(112)
-				self:x(WideScale(615,766))
-				self:y(WideScale(53,58))
-				self:zoom(WideScale(0.6,0.7))
-				if not Guest2 then
-				self:settext(comma_value(P2REALStepsPerSet))
-				else
-					self:settext(comma_value(TotalGuestStepsP2))
-				end
-				if Guest2 then 
-				self:y(WideScale(40,43))
-				end
-			elseif nsj == 1 then
-				self:diffuse(color("#FFFFFF"))
-				self:visible(P2)
-				self:horizalign(center)
-				self:maxwidth(112)
-				self:x(SCREEN_RIGHT - 119)
-				self:y(425)
-				self:zoom(0.75)
-				if not Guest1 or not Guest2 then
-					self:settext(comma_value(P2REALStepsPerSet) .. " / " .. comma_value(P2numTotalSteps))
-				else
-					self:settext(comma_value(TotalGuestStepsP2))
-				end
-			else
-				self:visible(false)
-			end
-			
-		end,
-		OnCommand=function(self)
-			SCREENMAN:GetTopScreen():AddInputCallback(getInputHandler(self, 'PlayerNumber_P2'))
-		end
-	},
-		-- # of steps hit lifetime
- Def.BitmapText{
-		Font="Miso/_miso",
-		InitCommand=function(self)
-			if IsUsingWideScreen() then
-				if Guest2 then return end
-				self:diffuse(color("#FFFFFF"))
-				self:visible(P2)
-				self:horizalign(left)
-				self:maxwidth(300)
-				self:x(WideScale(618,772))
-				self:y(WideScale(67,73))
-				self:zoom(WideScale(0.6,0.7))
-				self:settext(comma_value(P2numTotalSteps))
-			else
-				self:visible(false)
-			end
-			
-		end,
-		OnCommand=function(self)
-			SCREENMAN:GetTopScreen():AddInputCallback(getInputHandler(self, 'PlayerNumber_P2'))
-		end
-	},
-		-- Average Difficulty
- Def.BitmapText{
-		Font="Miso/_miso",
-		InitCommand=function(self)
-			if IsUsingWideScreen() then
-				self:diffuse(color("#FFFFFF"))
-				self:visible(P2)
-				self:horizalign(left)
-				self:maxwidth(114)
-				self:x(WideScale(632,790))
-				self:y(WideScale(81,88))
-				self:zoom(WideScale(0.6,0.7))
-				self:settext(RoundTen(AverageDifficultyPlayer2))
-				if Guest2 then 
-				self:y(WideScale(53,58))
-				end
-			elseif nsj == 1 then
-				self:diffuse(color("#FFFFFF"))
-				self:visible(P2)
-				self:horizalign(left)
-				self:maxwidth(120)
-				self:x(_screen.cx + 202)
-				self:y(440)
-				self:zoom(0.75)
-				self:settext(RoundTen(AverageDifficultyPlayer2))
-			else
-				self:visible(false)
-			end
-			
-		end,
-		OnCommand=function(self)
-			SCREENMAN:GetTopScreen():AddInputCallback(getInputHandler(self, 'PlayerNumber_P2'))
-		end
-	},
-		-- Average BPM
- Def.BitmapText{
-		Font="Miso/_miso",
-		InitCommand=function(self)
-			if IsUsingWideScreen() then
-				self:diffuse(color("#FFFFFF"))
-				self:visible(P2)
-				self:horizalign(left)
-				self:maxwidth(114)
-				self:x(WideScale(608,756))
-				self:y(WideScale(95,103))
-				self:zoom(WideScale(0.6,0.7))
-				self:settext(RoundTen(AverageBPMPlayer2))
-				if Guest2 then 
-				self:y(WideScale(67,73))
-				end
-			elseif nsj == 1 then
-				self:diffuse(color("#FFFFFF"))
-				self:visible(P2)
-				self:horizalign(left)
-				self:maxwidth(100)
-				self:x(_screen.cx + 270)
-				self:y(440)
-				self:zoom(0.75)
-				self:settext(RoundTen(AverageBPMPlayer2))
-			else
-				self:visible(false)
-			end
-			
-		end,
-		OnCommand=function(self)
-			SCREENMAN:GetTopScreen():AddInputCallback(getInputHandler(self, 'PlayerNumber_P2'))
-		end
-	},
+local af = Def.ActorFrame{
+	InitCommand=function(self) 
+		self:visible(GAMESTATE:IsPlayerEnabled(pn)):queuecommand("GetPlayerGrades") 
+	end,
+	CurrentGroupChangedMessageCommand=function(self)
+		self:stoptweening():sleep(0.2):queuecommand("GetPlayerGrades")
+	end,
+	["CurrentSteps"..pn.."ChangedMessageCommand"]=function(self)
+		self:stoptweening():sleep(0.2):queuecommand("GetPlayerGrades")
+	end,
 }
 
-return t
+-- define some variables for the next function
+local num_tiers = THEME:GetMetric("PlayerStageStats", "NumGradeTiersUsed")
+local grades = {}
+
+for i=1,num_tiers do
+	grades[ ("Grade_Tier%02d"):format(i) ] = i-1
+end
+
+-- assign the "Grade_Failed" key a value equal to num_tiers
+grades["Grade_Failed"] = num_tiers
+
+-- Get grade counts for all songs of a profile
+af.GetPlayerGradesCommand=function(self)
+	local SongCount = 0
+	local scores = {
+		Grade_Tier01 = 0,
+		Grade_Tier02 = 0,
+		Grade_Tier03 = 0,
+		Grade_Tier04 = 0,
+		Passes = 0
+	}
+	
+	local songs = PruneSongsFromGroup(NameOfGroup)
+	local stepstype = GAMESTATE:GetCurrentStyle():GetStepsType()
+	local steps = GAMESTATE:GetCurrentSteps(player)
+	
+	if steps then
+		-- Get current difficulty
+		local difficulty = steps:GetDifficulty()
+		for song in ivalues(songs) do
+			local stepses = song:GetAllSteps()
+			for songsteps in ivalues(stepses) do
+				local stepsdiff = songsteps:GetDifficulty()
+				-- Only show grades for the current difficulty if sorted by group
+				if SongSort == 1 then
+					if difficulty == stepsdiff and stepstype == songsteps:GetStepsType() then
+						SongCount = SongCount + 1
+						HighScoreList = player_profile:GetHighScoreListIfExists(song,songsteps)
+						if HighScoreList ~= nil then 
+							HighScores = HighScoreList:GetHighScores()
+							-- Get highest score
+							if #HighScores > 0 then
+								local grade = HighScores[1]:GetGrade()
+								if grade ~= "Grade_Failed" then
+									scores["Passes"] = scores["Passes"] + 1
+									if grades[grade] < 4 then
+										scores[grade] = scores[grade] + 1
+									end
+								end
+							end
+						end
+					end
+				-- if sorted by difficulty only show grades if they match the difficulty of the group folder
+				elseif SongSort == 6 then
+					if (songsteps:GetMeter() == NameOfGroup or (songsteps:GetMeter() >= 40 and NameOfGroup == "40+")) and stepstype == songsteps:GetStepsType() then
+						SongCount = SongCount + 1
+						HighScoreList = player_profile:GetHighScoreListIfExists(song,songsteps)
+						if HighScoreList ~= nil then 
+							HighScores = HighScoreList:GetHighScores()
+							-- Get highest score
+							if #HighScores > 0 then
+								local grade = HighScores[1]:GetGrade()
+								if grade ~= "Grade_Failed" then
+									scores["Passes"] = scores["Passes"] + 1
+									if grades[grade] < 4 then
+										scores[grade] = scores[grade] + 1
+									end
+								end
+							end
+						end
+					end
+				-- for all other sorts get all grades from all available steps
+				else
+					if stepstype == songsteps:GetStepsType() then
+						SongCount = SongCount + 1
+						HighScoreList = player_profile:GetHighScoreListIfExists(song,songsteps)
+						if HighScoreList ~= nil then 
+							HighScores = HighScoreList:GetHighScores()
+							-- Get highest score
+							if #HighScores > 0 then
+								local grade = HighScores[1]:GetGrade()
+								if grade ~= "Grade_Failed" then
+									scores["Passes"] = scores["Passes"] + 1
+									if grades[grade] < 4 then
+										scores[grade] = scores[grade] + 1
+									end
+								end
+							end
+						end
+					end
+				end
+				
+				
+			end
+		end
+		self:playcommand("SetGrades", {scores=scores, SongCount = SongCount})
+	else
+		self:visible(false)
+	end
+end
+
+-- Songs played set (label)
+af[#af+1] = Def.BitmapText{
+	Font="Miso/_miso",
+	Name="SongsPlayedSetValue"..pn,
+	InitCommand=function(self)
+		local zoom = 0.75
+		self:horizalign(right):vertalign(bottom):diffuse(color("#a58cff"))
+			:x(pn == "P1" and padding/2 + border/2 + width - 45 or _screen.w - padding/2 - border/2 - 45)
+			:y(padding/2 + border/2 + 17)
+			:maxwidth((width-110)/zoom)
+			:zoom(zoom)
+			:settext("Songs played (set):")
+	end,
+}
+
+
+-- Songs played set (value)
+af[#af+1] = Def.BitmapText{
+	Font="Miso/_miso",
+	Name="SongsPlayedSet"..pn,
+	InitCommand=function(self)
+		local zoom = 0.75
+		self:horizalign(left):vertalign(bottom)
+			:x(pn == "P1" and padding/2 + border/2 + width - 43 or _screen.w - padding/2 - border/2 - 43)
+			:y(padding/2 + border/2 + 17)
+			:maxwidth(43/zoom)
+			:zoom(zoom)
+			:settext(pn == "P1" and comma_value(P1SongsInSet) or comma_value(P2SongsInSet))
+	end,
+}
+
+
+-- Songs played lifetime (label)
+af[#af+1] = Def.BitmapText{
+	Font="Miso/_miso",
+	Name="SongsPlayedLifetimeLabel"..pn,
+	InitCommand=function(self)
+		local zoom = 0.75
+		self:horizalign(right):vertalign(bottom):diffuse(color("#a58cff"))
+			:x(pn == "P1" and padding/2 + border/2 + width - 45 or _screen.w - padding/2 - border/2 - 45)
+			:y(padding/2 + border/2 + 32)
+			:maxwidth((width-110)/zoom)
+			:zoom(zoom)
+			:settext("Songs played (lifetime):")
+			-- don't show this if the player doesn't have a profile
+			self:visible(IsNotGuest())
+	end,
+}
+
+-- Songs played lifetime (value)
+af[#af+1] = Def.BitmapText{
+	Font="Miso/_miso",
+	Name="SongsPlayedLifetimeValue"..pn,
+	InitCommand=function(self)
+		local zoom = 0.75
+		self:horizalign(left):vertalign(bottom)
+			:x(pn == "P1" and padding/2 + border/2 + width - 43 or _screen.w - padding/2 - border/2 - 43)
+			:y(padding/2 + border/2 + 32)
+			:maxwidth(43/zoom)
+			:zoom(zoom)
+			:settext(comma_value(total_num_songs_played))
+			-- don't show this if the player doesn't have a profile
+			self:visible(IsNotGuest())
+	end,
+}
+
+-- Number of times song played (label)
+af[#af+1] = Def.BitmapText{
+	Font="Miso/_miso",
+	Name="NumberOfTimesSongsPlayed"..pn,
+	InitCommand=function(self)
+		local zoom = 0.75
+		self:horizalign(right):vertalign(bottom):diffuse(color("#a58cff"))
+			:x(pn == "P1" and padding/2 + border/2 + width - 45 or _screen.w - padding/2 - border/2 - 45)
+			:y(padding/2 + border/2 + 47)
+			:maxwidth((width-110)/zoom)
+			:zoom(zoom)
+			:settext("Play count:")
+			-- don't show this if the player doesn't have a profile
+			self:visible(IsNotGuest())
+	end,
+}
+
+-- Number of times song played (value)
+af[#af+1] = Def.BitmapText{
+	Font="Miso/_miso",
+	Name="NumberOfTimesSongsPlayedValue"..pn,
+	InitCommand=function(self)
+		local zoom = 0.75
+		local song = GAMESTATE:GetCurrentSong()
+		local num_times_song = player_profile:GetSongNumTimesPlayed(song)
+		self:horizalign(left):vertalign(bottom)
+			:x(pn == "P1" and padding/2 + border/2 + width - 43 or _screen.w - padding/2 - border/2 - 43)
+			:y(padding/2 + border/2 + 47)
+			:maxwidth(43/zoom)
+			:zoom(zoom)
+			-- don't show this if the player doesn't have a profile
+			self:visible(IsNotGuest())
+			self:settext(comma_value(num_times_song))
+	end,
+	CurrentSongChangedMessageCommand=function(self)
+		if GAMESTATE:GetCurrentSong() == nil then
+			self:settext("?")
+		end
+	end,
+	[pn.."ChartParsedMessageCommand"]=function(self)
+			local song = GAMESTATE:GetCurrentSong()
+			local num_times_song = player_profile:GetSongNumTimesPlayed(song)
+			
+			-- don't show this if the player doesn't have a profile
+			self:visible(IsNotGuest())
+			self:settext(comma_value(num_times_song))
+	end,
+}
+
+-- Grades and grade count
+local columnWidth = 100
+for i=1,4 do
+	af[#af+1] = Def.Sprite{
+		Texture=THEME:GetPathG("","_grades/assets/grades 1x18.png"),
+		InitCommand=function(self) self:zoom(0):sleep(0.2):zoom(0.2):animate(false) end,
+		SetGradesCommand=function(self, params)
+			self:setstate(grades["Grade_Tier0"..i])
+			self:horizalign(left):vertalign(bottom)
+			if pn == "P1" then
+				self:x(85 + (i*40))
+				self:y(96)
+			else
+				self:x(_screen.w - padding/2 - border/2 - ((width - 73) - (i*40)))
+				self:y(96)
+			end
+			-- don't show this if the player doesn't have a profile
+			self:visible(IsNotGuest())
+		end,
+	}
+	
+	af[#af+1] = LoadFont("Common Normal")..{
+		Name="Grade" ..i,
+		Text="",
+		SetGradesCommand=function(self,params)
+			local zoom = 0.7
+			local text = params.scores["Grade_Tier0"..i]
+			self:settext(comma_value(text))
+			self:horizalign(center):vertalign(bottom)
+			self:zoom(zoom)
+			self:maxwidth(30/zoom)
+			if pn == "P1" then
+				self:x(93 + (i*40))
+				self:y(112)
+			else
+				self:x(_screen.w - padding/2 - border/2 - ((width - 81) - (i*40)))
+				self:y(112)
+			end
+			-- don't show this if the player doesn't have a profile
+			self:visible(IsNotGuest())
+		end,
+	}
+	
+end
+
+-- # of song passes per group
+af[#af+1] = Def.BitmapText{
+	Font="Miso/_miso",
+	Name="NumberOfSongPassesValue"..pn,
+	SetGradesCommand=function(self,params)
+		local zoom = 0.75
+		local text = "Passes: " .. comma_value(params.scores["Passes"]) .. " / " .. comma_value(params.SongCount)
+		local TextColor = color("#a58cff")
+		self:horizalign(center):vertalign(bottom)
+			:x(pn == "P1" and padding/2 + border + ((width + 100)/2) or _screen.w - padding/2 - border - ((width - 100)/2))
+			:y(padding/2 + border/2 + height - 5)
+			:maxwidth((width - 110 - (border/2))/zoom)
+			:zoom(zoom)
+			:settext(text)
+			:AddAttribute(0, {Length = 7, Diffuse = TextColor;})
+			-- don't show this if the player doesn't have a profile
+			self:visible(IsNotGuest())
+	end,
+}
+
+return af

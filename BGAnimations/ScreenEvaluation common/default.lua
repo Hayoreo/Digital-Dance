@@ -78,9 +78,6 @@ t[#t+1] = LoadActor("./Shared/SongFeatures.lua")
 -- for later retrieval on ScreenEvaluationSummary
 t[#t+1] = LoadActor("./Shared/GlobalStorage.lua")
 
--- Guest steps
-t[#t+1] = LoadActor("./GuestSteps.lua")
-
 -- Random WR Sound
 t[#t+1] = LoadActor("./WRSounds.lua")
 

@@ -99,7 +99,7 @@ for player in ivalues(PlayerNumber) do
 	af2.CurrentCourseChangedMessageCommand=function(self)			self:stoptweening():sleep(0.2):queuecommand("Set") end
 	af2.CurrentSongChangedMessageCommand=function(self)				self:stoptweening():sleep(0.2):queuecommand("Set"):queuecommand('LoadSong') end
 	af2["CurrentSteps"..pn.."ChangedMessageCommand"]=function(self) self:stoptweening():sleep(0.2):queuecommand("Set") end
-	af2["CurrentTrail"..pn.."ChangedMessageCommand"]=function(self) self:playcommand("Set") end
+	af2["CurrentTrail"..pn.."ChangedMessageCommand"]=function(self) self:stoptweening():sleep(0.2):queuecommand("Set") end
 	af2.SongIsReloadingMessageCommand=function(self)				self:stoptweening():sleep(0.2):queuecommand("Set") end
 
 	-- -----------------------------------------------------------------------

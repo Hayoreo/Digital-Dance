@@ -22,7 +22,7 @@ else
 			end
 		},
 		-- fallback visual (SL visual theme)
-		LoadActor(THEME:GetPathB("ScreenSelectMusicDD","underlay/ProfileDisplay/default picture.png"))..{
+		LoadActor(THEME:GetPathG("","/Default Avatar.png"))..{
 			InitCommand=function(self)
 				self:align(0,0):zoom(1.2):diffusealpha(0.9)
 			end

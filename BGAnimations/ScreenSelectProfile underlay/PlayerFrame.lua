@@ -263,7 +263,7 @@ return Def.ActorFrame{
 								self:align(0,0):zoomto(avatar_dim,avatar_dim):diffuse(color("#283239aa"))
 							end
 						},
-						LoadActor(THEME:GetPathB("ScreenSelectMusicDD","underlay/ProfileDisplay/default picture.png"))..{
+						LoadActor(THEME:GetPathG("","/Default Avatar.png"))..{
 							InitCommand=function(self)
 								self:align(0.15,0.09):zoom(0.895):diffusealpha(0.9):xy(13, 8)
 							end

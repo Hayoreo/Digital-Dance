@@ -267,6 +267,7 @@ local af = Def.ActorFrame{
 		self:xy((player==PLAYER_1 and (SCREEN_WIDTH/3)/2 or _screen.w - (SCREEN_WIDTH/3)/2), _screen.h - 32 - 60):visible(false)
 	end,
 	CurrentSongChangedMessageCommand=function(self)
+		self:stoptweening()
 		if GAMESTATE:GetCurrentSong() == nil then
 			for i=1, num_scores do
 				self:stoptweening()
@@ -279,7 +280,7 @@ local af = Def.ActorFrame{
 				self:GetChild("MachineName"..i):settext(""):visible(false)
 				self:GetChild("MachineScore"..i):settext(""):visible(false)
 			end
-			self:sleep(0.1):queuecommand('LoopScorebox')
+			self:queuecommand('LoopScorebox')
 		end
 	end,
 	["TabClicked"..player.."MessageCommand"]=function(self, TabClicked)
@@ -329,12 +330,12 @@ local af = Def.ActorFrame{
 	
 	GetMachineScoresCommand=function(self)
 		self:stoptweening()
+		
 		MachineScores = false
 		local MachineProfile = PROFILEMAN:GetMachineProfile()
 		local PlayerProfile = PROFILEMAN:GetProfile(pn)
 		local SongOrCourse = GAMESTATE:IsCourseMode() and GAMESTATE:GetCurrentCourse() or GAMESTATE:GetCurrentSong()
 		local StepsOrTrail = GAMESTATE:IsCourseMode() and GAMESTATE:GetCurrentTrail(player) or GAMESTATE:GetCurrentSteps(player)
-		
 		if not (SongOrCourse and StepsOrTrail) then return end
 		
 		local HighScoreList = MachineProfile:GetHighScoreList(SongOrCourse,StepsOrTrail)
@@ -352,20 +353,22 @@ local af = Def.ActorFrame{
 				score = FormatPercentScore(HighScores[i]:GetPercentDP())
 				name = HighScores[i]:GetName()
 				if i ~= 1 then
-					self:GetChild("MachineRank"..i):visible(false):settext(rank)
+					self:GetChild("MachineRank"..i):settext(rank):visible(false)
 				end
-				self:GetChild("MachineName"..i):visible(false):settext(name)
-				self:GetChild("MachineScore"..i):visible(false):settext(score)
+				self:GetChild("MachineName"..i):settext(name):visible(false)
+				self:GetChild("MachineScore"..i):settext(score):visible(false)
 			else
 				if i ~= 1 then
-					self:GetChild("MachineRank"..i):settext("")
+					self:GetChild("MachineRank"..i):settext(""):visible(false)
+				else
+					self:GetChild("MachineRank"..i):diffusealpha(0):visible(false)
 				end
-				self:GetChild("MachineName"..i):settext("")
-				self:GetChild("MachineScore"..i):settext("")
+				self:GetChild("MachineName"..i):settext(""):visible(false)
+				self:GetChild("MachineScore"..i):settext(""):visible(false)
 			end
-		end
-		if not IsServiceAllowed(SL.GrooveStats.GetScores) then
-			self:queuecommand("LoopScorebox")
+			if i == num_scores and not IsServiceAllowed(SL.GrooveStats.GetScores) then
+				self:queuecommand("LoopScorebox")
+			end
 		end
 	end,
 	
@@ -393,7 +396,6 @@ local af = Def.ActorFrame{
 			if not self.IsParsing[1] and not self.IsParsing[2] then
 				if IsServiceAllowed(SL.GrooveStats.GetScores) then
 					self:queuecommand("MakeRequest")
-				else
 				end
 				self:GetParent():queuecommand("GetMachineScores")
 			end
@@ -673,7 +675,7 @@ for i=1,num_scores do
 			if cur_style == 3 and MachineScores and GAMESTATE:GetCurrentSong() then
 				self:linear(transition_seconds/2):diffusealpha(1)
 			elseif cur_style == 3 and not MachineScores and i == 1 and GAMESTATE:GetCurrentSong() then
-				self:settext("No Scores"):linear(transition_seconds/2):diffusealpha(1)
+				self:linear(transition_seconds/2):diffusealpha(1):settext("No Scores")
 			end
 		end,
 	}
