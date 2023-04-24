@@ -1,8 +1,14 @@
 local player = ...
 local pn = ToEnumShortString(player)
-local CurrentTab = MaxTabs
+local CurrentTab = 1
+
+-- don't run if a player is not enabled
+if not GAMESTATE:IsHumanPlayer(pn) then return end
 
 local n = player==PLAYER_1 and "1" or "2"
+
+local MachineProfile = PROFILEMAN:GetMachineProfile()
+local PlayerProfile = PROFILEMAN:GetProfile(pn)
 
 local border = 5
 local width = SCREEN_WIDTH/3 - 5
@@ -33,7 +39,8 @@ local rival_color = color("#c29cff")
 local transition_seconds = 1
 
 local all_data = {}
-local MachineScores = false
+local MachineScores = {}
+local HasLocalScores = false
 
 local ResetAllData = function()
 	for i=1,num_styles do
@@ -330,10 +337,9 @@ local af = Def.ActorFrame{
 	
 	GetMachineScoresCommand=function(self)
 		self:stoptweening()
-		
-		MachineScores = false
-		local MachineProfile = PROFILEMAN:GetMachineProfile()
-		local PlayerProfile = PROFILEMAN:GetProfile(pn)
+		MachineScores = {}
+		HasLocalScores = false
+		local EntryCount = 0
 		local SongOrCourse = GAMESTATE:IsCourseMode() and GAMESTATE:GetCurrentCourse() or GAMESTATE:GetCurrentSong()
 		local StepsOrTrail = GAMESTATE:IsCourseMode() and GAMESTATE:GetCurrentTrail(player) or GAMESTATE:GetCurrentSteps(player)
 		if not (SongOrCourse and StepsOrTrail) then return end
@@ -342,34 +348,36 @@ local af = Def.ActorFrame{
 		local HighScores = HighScoreList:GetHighScores()
 		if not HighScores then return end
 		
-		
 		for i=1,num_scores do
 			local y = -height/2 + 16 * i + 8
 			local zoom = 0.87
 			local rank,name,score
+			
 			if HighScores[i] then
-				MachineScores = true
+				EntryCount = EntryCount + 1
+				HasLocalScores = true
 				rank = i
 				score = FormatPercentScore(HighScores[i]:GetPercentDP())
 				name = HighScores[i]:GetName()
-				if i ~= 1 then
-					self:GetChild("MachineRank"..i):settext(rank):visible(false)
-				end
-				self:GetChild("MachineName"..i):settext(name):visible(false)
-				self:GetChild("MachineScore"..i):settext(score):visible(false)
-			else
-				if i ~= 1 then
-					self:GetChild("MachineRank"..i):settext(""):visible(false)
-				else
-					self:GetChild("MachineRank"..i):diffusealpha(0):visible(false)
-				end
-				self:GetChild("MachineName"..i):settext(""):visible(false)
-				self:GetChild("MachineScore"..i):settext(""):visible(false)
+				
+				MachineScores[#MachineScores+1] = {
+					["rank"]=rank,
+					["name"]=name,
+					["score"]=score,
+				}
 			end
 			if i == num_scores and not IsServiceAllowed(SL.GrooveStats.GetScores) then
 				self:queuecommand("LoopScorebox")
 			end
 		end
+		for i=EntryCount+1, num_scores do
+			MachineScores[#MachineScores+1] = {
+					["rank"]="",
+					["name"]="",
+					["score"]="",
+			}
+		end
+		
 	end,
 	
 	RequestResponseActor("Leaderboard", 10, 0, 0)..{
@@ -639,7 +647,7 @@ for i=1,num_scores do
 				self:stoptweening():linear(transition_seconds/2):diffusealpha(0):queuecommand("SetMachineScores")
 			end,
 			SetMachineScoresCommand=function(self)
-				if cur_style == 3 and MachineScores and GAMESTATE:GetCurrentSong() then
+				if cur_style == 3 and HasLocalScores and GAMESTATE:GetCurrentSong() then
 					self:linear(transition_seconds/2):diffusealpha(1)
 				end
 			end,
@@ -655,7 +663,8 @@ for i=1,num_scores do
 				self:stoptweening():linear(transition_seconds/2):diffusealpha(0):queuecommand("SetMachineScores")
 			end,
 			SetMachineScoresCommand=function(self)
-				if cur_style == 3 and MachineScores and GAMESTATE:GetCurrentSong() then
+				if cur_style == 3 and HasLocalScores and GAMESTATE:GetCurrentSong() then
+					self:settext(MachineScores[i]["rank"])
 					self:linear(transition_seconds/2):diffusealpha(1)
 				end
 			end,
@@ -672,9 +681,10 @@ for i=1,num_scores do
 			self:stoptweening():linear(transition_seconds/2):diffusealpha(0):queuecommand("SetMachineScores")
 		end,
 		SetMachineScoresCommand=function(self)
-			if cur_style == 3 and MachineScores and GAMESTATE:GetCurrentSong() then
+			if cur_style == 3 and HasLocalScores and GAMESTATE:GetCurrentSong() then
+				self:settext(MachineScores[i]["name"])
 				self:linear(transition_seconds/2):diffusealpha(1)
-			elseif cur_style == 3 and not MachineScores and i == 1 and GAMESTATE:GetCurrentSong() then
+			elseif cur_style == 3 and not HasLocalScores and i == 1 and GAMESTATE:GetCurrentSong() then
 				self:linear(transition_seconds/2):diffusealpha(1):settext("No Scores")
 			end
 		end,
@@ -690,7 +700,8 @@ for i=1,num_scores do
 			self:stoptweening():linear(transition_seconds/2):diffusealpha(0):queuecommand("SetMachineScores")
 		end,
 		SetMachineScoresCommand=function(self)
-			if cur_style == 3 and MachineScores and GAMESTATE:GetCurrentSong() then
+			if cur_style == 3 and HasLocalScores and GAMESTATE:GetCurrentSong() then
+				self:settext(MachineScores[i]["score"])
 				self:linear(transition_seconds/2):diffusealpha(1)
 			end
 		end,
