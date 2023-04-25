@@ -42,7 +42,6 @@ end
 
 ---- set last difficulty played
 if not GAMESTATE:IsCourseMode() then
-	local song = GAMESTATE:GetCurrentSong()
 	if GAMESTATE:IsPlayerEnabled(PLAYER_1) then
 		local PlayerOneChart = GAMESTATE:GetCurrentSteps(0)
 		DDStats.SetStat(PLAYER_1, 'LastDifficulty', PlayerOneChart:GetDifficulty())
