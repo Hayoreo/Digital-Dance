@@ -14,7 +14,13 @@ local border = 5
 local width = SCREEN_WIDTH/3 - 5
 local height = 120 - 5
 
-local cur_style = 0
+local cur_style 
+if CurrentTab == 1 then
+	cur_style = 0
+else
+	cur_style = CurrentTab - 2
+end
+
 local num_styles = 4
 local num_scores = 6
 
@@ -270,8 +276,13 @@ end
 
 local af = Def.ActorFrame{
 	Name="ScoreBox"..pn,
-	InitCommand=function(self)
-		self:xy((player==PLAYER_1 and (SCREEN_WIDTH/3)/2 or _screen.w - (SCREEN_WIDTH/3)/2), _screen.h - 32 - 60):visible(false)
+	InitCommand=function(self)	
+		self:xy((player==PLAYER_1 and (SCREEN_WIDTH/3)/2 or _screen.w - (SCREEN_WIDTH/3)/2), _screen.h - 32 - 60)
+		if CurrentTab == 1 then
+			self:visible(false)
+		else
+			self:visible(true)
+		end
 	end,
 	CurrentSongChangedMessageCommand=function(self)
 		self:stoptweening()
