@@ -391,7 +391,7 @@ local af = Def.ActorFrame{
 		
 	end,
 	
-	RequestResponseActor("Leaderboard", 10, 0, 0)..{
+	RequestResponseActor("Leaderboard"..pn, 10, 0, 0)..{
 		OnCommand=function(self)
 			-- Create variables for both players, even if they're not currently active.
 			self.IsParsing = {false, false}
@@ -458,7 +458,7 @@ local af = Def.ActorFrame{
 				self:GetParent():GetChild("SRPG6Logo"):diffusealpha(0):visible(false)
 				self:GetParent():GetChild("ITLLogo"):diffusealpha(0):visible(false)
 				self:GetParent():GetChild("MachineLogo"):diffusealpha(0):visible(false)
-				MESSAGEMAN:Broadcast("Leaderboard", {
+				MESSAGEMAN:Broadcast("Leaderboard"..pn, {
 					data=data,
 					args=self:GetParent(),
 					callback=LeaderboardRequestProcessor
