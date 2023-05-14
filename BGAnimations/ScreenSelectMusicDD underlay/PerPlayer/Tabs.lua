@@ -1,16 +1,20 @@
 local player = ...
 local pn = ToEnumShortString(player)
 
+local InitialTab
+local InitialTabNumber
+
 local TabText = {}
 MaxTabs = 0
 
+if DDStats.GetStat(pn, 'LastTab') ~= nil then
+	InitialTab = DDStats.GetStat(pn, 'LastTab')
+else
+	InitialTab = "Steps"
+end
 
-local t = Def.ActorFrame{
-	InitCommand=function(self)
-		self:xy(SCREEN_LEFT + 2.5,_screen.h - 149.5)
-		:visible(GAMESTATE:IsHumanPlayer(pn))
-	end,
-}
+local TabText = {}
+MaxTabs = 0
 
 TabText[#TabText+1] = "Steps"
 
@@ -24,6 +28,43 @@ TabText[#TabText+1] = "Local"
 
 MaxTabs = #TabText
 
+local function TabToNumber(Tab)
+	local value
+	for i=1, MaxTabs do
+		if TabText[i] == Tab then
+			value = i
+		end
+	end
+	if value == nil then value = 1 end
+	return value
+end
+
+local function NumberToTab(Tab)
+	local value
+	for i=1, MaxTabs do
+		if i == Tab then
+			value = TabText[i]
+		end
+	end
+	if value == nil then value = "Steps" end
+	
+	if pn == "P1" then
+		DDStats.SetStat(PLAYER_1, 'LastTab', value)
+		DDStats.Save(PLAYER_1)
+	elseif pn == "P2" then
+		DDStats.SetStat(PLAYER_2, 'LastTab', value)
+		DDStats.Save(PLAYER_2)
+	end
+	
+	return value
+end
+
+local t = Def.ActorFrame{
+	OnCommand=function(self)
+		self:xy(SCREEN_LEFT + 2.5,_screen.h - 149.5)
+		:visible(GAMESTATE:IsHumanPlayer(pn))
+	end,
+}
 	
 --- bg for tabs
 t[#t+1] = Def.Quad {
@@ -42,12 +83,13 @@ for i=1,MaxTabs do
 			self:diffuse(color("#000000")):zoomto(30, 10):horizalign(left):vertalign(top)
 			:x(pn == "P1" and -30 + (i*32) or  (_screen.w - _screen.w/3) -30 + (i*32))
 			:y(2)
-			if i == 1 then
+			if i == TabToNumber(InitialTab) then
 				-- highlight color
 				self:diffuse(color("#3d304a"))
 			end
 		end,
 		["TabClicked"..player.."MessageCommand"]=function(self, TabClicked)
+			NumberToTab(TabClicked[1])
 			self:GetParent():GetChild("Tab"..i):diffuse(color("#000000"))
 			self:GetParent():GetChild("Tab"..TabClicked[1]):diffuse(color("#3d304a"))
 		end,

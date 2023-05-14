@@ -1,6 +1,60 @@
 local player = ...
 local pn = ToEnumShortString(player)
-local CurrentTab = 1
+local CurrentTab
+local CurrentTabNumber
+
+if pn == "P1" and GAMESTATE:IsHumanPlayer(pn) then
+	if DDStats.GetStat(PLAYER_1, 'LastTab') ~= nil then
+		CurrentTab = DDStats.GetStat(pn, 'LastTab')
+	else
+		CurrentTab = "Steps"
+	end
+elseif pn == "P2" and GAMESTATE:IsHumanPlayer(pn) then
+	if DDStats.GetStat(PLAYER_2, 'LastTab') ~= nil then
+		CurrentTab = DDStats.GetStat(pn, 'LastTab')
+	else
+		CurrentTab = "Steps"
+	end
+end
+
+local TabText = {}
+TabText[#TabText+1] = "Steps"
+-- Only show the online tabs if they're available
+if IsServiceAllowed(SL.GrooveStats.GetScores) then
+	TabText[#TabText+1] = "GS"
+	TabText[#TabText+1] = "RPG"
+	TabText[#TabText+1] = "ITL"
+end
+TabText[#TabText+1] = "Local"
+
+local GetRealTab = function(TabClicked)
+	local RealTabClick
+	
+	if IsServiceAllowed(SL.GrooveStats.GetScores) then
+		RealTabClick = TabClicked
+	else
+		-- we only show the steps information and local scores if not online
+		if TabClicked == 2 then
+			RealTabClick = 5
+		else
+			RealTabClick = TabClicked
+		end
+	end
+	return tonumber(RealTabClick)
+end
+
+local function TabToStyle(Tab)
+	local value
+	for i=1, #TabText do
+		if TabText[i] == Tab then
+			value = i
+		end
+	end
+	if value == nil then value = 1 end
+	value = GetRealTab(value)
+	return value
+end
+CurrentTabNumber = TabToStyle(CurrentTab)
 
 -- don't run if a player is not enabled
 if not GAMESTATE:IsHumanPlayer(pn) then return end
@@ -15,11 +69,11 @@ local border = 5
 local width = SCREEN_WIDTH/3 - 5
 local height = 120 - 5
 
-local cur_style 
-if CurrentTab == 1 then
+local cur_style
+if CurrentTabNumber == 1 then
 	cur_style = 0
 else
-	cur_style = CurrentTab - 2
+	cur_style = CurrentTabNumber - 2
 end
 
 local num_styles = 4
@@ -32,6 +86,10 @@ local MachinePurple = color("#4d0057")
 
 local isRanked = false
 local IsVisible = false
+
+if CurrentTabNumber ~= 1 then
+	IsVisible = true
+end
 
 local style_color = {
 	[0] = GrooveStatsBlue,
@@ -68,22 +126,6 @@ local ResetAllData = function()
 		end
 		all_data[#all_data + 1] = data
 	end
-end
-
-local GetRealTab = function(TabClicked)
-	local RealTabClick
-	
-	if IsServiceAllowed(SL.GrooveStats.GetScores) then
-		RealTabClick = TabClicked
-	else
-		-- we only show the steps information and local scores if not online
-		if TabClicked == 2 then
-			RealTabClick = 5
-		else
-			RealTabClick = TabClicked
-		end
-	end
-	return tonumber(RealTabClick)
 end
 
 -- Initialize the all_data object.
@@ -279,7 +321,7 @@ local af = Def.ActorFrame{
 	Name="ScoreBox"..pn,
 	InitCommand=function(self)	
 		self:xy((player==PLAYER_1 and (SCREEN_WIDTH/3)/2 or _screen.w - (SCREEN_WIDTH/3)/2), _screen.h - 32 - 60)
-		if CurrentTab == 1 then
+		if CurrentTabNumber == 1 then
 			self:visible(false)
 		else
 			self:visible(true)
