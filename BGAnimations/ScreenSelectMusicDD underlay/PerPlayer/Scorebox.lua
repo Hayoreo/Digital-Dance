@@ -7,6 +7,7 @@ if not GAMESTATE:IsHumanPlayer(pn) then return end
 
 local n = player==PLAYER_1 and "1" or "2"
 
+
 local MachineProfile = PROFILEMAN:GetMachineProfile()
 local PlayerProfile = PROFILEMAN:GetProfile(pn)
 
@@ -395,6 +396,7 @@ local af = Def.ActorFrame{
 		OnCommand=function(self)
 			-- Create variables for both players, even if they're not currently active.
 			self.IsParsing = {false, false}
+			self.RequestNumber = 0
 		end,
 		-- Broadcasted from ./PerPlayer/DensityGraph.lua
 		P1ChartParsingMessageCommand=function(self)	self.IsParsing[1] = true end,
@@ -458,10 +460,17 @@ local af = Def.ActorFrame{
 				self:GetParent():GetChild("SRPG6Logo"):diffusealpha(0):visible(false)
 				self:GetParent():GetChild("ITLLogo"):diffusealpha(0):visible(false)
 				self:GetParent():GetChild("MachineLogo"):diffusealpha(0):visible(false)
+				
+				self.RequestNumber = self.RequestNumber + 1
+				local thisRequestNumber = self.RequestNumber
 				MESSAGEMAN:Broadcast("Leaderboard"..pn, {
 					data=data,
 					args=self:GetParent(),
-					callback=LeaderboardRequestProcessor
+					callback=function(res, master)
+						if self.RequestNumber == thisRequestNumber then
+							LeaderboardRequestProcessor(res, master)
+						end
+					end,
 				})
 			end
 		end
