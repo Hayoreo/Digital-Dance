@@ -10,7 +10,7 @@ return Def.Sprite{
 		local label = "None"
 
 		-- force EditMode to use Ice HoldJudgment for now
-		if SCREENMAN:GetTopScreen():GetName():match("ScreenEdit") then
+		if SCREENMAN:GetTopScreen():GetName():match("ScreenEdit") or SCREENMAN:GetTopScreen():GetName():match("ScreenPractice") then
 			label = "Ice 1x2.png"
 
 		elseif self:GetParent() and self:GetParent():GetParent() then
