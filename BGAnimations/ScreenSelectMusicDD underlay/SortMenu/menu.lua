@@ -208,7 +208,7 @@ local t = Def.ActorFrame{
 					InitialAddY = InitialAddY + 12.5
 				end
 				
-				if GAMESTATE:GetCurrentStyle():GetStyleType() == 'StyleType_OnePlayerTwoSides' and GAMESTATE:IsPlayerEnabled(0) then
+				if GAMESTATE:GetCurrentStyle():GetStyleType() ~= 'StyleType_TwoPlayersTwoSides' and GAMESTATE:IsPlayerEnabled(0) and SongIsSelected then
 					InitialZoomY = InitialZoomY + 25
 					InitialAddY = InitialAddY + 12.5
 				end
@@ -255,7 +255,7 @@ local t = Def.ActorFrame{
 					InitialAddY = InitialAddY + 12.5
 				end
 				
-				if GAMESTATE:GetCurrentStyle():GetStyleType() == 'StyleType_OnePlayerTwoSides' and GAMESTATE:IsPlayerEnabled(0) then
+				if GAMESTATE:GetCurrentStyle():GetStyleType() ~= 'StyleType_TwoPlayersTwoSides' and GAMESTATE:IsPlayerEnabled(0) and SongIsSelected then
 					InitialZoomY = InitialZoomY + 25
 					InitialAddY = InitialAddY + 12.5
 				end
@@ -742,8 +742,12 @@ end
 OtherLabel[#OtherLabel+1] = "LEADERBOARDS"
 local leaderboards_label_index = #OtherLabel
 OtherLabel[#OtherLabel+1] = "TEST INPUT"
-if GAMESTATE:GetCurrentStyle():GetStyleType() == 'StyleType_OnePlayerTwoSides' and GAMESTATE:IsPlayerEnabled(0) then
+local practice_mode_label_index
+if GAMESTATE:GetCurrentStyle():GetStyleType() ~= 'StyleType_TwoPlayersTwoSides' and GAMESTATE:IsPlayerEnabled(0) then
 	OtherLabel[#OtherLabel+1] = "PRACTICE SONG"
+	practice_mode_label_index = #OtherLabel
+else
+	practice_mode_label_index = nil
 end
 
 
@@ -764,14 +768,23 @@ for i,OtherText in ipairs(OtherLabel) do
 		UpdateCommand=function(self)
 			local curSong = GAMESTATE:GetCurrentSong()
 			local is_leaderboard_enabled = curSong ~= nil and IsServiceAllowed(SL.GrooveStats.Leaderboard)
+			local is_practice_mode_enabled = curSong ~= nil and GAMESTATE:GetCurrentStyle():GetStyleType() ~= 'StyleType_TwoPlayersTwoSides' and GAMESTATE:IsPlayerEnabled(0)
 			local active_index = i
 
 			if not is_leaderboard_enabled and i >= leaderboards_label_index then
 				active_index = i - 1
 			end
+			if GAMESTATE:GetCurrentStyle():GetStyleType() ~= 'StyleType_TwoPlayersTwoSides' and GAMESTATE:IsPlayerEnabled(0) then
+				if not is_practice_mode_enabled and i >= practice_mode_label_index then
+					active_index = i - 1
+				end
+			end
 			self:y(SCREEN_CENTER_Y + 30 + 25*active_index)
 			if i == leaderboards_label_index then
 				self:visible(is_leaderboard_enabled)
+			end
+			if i == practice_mode_label_index then
+				self:visible(is_practice_mode_enabled)
 			end
 		end,
 	}

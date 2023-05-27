@@ -185,7 +185,7 @@ local SortMenuCursorLogic = function()
 			MESSAGEMAN:Broadcast("ToggleSortMenu")
 		end
 	end
-	if DDSortMenuCursorPosition == GetMaxCursorPosition() and GAMESTATE:GetCurrentStyle():GetStyleType() == 'StyleType_OnePlayerTwoSides' and GAMESTATE:IsPlayerEnabled(0) then
+	if DDSortMenuCursorPosition == GetMaxCursorPosition() and GAMESTATE:GetCurrentStyle():GetStyleType() ~= 'StyleType_TwoPlayersTwoSides' and GAMESTATE:IsPlayerEnabled(0) and GAMESTATE:GetCurrentSong() ~= nil then
 		SCREENMAN:GetTopScreen():SetNextScreenName("ScreenPractice")
 		SCREENMAN:GetTopScreen():StartTransitioningScreen("SM_GoToNextScreen")
 	end
