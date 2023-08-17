@@ -1,3 +1,4 @@
+# THIS IS DEPRECATED, USE [THE ITGMANIA BUILD](https://github.com/Hayoreo/Digital-Dance-ITGMania/releases/latest).
 # Digital Dance v1.0.55
 This is a partial release of v1.0.6 which is going to be a huge update and I wanted a release with ITL support.
 
